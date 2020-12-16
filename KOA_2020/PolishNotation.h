@@ -202,6 +202,9 @@ namespace PolishNotation
 
 		void UpdateTables(int positionAfterAssignment, int endPosition, LT::LexTable& lexTable, IT::IdTable& idtable)
 		{
+			LT::Entry entry; entry.lexema = -6; entry.line = resultChain[resultChain.size()-1].line;
+			for (int i = positionAfterAssignment + resultChain.size(); i < endPosition; i++)
+				resultChain.push_back(entry);
 			lexTable.table.erase(lexTable.table.begin() + positionAfterAssignment, lexTable.table.begin() + endPosition);
 			lexTable.table.insert(lexTable.table.begin() + positionAfterAssignment, resultChain.begin(), resultChain.end());
 			lexTable.table.shrink_to_fit();

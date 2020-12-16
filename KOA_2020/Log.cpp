@@ -82,6 +82,7 @@ namespace Log
 		strftime(buffer, 300, " Дата: %d.%m.%Y %H:%M:%S", &timeinfo);
 		*log.streamLexTable << buffer << " ----- " << endl;
 
+		*log.streamLexTable << "Размер: " << lexTable.current_size << endl;
 		int counter = 0;
 		for (int i = 0; i < lexTable.table[lexTable.current_size - 1].line; i++)
 		{

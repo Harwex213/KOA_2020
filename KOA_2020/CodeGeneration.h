@@ -40,7 +40,8 @@
 #define STANDART_HEAD_BEGIN		".586\n" + \
 								".model flat, stdcall\n"
 #define STANDART_HEAD_LIBS		"includelib kernel32.lib\n" + \
-								"includelib libucrt.lib\n"
+								"includelib libucrt.lib\n" + \
+								"includelib ..\Standart.lib"
 #define STANDART_HEAD_PROTOS	"ExitProcess PROTO: DWORD\n"
 
 #define STANDART_CONST_BEGIN	".const\n"
@@ -113,6 +114,8 @@ namespace CodeGeneration
 		std::vector<MFST::MfstState> StateArray;
 		int lexTablePosition = 0;
 		bool FunctionWas = false;
+
+		bool DebugCheck = true;
 
 		std::string IdNameToString(IT::Entry& entryId, int id)
 		{
@@ -270,11 +273,12 @@ namespace CodeGeneration
 				// Начинаем писать функцию.
 				entryFunctionData.funcBegin = entryFunctionData.funcBegin + STANDART_FUNC_BEGIN(entryId.idName);
 				// Пишем параметры функции.
+				entryId.paramsIdx.reverse();
 				auto idParam = entryId.paramsIdx.begin();
 				char* name = nullptr;
 				while (entryId.functionParamsCount > 0 && idParam != entryId.paramsIdx.end())
 				{
-					entryFunctionData.funcBegin = entryFunctionData.funcBegin + INSERT_FUNCTION_PARAM(idTable.table[*idParam].idName, IdDataTypeToString(idTable.table[*idParam].idDataType));
+					entryFunctionData.funcBegin = entryFunctionData.funcBegin + INSERT_FUNCTION_PARAM(IdNameToString(entryId, *idParam), IdDataTypeToString(idTable.table[*idParam].idDataType));
 					idParam++;
 				}
 				entryFunctionData.funcBegin = entryFunctionData.funcBegin + NEWLINE;
@@ -371,7 +375,7 @@ namespace CodeGeneration
 								entryFunctionData.funcCode = entryFunctionData.funcCode + POPZX(PVAR_NAME(byteTemp--));
 						}
 						entryFunctionData.funcCode = entryFunctionData.funcCode + INVOKE_FUNCTION(idTable.table[lexTable.table[i].idxTI].idName);
-						dwordTemp = PUSH_VAR_COUNT / 2;
+						dwordTemp = PUSH_VAR_COUNT / 2 - 1;
 						byteTemp = PUSH_VAR_COUNT;
 						for (int k = 0; k < idTable.table[lexTable.table[i].idxTI].functionParamsCount; k++)
 						{

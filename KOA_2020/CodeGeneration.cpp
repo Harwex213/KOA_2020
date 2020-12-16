@@ -8,6 +8,7 @@ namespace CodeGeneration
 		data.FillStandartLines();
 		data.FillDataAndProtos(idTable, lexTable);
 		data.GetStoreState(mfst);
+		// Dosn't make all.
 		data.StartCode(lexTable, idTable);
 		data.WriteCodeGeneration();
 	}

@@ -39,8 +39,8 @@ V_4 DWORD	0
 V_8 BYTE	0
 V_10 DWORD	0
 .code
-FindMax PROC, i: DWORD, arr: DWORD
-; ti=lllvlvvlv;
+FindMax PROC, V_2: DWORD, V_3: DWORD
+; ti=lllvlvvlvúú;
 	 push V_5
 	 push V_6
 	 push V_7
@@ -63,27 +63,18 @@ FindMax PROC, i: DWORD, arr: DWORD
 	 or  eax, ebx
 	 push eax
 	 pop V_4
-; =l;
+; ti=l;
 	 movzx eax, V_9
 	 push eax
 	 pop eax
 	 mov V_8, al
-; l;
+; i=l;
 	 push V_5
-	 push V_11
-	 push V_12
-	 pop eax
-	 pop ebx
-	 add eax, ebx
-	 push eax
-	 pop PV_7
-	 pop PV_6
-	 invoke FindMax, PV_8, PV_7
-	 pop V_10
+	 pop V_4
 	ret
 FindMax ENDP
 main PROC
-; =lllv@;
+; ti=lllv@úúú;
 	 push V_5
 	 push V_11
 	 push V_12
@@ -93,7 +84,7 @@ main PROC
 	 push eax
 	 pop PV_7
 	 pop PV_6
-	 invoke FindMax, PV_8, PV_7
+	 invoke FindMax, PV_7, PV_6
 	 pop V_10
 	push 0
 	call ExitProcess
