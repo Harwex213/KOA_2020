@@ -2,15 +2,8 @@ include "date.lib"
 uint function FindMax(uint arr, uint i)
 {
     uint k = 10 + (900 * 310 + 10) | 10;
-    while(k > 100)
-    {
-        if(k > 100)
-        {
-        uint j = 100;
-            k = 100;
-        }
-        k = k + 1;
-    }
+    bool j = true;
+    k = 10;
 	return k;
 }
 main

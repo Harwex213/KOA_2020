@@ -29,7 +29,10 @@
 #define FUNC_CODE_INDEX			7
 #define FUNC_END_INDEX			8
 
+#define PUSH_VAR_COUNT			16
+
 #define VAR_NAME(name) "V_" + name
+#define PVAR_NAME(id) "PV_" + std::to_string(id)
 
 #define COMMENT(value) "; " + value + "\n"
 #define NEWLINE	"\n"
@@ -61,7 +64,20 @@
 #define MAIN_BEGIN	"main PROC\n"
 #define MAIN_END	"	push 0\n" + "	call ExitProcess\n" "main ENDP\n"
 
-#define PUSH(name) "	push " + name + "\n"
+#define PUSH(name)		"\t push " + name + "\n"
+#define PUSHZX(name)	"\t movzx eax, " + name + "\n" + "\t push eax\n"
+#define	POP(name)		"\t pop " + name + "\n"
+#define	POPZX(name)		"\t pop eax\n" + "\t mov " name + ", al\n"
+#define ADD				"\t pop eax\n" + "\t pop ebx\n" + "\t add eax, ebx\n" + "\t push eax\n"
+#define SUB				"\t pop eax\n" + "\t pop ebx\n" + "\t sub eax, ebx\n" + "\t push eax\n"
+#define MUL				"\t pop eax\n" + "\t pop ebx\n" + "\t mul ebx\n" + "\t push eax\n"
+#define DIV				"\t pop eax\n" + "\t pop ebx\n" + "\t div ebx\n" + "\t push eax\n"
+#define BIT_OR			"\t pop eax\n" + "\t pop ebx\n" + "\t or  eax, ebx\n" + "\t push eax\n"
+#define BIT_AND			"\t pop eax\n" + "\t pop ebx\n" + "\t and eax, ebx\n" + "\t push eax\n"
+#define BIT_NOT			"\t pop eax\n" + "\t not eax\n" + "\t push eax\n"
+
+#define INVOKE_FUNCTION(name) "\t invoke " + name 
+#define ADD_FUNCTION_PARAM(name) ", " + name
 
 namespace CodeGeneration
 {
@@ -154,13 +170,13 @@ namespace CodeGeneration
 				data = data + COMMENT(comment);
 				break;
 			case FUNC_BEGIN_INDEX:
-				codeArray[currentFunction].funcBegin = codeArray[currentFunction].funcBegin + COMMENT(comment);
+				entryFunctionData.funcBegin = entryFunctionData.funcBegin + COMMENT(comment);
 				break;
 			case FUNC_CODE_INDEX:
-				codeArray[currentFunction].funcCode = codeArray[currentFunction].funcCode + COMMENT(comment);
+				entryFunctionData.funcCode = entryFunctionData.funcCode + COMMENT(comment);
 				break;
 			case FUNC_END_INDEX:
-				codeArray[currentFunction].funcEnd = codeArray[currentFunction].funcEnd + COMMENT(comment);
+				entryFunctionData.funcEnd = entryFunctionData.funcEnd + COMMENT(comment);
 				break;
 			}
 		}
@@ -173,6 +189,10 @@ namespace CodeGeneration
 			head.protos = head.protos + STANDART_HEAD_PROTOS;
 			consts = consts + STANDART_CONST_BEGIN;
 			data = data + STANDART_DATA_BEGIN;
+			for (int i = 0; i < PUSH_VAR_COUNT / 2; i++)
+				data = data + INSERT_VARS(PVAR_NAME(i), "DWORD", "?");
+			for (int i = PUSH_VAR_COUNT / 2; i < PUSH_VAR_COUNT; i++)
+				data = data + INSERT_VARS(PVAR_NAME(i), "BYTE", "?");
 		}
 
 		void FillDataAndProtos(IT::IdTable& idTable, LT::LexTable& lexTable)
@@ -271,12 +291,66 @@ namespace CodeGeneration
 			}
 		}
 
+		void ExecuteOperation(LT::OperationType operationType)
+		{
+			switch (operationType)
+			{
+			case LT::PLUS:
+				entryFunctionData.funcCode = entryFunctionData.funcCode + ADD;
+				break;
+			case LT::MINUS:
+				entryFunctionData.funcCode = entryFunctionData.funcCode + SUB;
+				break;
+			case LT::MULTIPLY:
+				entryFunctionData.funcCode = entryFunctionData.funcCode + MUL;
+				break;
+			case LT::DIVISION:
+				entryFunctionData.funcCode = entryFunctionData.funcCode + DIV;
+				break;
+			case LT::EQUALLY:
+				break;
+			case LT::NON_EQUALLY:
+				break;
+			case LT::MORE:
+				break;
+			case LT::LESS:
+				break;
+			case LT::MORE_OR_EQUAL:
+				break;
+			case LT::LESS_OR_EQUAL:
+				break;
+			case LT::OR:
+				entryFunctionData.funcCode = entryFunctionData.funcCode + BIT_OR;
+				break;
+			case LT::AND:
+				entryFunctionData.funcCode = entryFunctionData.funcCode + BIT_AND;
+				break;
+			case LT::INVERSION:
+				entryFunctionData.funcCode = entryFunctionData.funcCode + BIT_NOT;
+				break;
+			}
+		}
+
 		void ChooseInRuleChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable)
 		{
+			// Выводим разбираемую строку.
+			std::string tempString;
+			int tempPosition = lexTablePosition;
+			while (lexTable.table[tempPosition].line == lexTable.table[lexTablePosition].line)
+				tempString += lexTable.table[tempPosition++].lexema;
+			char* s = (char *)tempString.c_str();
+			WriteComment(FUNC_CODE_INDEX, s);
 			switch (nrulechain)
 			{
 			case IR_DECL_INIT_CHAIN:
 			case IR_DECL_INIT_CHAIN + 9:
+			case IR_DECL_CONST_CHAIN:
+			case IR_DECL_CONST_CHAIN + 9:
+			case IR_INIT_CHAIN:
+			case IR_INIT_CHAIN + 9:
+			case IR_INIT_ARR_CHAIN:
+			case IR_INIT_ARR_CHAIN + 9:
+			{
 				// Доходим до присваивания.
 				while (lexTable.table[lexTablePosition].lexema != LEX_ASSIGNMENT)
 					lexTablePosition++;
@@ -285,32 +359,58 @@ namespace CodeGeneration
 				{
 					switch (lexTable.table[i].lexema)
 					{
+					case LEX_CALL_FUNCTION:
+					{
+						int dwordTemp = PUSH_VAR_COUNT / 2 - 1;
+						int byteTemp = PUSH_VAR_COUNT;
+						for (int k = 0; k < idTable.table[lexTable.table[i].idxTI].functionParamsCount; k++)
+						{
+							if (idTable.table[lexTable.table[i].idxTI].idDataType == IT::UINT)
+								entryFunctionData.funcCode = entryFunctionData.funcCode + POP(PVAR_NAME(dwordTemp--));
+							else
+								entryFunctionData.funcCode = entryFunctionData.funcCode + POPZX(PVAR_NAME(byteTemp--));
+						}
+						entryFunctionData.funcCode = entryFunctionData.funcCode + INVOKE_FUNCTION(idTable.table[lexTable.table[i].idxTI].idName);
+						dwordTemp = PUSH_VAR_COUNT / 2;
+						byteTemp = PUSH_VAR_COUNT;
+						for (int k = 0; k < idTable.table[lexTable.table[i].idxTI].functionParamsCount; k++)
+						{
+							if (idTable.table[lexTable.table[i].idxTI].idDataType == IT::UINT)
+								entryFunctionData.funcCode = entryFunctionData.funcCode + ADD_FUNCTION_PARAM(PVAR_NAME(dwordTemp--));
+							else
+								entryFunctionData.funcCode = entryFunctionData.funcCode + ADD_FUNCTION_PARAM(PVAR_NAME(byteTemp--));
+						}
+						entryFunctionData.funcCode = entryFunctionData.funcCode + NEWLINE;
+						break;
+					}
 					case LEX_IDENTIFICATOR:
 					case LEX_LITERAL:
-						entryFunctionData.funcCode = entryFunctionData.funcCode + PUSH(VAR_NAME(std::to_string(lexTable.table[i].idxTI)));
+						if (idTable.table[lexTable.table[i].idxTI].idDataType == IT::UINT)
+							entryFunctionData.funcCode = entryFunctionData.funcCode + PUSH(VAR_NAME(std::to_string(lexTable.table[i].idxTI)));
+						else
+							entryFunctionData.funcCode = entryFunctionData.funcCode + PUSHZX(VAR_NAME(std::to_string(lexTable.table[i].idxTI)));
 						break;
 					case LEX_BINARIES:
 					case LEX_COMPARISONS:
 					case LEX_UNARY:
-						entryFunctionData.funcCode = entryFunctionData.funcCode + ;
+						ExecuteOperation(lexTable.table[i].operationType);
 						break;
 					}
 				}
+				// Выполняем присваивание идентификатору, что был до присваивания.
+				int i = lexTablePosition - 1;
+				if (idTable.table[lexTable.table[i].idxTI].idDataType == IT::UINT)
+					entryFunctionData.funcCode = entryFunctionData.funcCode + POP(VAR_NAME(std::to_string(lexTable.table[i].idxTI)));
+				else
+					entryFunctionData.funcCode = entryFunctionData.funcCode + POPZX(VAR_NAME(std::to_string(lexTable.table[i].idxTI)));
 				break;
+
+			}
 			case IR_DECL_CHAIN:
 			case IR_DECL_CHAIN + 9:
 				break;
 			case IR_DECL_ARR_CHAIN:
 			case IR_DECL_ARR_CHAIN + 9:
-				break;
-			case IR_DECL_CONST_CHAIN:
-			case IR_DECL_CONST_CHAIN + 9:
-				break;
-			case IR_INIT_CHAIN:
-			case IR_INIT_CHAIN + 9:
-				break;
-			case IR_INIT_ARR_CHAIN:
-			case IR_INIT_ARR_CHAIN + 9:
 				break;
 			case IR_WHILE:
 			case IR_WHILE + 9:
@@ -328,10 +428,10 @@ namespace CodeGeneration
 		{
 			for (unsigned int i = 0; i < StateArray.size(); i++)
 			{
-				lexTablePosition = StateArray[i].lenta_position;
 				switch (StateArray[i].nrule)
 				{
 				case S_RULE:
+					lexTablePosition = StateArray[i].lenta_position;
 #pragma region PopFunction
 					if (FunctionWas)
 					{
@@ -353,6 +453,7 @@ namespace CodeGeneration
 					ChooseSnRuleChain(StateArray[i].nrulechain, lexTable, idTable);
 					break;
 				case I_RULE:
+					lexTablePosition = StateArray[i].lenta_position;
 					ChooseInRuleChain(StateArray[i].nrulechain, lexTable, idTable);
 					break;
 				default:
