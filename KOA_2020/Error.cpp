@@ -31,7 +31,7 @@ namespace Error
 		ERROR_ENTRY(111, "Недопустимый символ в исходном коде (-in)"),
 		ERROR_ENTRY(112, "Ошибка при создании файла протокола (-log)"),
 		ERROR_ENTRY(113, "Файл, переданный как -in:, пуст"),
-		ERROR_ENTRY(114, "Ошибка при создании файла протокола (-out)"),
+		ERROR_ENTRY(114, "Ошибка при создании файла генерации кода"),
 		ERROR_ENTRY_NODEF(115),
 		ERROR_ENTRY_NODEF(116),		ERROR_ENTRY_NODEF(117),		ERROR_ENTRY_NODEF(118),
 		ERROR_ENTRY_NODEF(119),

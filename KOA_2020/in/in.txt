@@ -6,6 +6,7 @@ uint function FindMax(uint arr, uint i)
     {
         if(k > 100)
         {
+        uint j = 100;
             k = 100;
         }
         k = k + 1;
