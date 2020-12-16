@@ -9,5 +9,5 @@ uint function FindMax(uint arr, uint i)
 main
 {
     uint k = FindMax(10, 20 + 9);
- 	return k;
+ 	return 0;
 }

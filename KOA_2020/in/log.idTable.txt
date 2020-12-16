@@ -1,4 +1,4 @@
------ Протокол -----  Дата: 16.12.2020 15:53:26 ----- 
+----- Протокол -----  Дата: 16.12.2020 17:23:34 ----- 
 
 |Params|
 ID Name                            idx First LE                       Visibility Init                    DataType                           Value UINT                         Value FLOAT                        Value BOOL                         Value STRING
@@ -21,10 +21,11 @@ k                                  44                                 main      
 |Literals|
 Name                               idx First LE                       Visibility                         DataType                           Value UINT                         Value FLOAT                        Value BOOL                         Value STRING                       
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-L0                                 1                                  LITERAL                            2                                  -                                  -                                  -                                  "date.lib"                         
+L0                                 1                                  LITERAL                            2                                  -                                  -                                  -                                  "DateTime.lib"                     
 L1                                 16                                 LITERAL                            1                                  10                                 -                                  -                                  -                                  
 L2                                 19                                 LITERAL                            1                                  900                                -                                  -                                  -                                  
 L3                                 21                                 LITERAL                            1                                  310                                -                                  -                                  -                                  
 L4                                 31                                 LITERAL                            3                                  -                                  -                                  1                                  -                                  
 L5                                 50                                 LITERAL                            1                                  20                                 -                                  -                                  -                                  
 L6                                 52                                 LITERAL                            1                                  9                                  -                                  -                                  -                                  
+L7                                 56                                 LITERAL                            1                                  0                                  -                                  -                                  -                                  

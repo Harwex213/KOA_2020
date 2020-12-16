@@ -20,6 +20,8 @@
 #define IR_IF_ELSE				7
 #define IR_IF					8
 
+#define E_RULE	2
+
 #define HEAD_BEGIN_INDEX		1
 #define HEAD_LIBS_INDEX			2
 #define HEAD_PROTOS_INDEX		3
@@ -31,6 +33,9 @@
 
 #define PUSH_VAR_COUNT			16
 
+#define IDX_MAIN	-2
+#define IDX_FUNC	1
+
 #define VAR_NAME(name) "V_" + name
 #define PVAR_NAME(id) "PV_" + std::to_string(id)
 
@@ -41,7 +46,7 @@
 								".model flat, stdcall\n"
 #define STANDART_HEAD_LIBS		"includelib kernel32.lib\n" + \
 								"includelib libucrt.lib\n" + \
-								"includelib ..\Standart.lib"
+								"includelib Standart.lib\n"
 #define STANDART_HEAD_PROTOS	"ExitProcess PROTO: DWORD\n"
 
 #define STANDART_CONST_BEGIN	".const\n"
@@ -61,9 +66,11 @@
 
 #define STANDART_FUNC_BEGIN(name)			name + " PROC"
 #define INSERT_FUNCTION_PARAM(name, type)	", " + name + ": " + type
-#define STANDART_FUNC_END(name)				"	ret\n" + name + " ENDP\n"
+#define RET(name)							"\t mov eax, " + name + "\n"
+#define RETZX(name)							"\t movzx eax, " + name + "\n"
+#define STANDART_FUNC_END(name)				"\t ret\n" + name + " ENDP\n"
 #define MAIN_BEGIN	"main PROC\n"
-#define MAIN_END	"	push 0\n" + "	call ExitProcess\n" "main ENDP\n"
+#define MAIN_END	"\t call ExitProcess\n" "main ENDP\n"
 
 #define PUSH(name)		"\t push " + name + "\n"
 #define PUSHZX(name)	"\t movzx eax, " + name + "\n" + "\t push eax\n"
@@ -77,8 +84,9 @@
 #define BIT_AND			"\t pop eax\n" + "\t pop ebx\n" + "\t and eax, ebx\n" + "\t push eax\n"
 #define BIT_NOT			"\t pop eax\n" + "\t not eax\n" + "\t push eax\n"
 
-#define INVOKE_FUNCTION(name) "\t invoke " + name 
+#define INVOKE_FUNCTION(name) "\t invoke " + name
 #define ADD_FUNCTION_PARAM(name) ", " + name
+#define PUSH_RESULT_FUNCTION "\t push eax\n"
 
 namespace CodeGeneration
 {
@@ -213,7 +221,6 @@ namespace CodeGeneration
 						head.protos = head.protos + INSERT_DWORD;
 					head.protos = head.protos + NEWLINE;
 					break;
-				case IT::PARAM:
 				case IT::VARIABLE:
 					data = data + INSERT_VARS(IdNameToString(idTable.table[i], i), IdDataTypeToString(idTable.table[i].idDataType), ValueToString(idTable.table[i]));
 					break;
@@ -348,12 +355,8 @@ namespace CodeGeneration
 			{
 			case IR_DECL_INIT_CHAIN:
 			case IR_DECL_INIT_CHAIN + 9:
-			case IR_DECL_CONST_CHAIN:
-			case IR_DECL_CONST_CHAIN + 9:
 			case IR_INIT_CHAIN:
 			case IR_INIT_CHAIN + 9:
-			case IR_INIT_ARR_CHAIN:
-			case IR_INIT_ARR_CHAIN + 9:
 			{
 				// Доходим до присваивания.
 				while (lexTable.table[lexTablePosition].lexema != LEX_ASSIGNMENT)
@@ -385,6 +388,7 @@ namespace CodeGeneration
 								entryFunctionData.funcCode = entryFunctionData.funcCode + ADD_FUNCTION_PARAM(PVAR_NAME(byteTemp--));
 						}
 						entryFunctionData.funcCode = entryFunctionData.funcCode + NEWLINE;
+						entryFunctionData.funcCode = entryFunctionData.funcCode + PUSH_RESULT_FUNCTION;
 						break;
 					}
 					case LEX_IDENTIFICATOR:
@@ -413,9 +417,6 @@ namespace CodeGeneration
 			case IR_DECL_CHAIN:
 			case IR_DECL_CHAIN + 9:
 				break;
-			case IR_DECL_ARR_CHAIN:
-			case IR_DECL_ARR_CHAIN + 9:
-				break;
 			case IR_WHILE:
 			case IR_WHILE + 9:
 				break;
@@ -440,7 +441,7 @@ namespace CodeGeneration
 					if (FunctionWas)
 					{
 						// Проверяем. Если -2 => был мейн. Если нет, была просто функция.
-						if (entryFunctionData.idxFunction == -2)
+						if (entryFunctionData.idxFunction == IDX_MAIN)
 							entryFunctionData.funcEnd = entryFunctionData.funcEnd + MAIN_END;
 						else
 							entryFunctionData.funcEnd = entryFunctionData.funcEnd + STANDART_FUNC_END(idTable.table[entryFunctionData.idxFunction].idName);
@@ -459,6 +460,28 @@ namespace CodeGeneration
 				case I_RULE:
 					lexTablePosition = StateArray[i].lenta_position;
 					ChooseInRuleChain(StateArray[i].nrulechain, lexTable, idTable);
+					break;
+				case E_RULE:
+					// Смотрим, не конец ли функции.
+					lexTablePosition = StateArray[i].lenta_position;
+					if (i + 1 == StateArray.size() || StateArray[i + 1].nrule == S_RULE)
+					{
+						switch (entryFunctionData.idxFunction)
+						{
+						case IDX_MAIN:
+							if (idTable.table[lexTable.table[lexTablePosition].idxTI].idDataType == IT::UINT)
+								entryFunctionData.funcEnd = entryFunctionData.funcEnd + PUSH(IdNameToString(idTable.table[lexTable.table[lexTablePosition].idxTI], lexTable.table[lexTablePosition].idxTI));
+							else
+								entryFunctionData.funcEnd = entryFunctionData.funcEnd + PUSHZX(IdNameToString(idTable.table[lexTable.table[lexTablePosition].idxTI], lexTable.table[lexTablePosition].idxTI));
+							break;
+						case IDX_FUNC:
+							if (idTable.table[lexTable.table[lexTablePosition].idxTI].idDataType == IT::UINT)
+								entryFunctionData.funcEnd = entryFunctionData.funcEnd + RET(IdNameToString(idTable.table[lexTable.table[lexTablePosition].idxTI], lexTable.table[lexTablePosition].idxTI));
+							else
+								entryFunctionData.funcEnd = entryFunctionData.funcEnd + RETZX(IdNameToString(idTable.table[lexTable.table[lexTablePosition].idxTI], lexTable.table[lexTablePosition].idxTI));
+							break;
+						}
+					}
 					break;
 				default:
 					break;
