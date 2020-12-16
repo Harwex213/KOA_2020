@@ -1,13 +1,52 @@
 include "DateTime.lib"
-uint function FindMax(uint arr, uint i)
+
+string function GetCurrentTime()
 {
-    uint k = 10 + (900 * 310 + 10) | 10;
-    bool j = true;
-    k = 10;
-	return k;
+    string time =  "Date: " + GetDate() + ". Time: " + GetTime() ".";
+    return time;
 }
+
 main
 {
-    uint k = FindMax(10, 20 + 9);
+    cWriteLine(GetCurrentTime());
+    cWriteLine("-----------------------------------------------");
+    string resultString;
+    bool xIsTheBiggest;
+    bool yIsTheBiggest;
+    bool zIsTheBiggest;
+    uint x = GetRandom(0, 2077);
+    uint y = GetRandom(0, 2077);
+    uint z = GetRandom(0, 2077;
+    string startInfo = "Найти максимальное среди чисел: " + UintToChar(x) + ", " + UintToChar(x) + ", "  + UintToChar(x);
+    cWriteLine(startInfo);
+    if(x > y)
+    {
+       if(x > z)
+       {
+            xIsTheBiggest = true;
+       }
+       else
+       {
+            zIsTheBiggest = true;
+       }
+    }
+    else
+    {
+        if(y > z)
+        {
+            yIsTheBiggest = true;
+        }
+        else
+        {
+            zIsTheBiggest = true;
+        }
+    }
+
+    if(xIsTheBiggest) { resultString =  UintToChar(x) + "Самое большое число!" }
+    if(yIsTheBiggest) { resultString =  UintToChar(y) + "Самое большое число!" }
+    if(zIsTheBiggest) { resultString =  UintToChar(z) + "Самое большое число!" }
+
+    cWriteLine(resultString);
+
  	return 0;
 }

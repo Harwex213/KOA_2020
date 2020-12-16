@@ -12,13 +12,10 @@
 
 #define IR_DECL_INIT_CHAIN		0
 #define IR_DECL_CHAIN			1
-#define IR_DECL_ARR_CHAIN		2
-#define IR_DECL_CONST_CHAIN		3
-#define IR_INIT_CHAIN			4
-#define IR_INIT_ARR_CHAIN		5
-#define IR_WHILE				6
-#define IR_IF_ELSE				7
-#define IR_IF					8
+#define IR_INIT_CHAIN			2
+#define IR_WHILE				3
+#define IR_IF_ELSE				4
+#define IR_IF					5
 
 #define E_RULE	2
 
@@ -297,7 +294,7 @@ namespace CodeGeneration
 				// Начинаем писать мейн.
 				entryFunctionData.funcBegin = entryFunctionData.funcBegin + MAIN_BEGIN;
 				// Ставим id мейна.
-				entryFunctionData.idxFunction = -2;
+				entryFunctionData.idxFunction = IDX_MAIN;
 				break;
 			}
 		}
@@ -354,9 +351,9 @@ namespace CodeGeneration
 			switch (nrulechain)
 			{
 			case IR_DECL_INIT_CHAIN:
-			case IR_DECL_INIT_CHAIN + 9:
+			case IR_DECL_INIT_CHAIN + 6:
 			case IR_INIT_CHAIN:
-			case IR_INIT_CHAIN + 9:
+			case IR_INIT_CHAIN + 6:
 			{
 				// Доходим до присваивания.
 				while (lexTable.table[lexTablePosition].lexema != LEX_ASSIGNMENT)
@@ -415,16 +412,16 @@ namespace CodeGeneration
 
 			}
 			case IR_DECL_CHAIN:
-			case IR_DECL_CHAIN + 9:
+			case IR_DECL_CHAIN + 6:
 				break;
 			case IR_WHILE:
-			case IR_WHILE + 9:
+			case IR_WHILE + 6:
 				break;
 			case IR_IF_ELSE:
-			case IR_IF_ELSE + 9:
+			case IR_IF_ELSE + 6:
 				break;
 			case IR_IF:
-			case IR_IF + 9:
+			case IR_IF + 6:
 				break;
 			}
 		}

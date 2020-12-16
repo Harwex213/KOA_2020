@@ -23,20 +23,14 @@ namespace GRB
 				// Instructions. 
 				NS('I'),
 				GRB_ERROR_SERIES + 2,
-				18,
+				12,
 				// Блок повторяющихся.
 				// Объявление и присваивание.
 				Rule::Chain(6, TS('t'), TS('i'), TS('='), NS('E'), TS(';'), NS('I')),
 				// Объявление.
 				Rule::Chain(4, TS('t'), TS('i'), TS(';'), NS('I')),
-				// Объявление массива.
-				Rule::Chain(7, TS('t'), TS('i'), TS('['), NS('E'), TS(']'), TS(';'), NS('I')),
-				// Объявление константы.
-				Rule::Chain(7, TS('c'), TS('t'), TS('i'), TS('='), TS('l'), TS(';'), NS('I')),
 				// Присваивание.
 				Rule::Chain(5, TS('i'), TS('='), NS('E'), TS(';'), NS('I')),
-				// Присваивание массива.
-				Rule::Chain(8, TS('i'), TS('['), NS('E'), TS(']'), TS('='), NS('E'), TS(';'), NS('I')),
 				// Цикл
 				Rule::Chain(8, TS('w'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
 				// if -> else
@@ -49,14 +43,8 @@ namespace GRB
 				Rule::Chain(5, TS('t'), TS('i'), TS('='), NS('E'), TS(';')),
 				// Объявление.
 				Rule::Chain(3, TS('t'), TS('i'), TS(';')),
-				// Объявление массива.
-				Rule::Chain(6, TS('t'), TS('i'), TS('['), NS('E'), TS(']'), TS(';')),
-				// Объявление константы.
-				Rule::Chain(6, TS('c'), TS('t'), TS('i'), TS('='), TS('l'), TS(';')),
 				// Присваивание.
 				Rule::Chain(4, TS('i'), TS('='), NS('E'), TS(';')),
-				// Присваивание массива.
-				Rule::Chain(7, TS('i'), TS('['), NS('E'), TS(']'), TS('='), NS('E'), TS(';')),
 				// Цикл
 				Rule::Chain(7, TS('w'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}')),
 				// if -> else
@@ -68,12 +56,10 @@ namespace GRB
 				// Expressions.
 				NS('E'),
 				GRB_ERROR_SERIES + 3,
-				12,
+				8,
 				// Блок с операциями.
 				// Идентификатор.
 				Rule::Chain(2, TS('i'), NS('O')),
-				// Массив.
-				Rule::Chain(5, TS('i'), TS('['), NS('E'), TS(']'), NS('O')),
 				// Литерал.
 				Rule::Chain(2, TS('l'), NS('O')),
 				// Вызов функции.
@@ -86,8 +72,6 @@ namespace GRB
 				// Блок без операций.
 				// Идентификатор.
 				Rule::Chain(1, TS('i')),
-				// Массив.
-				Rule::Chain(4, TS('i'), TS('['), NS('E'), TS(']')),
 				// Литерал.
 				Rule::Chain(1, TS('l')),
 				// Вызов функции.

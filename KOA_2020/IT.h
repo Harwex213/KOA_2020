@@ -7,8 +7,6 @@
 #define TI_STR_DEFAULT	0x00			// значение по умолчанию для типа string
 #define TI_STR_MAXSIZE	255
 
-#define PARM_ID_DEFAULT_EXT L".id.txt" //для файла с итогом лексического анализa(идентификаторы и литералы)
-
 namespace IT
 {
 	enum IDDATATYPE { UNDEF = 0, UINT = 1, STRING = 2, BOOL = 3, FLOAT = 4 };
