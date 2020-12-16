@@ -7,7 +7,8 @@ namespace CodeGeneration
 		CodeGenerationData data;
 		data.FillStandartLines();
 		data.FillDataAndProtos(idTable, lexTable);
-		data.StartCode(mfst, lexTable, idTable);
+		data.GetStoreState(mfst);
+		data.StartCode(lexTable, idTable);
 		data.EndCode();
 		data.WriteCodeGeneration();
 	}

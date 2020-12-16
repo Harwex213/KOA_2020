@@ -2,10 +2,18 @@
 
 #define GENERATION_DEBUG
 
-#define S_RULE	0
-#define I_RULE	1
-#define E_RULE	2
-#define O_RULE  3
+#define S_RULE				0
+#define SR_INCLUDE_CHAIN	0
+#define SR_MAIN_CHAIN		1
+#define SR_FUNCTION_CHAIN	2
+
+#define I_RULE					1
+#define IR_DECL_INIT_CHAIN		0
+#define IR_DECL_INIT_CHAINwide	IR_DECL_INIT_CHAIN + 8
+#define IR_DECL_CHAIN			1
+#define IR_DECL_CHAINwide		IR_DECL_CHAIN + 8
+#define IR_DECL_ARR_CHAIN		2
+#define IR_DECL_ARR_CHAINwide	IR_DECL_ARR_CHAIN + 8
 
 #define HEAD_BEGIN_INDEX		1
 #define HEAD_LIBS_INDEX			2
@@ -30,7 +38,7 @@
 #define STANDART_CODE_BEGIN		".code\n"
 #define STANDART_CODE_END		"end main\n"
 
-#define STANDART_LIB 
+#define INCLUDE_LIB(name) "includelib " + name
 
 #define STACK(value) ".stack " + std::to_string(value) + "\n"
 
@@ -62,8 +70,7 @@ namespace CodeGeneration
 
 		ofstream* streamOut = new ofstream();
 
-		MFST::MfstState entryState;
-		GRB::Rule entryRule;
+		std::vector<MFST::MfstState> StateArray;
 
 		std::string IdNameToString(IT::Entry& entryId, int id)
 		{
@@ -165,18 +172,12 @@ namespace CodeGeneration
 			WriteComment(HEAD_PROTOS_INDEX, "----- End User Function Protos -----");
 		}
 
-		void MetFunction()
-		{
-
-		}
-
-		void StartCode(MFST::Mfst& mfst, LT::LexTable& lexTable, IT::IdTable& idTable)
+		void GetStoreState(MFST::Mfst& mfst)
 		{
 			// Проходимся по дереву разбора
 			for (unsigned short k = 0; k < mfst.storestate.size(); k++)
 			{
 				// Получаем текущее правило.
-#pragma region GetMfstState
 				std::stack<MFST::MfstState> temp_storestate = mfst.storestate;
 				auto j = temp_storestate.size() - 1;
 
@@ -185,16 +186,15 @@ namespace CodeGeneration
 
 				if (!temp_storestate.empty())
 				{
-					entryState = temp_storestate.top();
+					StateArray.push_back(temp_storestate.top());
 					temp_storestate.pop();
 				}
-#pragma endregion
-
-				switch (entryState.nrule)
-				{
-
-				}
 			}
+		}
+
+		void StartCode(LT::LexTable& lexTable, IT::IdTable& idTable)
+		{
+			cout << "Krya";
 		}
 
 		void EndCode()
