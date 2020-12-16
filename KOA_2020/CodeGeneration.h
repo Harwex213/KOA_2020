@@ -3,16 +3,22 @@
 //#define GENERATION_DEBUG
 
 #define S_RULE				0
+
 #define SR_INCLUDE_CHAIN	0
 #define SR_MAIN_CHAIN		1
 #define SR_FUNCTION_CHAIN	2
 
 #define I_RULE					1
-#define IR_DECL_INIT_CHAIN		0
-#define IR_DECL_INIT_CHAINwide	IR_DECL_INIT_CHAIN + 8
-#define IR_DECL_CHAIN			1
-#define IR_DECL_CHAINwide		IR_DECL_CHAIN + 8
 
+#define IR_DECL_INIT_CHAIN		0
+#define IR_DECL_CHAIN			1
+#define IR_DECL_ARR_CHAIN		2
+#define IR_DECL_CONST_CHAIN		3
+#define IR_INIT_CHAIN			4
+#define IR_INIT_ARR_CHAIN		5
+#define IR_WHILE				6
+#define IR_IF_ELSE				7
+#define IR_IF					8
 
 #define HEAD_BEGIN_INDEX		1
 #define HEAD_LIBS_INDEX			2
@@ -23,7 +29,7 @@
 #define FUNC_CODE_INDEX			7
 #define FUNC_END_INDEX			8
 
-#define VAR_NAME "V_"
+#define VAR_NAME(name) "V_" + name
 
 #define COMMENT(value) "; " + value + "\n"
 #define NEWLINE	"\n"
@@ -54,6 +60,8 @@
 #define STANDART_FUNC_END(name)				"	ret\n" + name + " ENDP\n"
 #define MAIN_BEGIN	"main PROC\n"
 #define MAIN_END	"	push 0\n" + "	call ExitProcess\n" "main ENDP\n"
+
+#define PUSH(name) "	push " + name + "\n"
 
 namespace CodeGeneration
 {
@@ -97,7 +105,7 @@ namespace CodeGeneration
 				return entryId.idName;
 			return entryId.idName + (std::string)"_" + *entryId.visibility.cbegin();
 #endif // GENERATION_DEBUG
-			return VAR_NAME + std::to_string(id);
+			return VAR_NAME(std::to_string(id));
 		}
 
 		std::string IdDataTypeToString(IT::IDDATATYPE idDataType)
@@ -265,13 +273,62 @@ namespace CodeGeneration
 
 		void ChooseInRuleChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable)
 		{
-
+			switch (nrulechain)
+			{
+			case IR_DECL_INIT_CHAIN:
+			case IR_DECL_INIT_CHAIN + 9:
+				// Доходим до присваивания.
+				while (lexTable.table[lexTablePosition].lexema != LEX_ASSIGNMENT)
+					lexTablePosition++;
+				// Проходимся по цепочке лексем до точки с запятой.
+				for (int i = lexTablePosition + 1; lexTable.table[i].lexema != LEX_SEMICOLON; i++)
+				{
+					switch (lexTable.table[i].lexema)
+					{
+					case LEX_IDENTIFICATOR:
+					case LEX_LITERAL:
+						entryFunctionData.funcCode = entryFunctionData.funcCode + PUSH(VAR_NAME(std::to_string(lexTable.table[i].idxTI)));
+						break;
+					case LEX_BINARIES:
+					case LEX_COMPARISONS:
+					case LEX_UNARY:
+						entryFunctionData.funcCode = entryFunctionData.funcCode + ;
+						break;
+					}
+				}
+				break;
+			case IR_DECL_CHAIN:
+			case IR_DECL_CHAIN + 9:
+				break;
+			case IR_DECL_ARR_CHAIN:
+			case IR_DECL_ARR_CHAIN + 9:
+				break;
+			case IR_DECL_CONST_CHAIN:
+			case IR_DECL_CONST_CHAIN + 9:
+				break;
+			case IR_INIT_CHAIN:
+			case IR_INIT_CHAIN + 9:
+				break;
+			case IR_INIT_ARR_CHAIN:
+			case IR_INIT_ARR_CHAIN + 9:
+				break;
+			case IR_WHILE:
+			case IR_WHILE + 9:
+				break;
+			case IR_IF_ELSE:
+			case IR_IF_ELSE + 9:
+				break;
+			case IR_IF:
+			case IR_IF + 9:
+				break;
+			}
 		}
 
 		void StartCode(LT::LexTable& lexTable, IT::IdTable& idTable)
 		{
 			for (unsigned int i = 0; i < StateArray.size(); i++)
 			{
+				lexTablePosition = StateArray[i].lenta_position;
 				switch (StateArray[i].nrule)
 				{
 				case S_RULE:
@@ -282,7 +339,7 @@ namespace CodeGeneration
 						if (entryFunctionData.idxFunction == -2)
 							entryFunctionData.funcEnd = entryFunctionData.funcEnd + MAIN_END;
 						else
-							entryFunctionData.funcEnd = entryFunctionData.funcEnd + STANDART_FUNC_END(idTable.table[lexTable.table[lexTablePosition].idxTI].idName);
+							entryFunctionData.funcEnd = entryFunctionData.funcEnd + STANDART_FUNC_END(idTable.table[entryFunctionData.idxFunction].idName);
 						// Заносим функцию в вектор.
 						codeArray.push_back(entryFunctionData);
 						currentFunction++;
