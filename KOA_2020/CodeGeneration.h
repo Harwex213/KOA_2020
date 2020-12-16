@@ -12,7 +12,7 @@
 #define IR_DECL_INIT_CHAINwide	IR_DECL_INIT_CHAIN + 8
 #define IR_DECL_CHAIN			1
 #define IR_DECL_CHAINwide		IR_DECL_CHAIN + 8
-#define 
+
 
 #define HEAD_BEGIN_INDEX		1
 #define HEAD_LIBS_INDEX			2
@@ -51,9 +51,9 @@
 
 #define STANDART_FUNC_BEGIN(name)			name + " PROC"
 #define INSERT_FUNCTION_PARAM(name, type)	", " + name + ": " + type
-#define STANDART_FUNC_END(name)				name + " ENDP\n"
+#define STANDART_FUNC_END(name)				"	ret\n" + name + " ENDP\n"
 #define MAIN_BEGIN	"main PROC\n"
-#define MAIN_END	"main ENDP\n"
+#define MAIN_END	"	push 0\n" + "	call ExitProcess\n" "main ENDP\n"
 
 namespace CodeGeneration
 {
@@ -105,11 +105,11 @@ namespace CodeGeneration
 			switch (idDataType)
 			{
 			case IT::UINT:
-				return "dd";
+				return "DWORD";
 			case IT::STRING:
-				return "db";
+				return "BYTE";
 			case IT::BOOL:
-				return "db";
+				return "BYTE";
 			}
 		}
 

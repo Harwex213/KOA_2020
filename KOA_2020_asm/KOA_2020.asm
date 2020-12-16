@@ -9,23 +9,26 @@ ExitProcess PROTO: DWORD
 FindMax PROTO : DWORD, : DWORD
 ; ----- End User Function Protos -----
 .const
-V_0 db	"date.lib"
-V_5 dd	10
-V_6 dd	900
-V_7 dd	310
-V_8 dd	100
-V_10 dd	1
-V_12 dd	20
-V_13 dd	9
+V_0 BYTE	"date.lib"
+V_5 DWORD	10
+V_6 DWORD	900
+V_7 DWORD	310
+V_8 DWORD	100
+V_10 DWORD	1
+V_12 DWORD	20
+V_13 DWORD	9
 .data
-V_2 dd	0
-V_3 dd	0
-V_4 dd	0
-V_9 dd	0
-V_11 dd	0
+V_2 DWORD	0
+V_3 DWORD	0
+V_4 DWORD	0
+V_9 DWORD	0
+V_11 DWORD	0
 .code
-FindMax PROC, i: dd, arr: dd
+FindMax PROC, i: DWORD, arr: DWORD
+	ret
 FindMax ENDP
 main PROC
+	push 0
+	call ExitProcess
 main ENDP
 end main
