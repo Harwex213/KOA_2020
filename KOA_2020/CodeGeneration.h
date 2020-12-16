@@ -2,26 +2,33 @@
 
 #define GENERATION_DEBUG
 
-#define HEAD_INDEX		1
-#define CONSTS_INDEX	2
-#define DATA_INDEX		3
-#define CODE_INDEX		4
+#define S_RULE	0
+#define I_RULE	1
+#define E_RULE	2
+#define O_RULE  3
+
+#define HEAD_BEGIN_INDEX		1
+#define HEAD_LIBS_INDEX			2
+#define HEAD_PROTOS_INDEX		3
+#define CONSTS_INDEX			4
+#define DATA_INDEX				5
+#define CODE_INDEX				6
 
 #define VAR_NAME		"V_"
-#define SEPARATOR_NAME	"_"
 
 #define COMMENT(value)		"; " + value + "\n"
 #define NEWLINE	"\n"
 
 #define STANDART_HEAD_BEGIN		".586\n" + \
-								".model flat, stdcall\n" + \
-								"includelib kernel32.lib\n" + \
-								"includelib libucrt.lib\n" + \
-								"ExitProcess PROTO: DWORD\n"
+								".model flat, stdcall\n"
+#define STANDART_HEAD_LIBS		"includelib kernel32.lib\n" + \
+								"includelib libucrt.lib\n"
+#define STANDART_HEAD_PROTOS	"ExitProcess PROTO: DWORD\n"
+
 #define STANDART_CONST_BEGIN	".const\n"
 #define STANDART_DATA_BEGIN		".data\n"
 #define STANDART_CODE_BEGIN		".code\n"
-#define STANDART_CODE_END		"end main"
+#define STANDART_CODE_END		"end main\n"
 
 #define STANDART_LIB 
 
@@ -39,14 +46,24 @@
 
 namespace CodeGeneration
 {
+	struct CodeHead
+	{
+		std::string begin;
+		std::string libs;
+		std::string protos;
+	};
+
 	struct CodeGenerationData
 	{
-		std::string head;
+		CodeHead head;
 		std::string consts;
 		std::string data;
 		std::string code;
 
 		ofstream* streamOut = new ofstream();
+
+		MFST::MfstState entryState;
+		GRB::Rule entryRule;
 
 		std::string IdNameToString(IT::Entry& entryId, int id)
 		{
@@ -88,8 +105,14 @@ namespace CodeGeneration
 		{
 			switch (indexOfBlock)
 			{
-			case HEAD_INDEX:
-				head = head + COMMENT(comment);
+			case HEAD_BEGIN_INDEX:
+				head.begin = head.begin + COMMENT(comment);
+				break;
+			case HEAD_LIBS_INDEX:
+				head.libs = head.libs + COMMENT(comment);
+				break;
+			case HEAD_PROTOS_INDEX:
+				head.protos = head.protos + COMMENT(comment);
 				break;
 			case CONSTS_INDEX:
 				consts = consts + COMMENT(comment);
@@ -105,34 +128,30 @@ namespace CodeGeneration
 
 		void FillStandartLines()
 		{
-			WriteComment(HEAD_INDEX, "----- Start -----");
-			head = head + STANDART_HEAD_BEGIN;
-			WriteComment(HEAD_INDEX, "----- End Start -----");
+			head.begin = head.begin + STANDART_HEAD_BEGIN;
+			head.begin = head.begin + STACK(4096);
+			head.libs = head.libs + STANDART_HEAD_LIBS;
+			head.protos = head.protos + STANDART_HEAD_PROTOS;
 			consts = consts + STANDART_CONST_BEGIN;
 			data = data + STANDART_DATA_BEGIN;
 			WriteComment(CODE_INDEX, "----- Code -----");
 			code = code + STANDART_CODE_BEGIN;
 		}
 
-		void FillStack(int value)
+		void FillDataAndProtos(IT::IdTable& idTable, LT::LexTable& lexTable)
 		{
-			head = head + STACK(value);
-		}
-
-		void FillData(IT::IdTable& idTable, LT::LexTable& lexTable)
-		{
-			WriteComment(HEAD_INDEX, "----- Function Protos -----");
+			WriteComment(HEAD_PROTOS_INDEX, "----- User Function Protos -----");
 			for (int i = 0; i < idTable.current_size; i++)
 			{
 				switch (idTable.table[i].idType)
 				{
 				case IT::FUNCTION:
-					head = head + INSERT_FUNCTION_PROTO(idTable.table[i].idName);
+					head.protos = head.protos + INSERT_FUNCTION_PROTO(idTable.table[i].idName);
 					if (idTable.table[i].functionParamsCount > 0)
-						head = head + INSERT_FIRST_DWORD;
+						head.protos = head.protos + INSERT_FIRST_DWORD;
 					for (int j = 1; j < idTable.table[i].functionParamsCount; j++)
-						head = head + INSERT_DWORD;
-					head = head + NEWLINE;
+						head.protos = head.protos + INSERT_DWORD;
+					head.protos = head.protos + NEWLINE;
 					break;
 				case IT::PARAM:
 				case IT::VARIABLE:
@@ -143,13 +162,39 @@ namespace CodeGeneration
 					break;
 				}
 			}
-			WriteComment(HEAD_INDEX, "----- End Function Protos -----");
-			FillStack(4096);
+			WriteComment(HEAD_PROTOS_INDEX, "----- End User Function Protos -----");
 		}
 
-		void StartCode()
+		void MetFunction()
 		{
 
+		}
+
+		void StartCode(MFST::Mfst& mfst, LT::LexTable& lexTable, IT::IdTable& idTable)
+		{
+			// Проходимся по дереву разбора
+			for (unsigned short k = 0; k < mfst.storestate.size(); k++)
+			{
+				// Получаем текущее правило.
+#pragma region GetMfstState
+				std::stack<MFST::MfstState> temp_storestate = mfst.storestate;
+				auto j = temp_storestate.size() - 1;
+
+				while (!temp_storestate.empty() && j-- != k)
+					temp_storestate.pop();
+
+				if (!temp_storestate.empty())
+				{
+					entryState = temp_storestate.top();
+					temp_storestate.pop();
+				}
+#pragma endregion
+
+				switch (entryState.nrule)
+				{
+
+				}
+			}
 		}
 
 		void EndCode()
@@ -164,7 +209,9 @@ namespace CodeGeneration
 			if (streamOut->fail())
 				throw ERROR_THROW(114);
 
-			*streamOut << head;
+			*streamOut << head.begin;
+			*streamOut << head.libs;
+			*streamOut << head.protos;
 			*streamOut << consts;
 			*streamOut << data;
 			*streamOut << code;

@@ -6,8 +6,8 @@ namespace CodeGeneration
 	{
 		CodeGenerationData data;
 		data.FillStandartLines();
-		data.FillData(idTable, lexTable);
-		data.StartCode();
+		data.FillDataAndProtos(idTable, lexTable);
+		data.StartCode(mfst, lexTable, idTable);
 		data.EndCode();
 		data.WriteCodeGeneration();
 	}
