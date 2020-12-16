@@ -9,7 +9,6 @@ namespace CodeGeneration
 		data.FillDataAndProtos(idTable, lexTable);
 		data.GetStoreState(mfst);
 		data.StartCode(lexTable, idTable);
-		data.EndCode();
 		data.WriteCodeGeneration();
 	}
 }

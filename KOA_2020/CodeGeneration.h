@@ -1,6 +1,6 @@
 #pragma once
 
-#define GENERATION_DEBUG
+//#define GENERATION_DEBUG
 
 #define S_RULE				0
 #define SR_INCLUDE_CHAIN	0
@@ -12,19 +12,20 @@
 #define IR_DECL_INIT_CHAINwide	IR_DECL_INIT_CHAIN + 8
 #define IR_DECL_CHAIN			1
 #define IR_DECL_CHAINwide		IR_DECL_CHAIN + 8
-#define IR_DECL_ARR_CHAIN		2
-#define IR_DECL_ARR_CHAINwide	IR_DECL_ARR_CHAIN + 8
+#define 
 
 #define HEAD_BEGIN_INDEX		1
 #define HEAD_LIBS_INDEX			2
 #define HEAD_PROTOS_INDEX		3
 #define CONSTS_INDEX			4
 #define DATA_INDEX				5
-#define CODE_INDEX				6
+#define FUNC_BEGIN_INDEX		6
+#define FUNC_CODE_INDEX			7
+#define FUNC_END_INDEX			8
 
-#define VAR_NAME		"V_"
+#define VAR_NAME "V_"
 
-#define COMMENT(value)		"; " + value + "\n"
+#define COMMENT(value) "; " + value + "\n"
 #define NEWLINE	"\n"
 
 #define STANDART_HEAD_BEGIN		".586\n" + \
@@ -38,7 +39,7 @@
 #define STANDART_CODE_BEGIN		".code\n"
 #define STANDART_CODE_END		"end main\n"
 
-#define INCLUDE_LIB(name) "includelib " + name
+#define INCLUDE_LIB(name) "includelib " + name + "\n"
 
 #define STACK(value) ".stack " + std::to_string(value) + "\n"
 
@@ -48,9 +49,11 @@
 
 #define INSERT_VARS(name, type, value) name + " " + type + "\t" + value + "\n"
 
-#define STANDART_FUNC_BEGIN(name)			name + "PROC"
+#define STANDART_FUNC_BEGIN(name)			name + " PROC"
 #define INSERT_FUNCTION_PARAM(name, type)	", " + name + ": " + type
-#define STANDART_FUNC_END(name)				name + "ENDP"
+#define STANDART_FUNC_END(name)				name + " ENDP\n"
+#define MAIN_BEGIN	"main PROC\n"
+#define MAIN_END	"main ENDP\n"
 
 namespace CodeGeneration
 {
@@ -61,16 +64,31 @@ namespace CodeGeneration
 		std::string protos;
 	};
 
+	struct FunctionData
+	{
+		// -2 ==> Main.
+		int idxFunction = -1;
+		std::string funcBegin;
+		std::string funcCode;
+		std::string funcEnd;
+	};
+
 	struct CodeGenerationData
 	{
 		CodeHead head;
 		std::string consts;
 		std::string data;
-		std::string code;
+		std::string codeBegin{ STANDART_CODE_BEGIN };
+		std::string codeEnd{ STANDART_CODE_END };
+		std::vector<FunctionData> codeArray;
+		int currentFunction = 0;
+		FunctionData entryFunctionData;
 
 		ofstream* streamOut = new ofstream();
 
 		std::vector<MFST::MfstState> StateArray;
+		int lexTablePosition = 0;
+		bool FunctionWas = false;
 
 		std::string IdNameToString(IT::Entry& entryId, int id)
 		{
@@ -127,8 +145,14 @@ namespace CodeGeneration
 			case DATA_INDEX:
 				data = data + COMMENT(comment);
 				break;
-			case CODE_INDEX:
-				code = code + COMMENT(comment);
+			case FUNC_BEGIN_INDEX:
+				codeArray[currentFunction].funcBegin = codeArray[currentFunction].funcBegin + COMMENT(comment);
+				break;
+			case FUNC_CODE_INDEX:
+				codeArray[currentFunction].funcCode = codeArray[currentFunction].funcCode + COMMENT(comment);
+				break;
+			case FUNC_END_INDEX:
+				codeArray[currentFunction].funcEnd = codeArray[currentFunction].funcEnd + COMMENT(comment);
 				break;
 			}
 		}
@@ -141,8 +165,6 @@ namespace CodeGeneration
 			head.protos = head.protos + STANDART_HEAD_PROTOS;
 			consts = consts + STANDART_CONST_BEGIN;
 			data = data + STANDART_DATA_BEGIN;
-			WriteComment(CODE_INDEX, "----- Code -----");
-			code = code + STANDART_CODE_BEGIN;
 		}
 
 		void FillDataAndProtos(IT::IdTable& idTable, LT::LexTable& lexTable)
@@ -192,15 +214,109 @@ namespace CodeGeneration
 			}
 		}
 
-		void StartCode(LT::LexTable& lexTable, IT::IdTable& idTable)
+		void ChooseSnRuleChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable)
 		{
-			cout << "Krya";
+			IT::Entry entryId;
+			switch (nrulechain)
+			{
+			case SR_INCLUDE_CHAIN:
+				// Доходим до литерала.
+				while (lexTable.table[lexTablePosition].lexema != LEX_LITERAL)
+					lexTablePosition++;
+				// Присваиваем в tempEntry путь библиотеки.
+				entryId = idTable.table[lexTable.table[lexTablePosition].idxTI];
+				// Подключаем библиотеку.
+				head.libs = head.libs + INCLUDE_LIB(entryId.value.vString.string);
+				break;
+			case SR_FUNCTION_CHAIN:
+			{
+				// Ставим, что функция была.
+				FunctionWas = true;
+				// Доходим до идентификатора (функции).
+				while (lexTable.table[lexTablePosition].lexema != LEX_IDENTIFICATOR)
+					lexTablePosition++;
+				// Присваиваем в tempEntry идентификатор функции.
+				entryId = idTable.table[lexTable.table[lexTablePosition].idxTI];
+				// Ставим id функции, в которой находимся.
+				entryFunctionData.idxFunction = lexTable.table[lexTablePosition].idxTI;
+				// Начинаем писать функцию.
+				entryFunctionData.funcBegin = entryFunctionData.funcBegin + STANDART_FUNC_BEGIN(entryId.idName);
+				// Пишем параметры функции.
+				auto idParam = entryId.paramsIdx.begin();
+				char* name = nullptr;
+				while (entryId.functionParamsCount > 0 && idParam != entryId.paramsIdx.end())
+				{
+					entryFunctionData.funcBegin = entryFunctionData.funcBegin + INSERT_FUNCTION_PARAM(idTable.table[*idParam].idName, IdDataTypeToString(idTable.table[*idParam].idDataType));
+					idParam++;
+				}
+				entryFunctionData.funcBegin = entryFunctionData.funcBegin + NEWLINE;
+				break;
+			}
+			case SR_MAIN_CHAIN:
+				// Ставим, что функция была.
+				FunctionWas = true;
+				// Начинаем писать мейн.
+				entryFunctionData.funcBegin = entryFunctionData.funcBegin + MAIN_BEGIN;
+				// Ставим id мейна.
+				entryFunctionData.idxFunction = -2;
+				break;
+			}
 		}
 
-		void EndCode()
+		void ChooseInRuleChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable)
 		{
-			code = code + STANDART_CODE_END;
-			WriteComment(CODE_INDEX, "----- End Code -----");
+
+		}
+
+		void StartCode(LT::LexTable& lexTable, IT::IdTable& idTable)
+		{
+			for (unsigned int i = 0; i < StateArray.size(); i++)
+			{
+				switch (StateArray[i].nrule)
+				{
+				case S_RULE:
+#pragma region PopFunction
+					if (FunctionWas)
+					{
+						// Проверяем. Если -2 => был мейн. Если нет, была просто функция.
+						if (entryFunctionData.idxFunction == -2)
+							entryFunctionData.funcEnd = entryFunctionData.funcEnd + MAIN_END;
+						else
+							entryFunctionData.funcEnd = entryFunctionData.funcEnd + STANDART_FUNC_END(idTable.table[lexTable.table[lexTablePosition].idxTI].idName);
+						// Заносим функцию в вектор.
+						codeArray.push_back(entryFunctionData);
+						currentFunction++;
+						// Очищаем данные о функции.
+						entryFunctionData.funcBegin.clear();
+						entryFunctionData.funcCode.clear();
+						entryFunctionData.funcEnd.clear();
+						entryFunctionData.idxFunction = -1;
+					}
+#pragma endregion
+					ChooseSnRuleChain(StateArray[i].nrulechain, lexTable, idTable);
+					break;
+				case I_RULE:
+					ChooseInRuleChain(StateArray[i].nrulechain, lexTable, idTable);
+					break;
+				default:
+					break;
+				}
+			}
+			// Заносим последнюю функцию в вектор.
+#pragma region PopLastFunction
+			if (entryFunctionData.idxFunction == -2)
+				entryFunctionData.funcEnd = entryFunctionData.funcEnd + MAIN_END;
+			else
+				entryFunctionData.funcEnd = entryFunctionData.funcEnd + STANDART_FUNC_END(idTable.table[lexTable.table[lexTablePosition].idxTI].idName);
+			// Заносим функцию в вектор.
+			codeArray.push_back(entryFunctionData);
+			currentFunction++;
+			// Очищаем данные о функции.
+			entryFunctionData.funcBegin.clear();
+			entryFunctionData.funcCode.clear();
+			entryFunctionData.funcEnd.clear();
+			entryFunctionData.idxFunction = -1;
+#pragma endregion
 		}
 
 		void WriteCodeGeneration()
@@ -214,7 +330,14 @@ namespace CodeGeneration
 			*streamOut << head.protos;
 			*streamOut << consts;
 			*streamOut << data;
-			*streamOut << code;
+			*streamOut << codeBegin;
+			for (unsigned int i = 0; i < codeArray.size(); i++)
+			{
+				*streamOut << codeArray[i].funcBegin;
+				*streamOut << codeArray[i].funcCode;
+				*streamOut << codeArray[i].funcEnd;
+			}
+			*streamOut << codeEnd;
 
 			streamOut->close();
 		}
