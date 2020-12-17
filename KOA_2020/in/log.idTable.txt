@@ -1,4 +1,4 @@
------ Протокол -----  Дата: 18.12.2020 02:02:37 ----- 
+----- Протокол -----  Дата: 18.12.2020 02:03:42 ----- 
 
 |Params|
 ID Name                            idx First LE                       Visibility Init                    DataType                           Value UINT                         Value FLOAT                        Value BOOL                         Value STRING
@@ -13,6 +13,16 @@ max                                46                                 GetRandom 
 ID Name                            idx First LE                       Visibility                         Return DataType                    Params ID                          Params Counter                     
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 GetCurrentTime                     51                                 GLOBAL                             2                                                                     0                                  -                                  
+
+|Prototypes|
+ID Name                            idx First LE                       Visibility                         Return DataType                    Params ID                          Params Counter                     
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+GetDate                            4                                  GLOBAL                             2                                                                     0                                  -                                  
+GetTime                            10                                 GLOBAL                             2                                                                     0                                  -                                  
+cWrite                             16                                 GLOBAL                             1                                  4                                  1                                  -                                  
+cWriteLine                         24                                 GLOBAL                             1                                  6                                  1                                  -                                  
+UintToChar                         32                                 GLOBAL                             2                                  8                                  1                                  -                                  
+GetRandom                          40                                 GLOBAL                             1                                  11 10                                2                                  -                                  
 
 |Variables|
 Name                               idx First LE                       Visiblity                          DataType                           Value UINT                         Value FLOAT                        Value BOOL                         Value STRING                       
