@@ -126,8 +126,9 @@ namespace IT
 	void Delete(IdTable& idtable)
 	{
 		for (int i = 0; i < idtable.current_size; i++)
+		{
 			delete[] idtable.table[i].idName;
-		for (int i = 0; i < idtable.tableLibId.size(); i++)
 			delete[] idtable.tableLibId[i].idName;
+		}
 	}
 }

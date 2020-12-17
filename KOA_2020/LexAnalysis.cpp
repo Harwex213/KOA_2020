@@ -248,11 +248,12 @@ namespace LexAnalysis
 		case IT::LITERAL:
 			entry.visibility.push_front(LITERAL_VISIBILITY);
 			break;
-		case IT::PROTOTYPE:
 		case IT::FUNCTION:
 			entry.visibility = analysisData.visibilityList;
 			analysisData.visibilityList.push_front(entry.idName);
 			break;
+		case IT::PROTOTYPE:
+			entry.visibility.push_front(STANDART_VISIBILITY);
 		default:
 			entry.visibility = analysisData.visibilityList;
 			break;
@@ -335,7 +336,7 @@ namespace LexAnalysis
 		// Проверяем название и возвращаемый тип у прототипа
 		if (entryId.idType == IT::PROTOTYPE)
 		{
-			if (CheckPrototypeId(idTable, entryId, analysisData))
+			if (!CheckPrototypeId(idTable, entryId, analysisData))
 				return PROTOTYPE_NOT_FOUND;
 			else
 				return OK;
