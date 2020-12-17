@@ -2,25 +2,11 @@
 
 namespace IT
 {
-	IdTable Create(int size)
-	{
-		if (size > TI_MAXSIZE)
-			throw ERROR_THROW(140);
-		IdTable sample;
-		sample.maxsize = size;
-		sample.current_size = 0;
-		sample.table = new Entry[size];
-		return sample;
-	}
 	void AddEntry(IdTable& idtable, Entry entry)
 	{
-		idtable.table[idtable.current_size].idName = new char[strlen(entry.idName)+1];
+		idtable.table.push_back(entry);
+		idtable.table[idtable.current_size].idName = new char[strlen(entry.idName) + 1];
 		strcpy(idtable.table[idtable.current_size].idName, entry.idName);
-		idtable.table[idtable.current_size].idType = entry.idType;
-		idtable.table[idtable.current_size].idDataType = entry.idDataType;
-		idtable.table[idtable.current_size].idxfirstLE = entry.idxfirstLE;
-		idtable.table[idtable.current_size].visibility = entry.visibility;
-		idtable.table[idtable.current_size].value = entry.value;
 		idtable.current_size++;
 	}
 	Entry GetEntry(const IdTable& idtable, int n)
@@ -55,10 +41,6 @@ namespace IT
 							if (entry.value.vBool == idTable.table[i].value.vBool)
 								return i;
 							break;
-						case IT::FLOAT:
-							if (entry.value.vFloat == idTable.table[i].value.vFloat)
-								return i;
-							break;
 						case IT::STRING:
 							if (strcmp(entry.value.vString.string, idTable.table[i].value.vString.string) == 0)
 								return i;
@@ -82,6 +64,5 @@ namespace IT
 		{
 			delete[] idtable.table[i].idName;
 		}
-		delete[] idtable.table;
 	}
 }

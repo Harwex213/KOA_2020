@@ -15,7 +15,7 @@ int wmain(int argc, wchar_t* argv[])
 		// Lex Analysis Stage.
 		In::IN in = In::getin(parm.in);
 		LT::LexTable lexTable;
-		IT::IdTable idTable = IT::Create(TI_MAXSIZE);
+		IT::IdTable idTable;
 		LexAnalysis::Lexer(in, lexTable, idTable);
 
 		// Write results Stage.
@@ -27,18 +27,18 @@ int wmain(int argc, wchar_t* argv[])
 
 		// Parse Stage.
 		// For Debug:
-		//MFST_TRACE_START;
+		MFST_TRACE_START;
 		MFST::Mfst mfst(lexTable, GRB::getGreibach());
 		mfst.start();
 		mfst.printRules();
 
-		// Polish Notation Stage.
-		PolishNotation::TransformToPolishNotation(lexTable, idTable);
-		Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
-		Log::WriteLogLexTable(log, lexTable);
+		//// Polish Notation Stage.
+		//PolishNotation::TransformToPolishNotation(lexTable, idTable);
+		//Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
+		//Log::WriteLogLexTable(log, lexTable);
 
-		// Code Generation Stage.
-		CodeGeneration::Start(mfst, lexTable, idTable);
+		//// Code Generation Stage.
+		//CodeGeneration::Start(mfst, lexTable, idTable);
 
 		// Clear RAM Stage.
 		LT::Delete(lexTable);

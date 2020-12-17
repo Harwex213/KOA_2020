@@ -1,5 +1,5 @@
 #include "stdafx.h"
-//#define DEBUG
+#define DEBUG
 
 namespace MFST
 {

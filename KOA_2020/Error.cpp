@@ -59,26 +59,24 @@ namespace Error
 		ERROR_ENTRY_NODEF10(150),	ERROR_ENTRY_NODEF10(160),
 		ERROR_ENTRY_NODEF10(170),	ERROR_ENTRY_NODEF10(180),	ERROR_ENTRY_NODEF10(190),
 		ERROR_ENTRY_NODEF100(200),	ERROR_ENTRY_NODEF100(300),
-		ERROR_ENTRY(400, "Идентификатор должен быть объявлен до его использования"),
-		ERROR_ENTRY(401, "Переобъявление идентификатора"),
-		ERROR_ENTRY(402, "Объявление идентификатора вне функции"),
-		ERROR_ENTRY(403, "Выход за диапазон допустимых целочисленных значений"),
-		ERROR_ENTRY(404, "Выход за диапазон допустимого строкового значения"),
-		ERROR_ENTRY(405, "SURPRISE"),
-		ERROR_ENTRY(406, "SURPRISE"),
-		ERROR_ENTRY(407, "SURPRISE"),
-		ERROR_ENTRY(408, "SURPRISE"),
-		ERROR_ENTRY(409, "SURPRISE"),
-		ERROR_ENTRY(410, "SURPRISE"),
-		ERROR_ENTRY(411, "SURPRISE"),
-		ERROR_ENTRY(412, "Несоответствие количества формальных и фактических параметров при вызове функции"),
-		ERROR_ENTRY(413, "SURPRISE"),
-		ERROR_ENTRY(414, "SURPRISE"),
-		ERROR_ENTRY(415, "SURPRISE"),
-		ERROR_ENTRY(416, "SURPRISE"),
-		ERROR_ENTRY(417, "SURPRISE"),
-		ERROR_ENTRY(418, "SURPRISE"),
-		ERROR_ENTRY(419, "SURPRISE"),
+		ERROR_ENTRY(400, "Идентификатор должен быть объявлен до его использования"), //done
+		ERROR_ENTRY(401, "Переобъявление идентификатора"), //done
+		ERROR_ENTRY(402, "Объявление идентификатора вне функции"), //done
+		ERROR_ENTRY(403, "Выход за диапазон допустимых целочисленных значений"), //done
+		ERROR_ENTRY(404, "Выход за диапазон допустимого строкового значения"), //done
+		ERROR_ENTRY(405, "В программе может быть только одна точка входа (main)"), //done
+		ERROR_ENTRY(406, "Отсутствует точка входа в программу (main)"), //done
+		ERROR_ENTRY(407, "Лишняя лексема окончания блока"), //done
+		ERROR_ENTRY(408, "Неверный параметр возвращаемого типа"), //
+		ERROR_ENTRY(409, "Превышено максимальное количество параметров функции (не больше 8)"), //done
+		ERROR_ENTRY(410, "Несоответствие типов формальных и фактических параметров при вызове функции"), //
+		ERROR_ENTRY(411, "Несоответствие количества формальных и фактических параметров при вызове функци"), //
+		ERROR_ENTRY(412, "Невозможно преобразовать тип правостороннего операнда к типу левостороннего"), //
+		ERROR_ENTRY(413, "Использован запрещенный оператор с данными операндами."), //
+		ERROR_ENTRY(414, "Прототип функции не найден для текущих библиотек."), // done
+		ERROR_ENTRY(415, "Идентификатор функции совпадает с идентификатором библиотечной функции"), //done
+		ERROR_ENTRY(416, "Подключена неизвестная библиотека"), //
+		ERROR_ENTRY_NODEF(419),
 		ERROR_ENTRY_NODEF10(420),
 		ERROR_ENTRY_NODEF10(430),
 		ERROR_ENTRY_NODEF10(440),

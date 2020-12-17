@@ -144,12 +144,6 @@ namespace Log
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
 					break;
-				case IT::FLOAT:
-					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
-					log.streamIdTable->width(StringLength); *log.streamIdTable << idTable.table[i].value.vFloat;
-					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
-					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
-					break;
 				case IT::BOOL:
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
@@ -231,12 +225,6 @@ namespace Log
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
 					break;
-				case IT::FLOAT:
-					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
-					log.streamIdTable->width(StringLength); *log.streamIdTable << idTable.table[i].value.vFloat;
-					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
-					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
-					break;
 				case IT::BOOL:
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
@@ -280,12 +268,6 @@ namespace Log
 				case IT::UINT:
 					log.streamIdTable->width(StringLength); *log.streamIdTable << idTable.table[i].value.vUint;
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
-					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
-					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
-					break;
-				case IT::FLOAT:
-					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
-					log.streamIdTable->width(StringLength); *log.streamIdTable << idTable.table[i].value.vFloat;
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
 					log.streamIdTable->width(StringLength); *log.streamIdTable << "-";
 					break;

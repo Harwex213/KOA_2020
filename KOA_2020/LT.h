@@ -8,7 +8,7 @@
 #define	LEX_BOOL					't'			// bool
 #define	LEX_FLOAT					't'			// float
 #define LEX_DATATYPE				't'
-#define LEX_CONST					'c'			// const
+#define LEX_PROTOTYPE				'p'			// prototype
 #define	LEX_INCLUDE					'd'			// include
 #define	LEX_FUNCTION				'f'			// function
 #define	LEX_IF						'q'			// if

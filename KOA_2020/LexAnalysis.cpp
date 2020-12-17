@@ -21,15 +21,14 @@ namespace LexAnalysis
 					SetIdType_IdDataType_IdxFirstLE(*temp, analysisData, entryId, lexTable.current_size, idTable.current_size);
 					if (analysisData.infoFunctionParamsNeedUpdate)
 						SetFunctionParams(analysisData, idTable.current_size);
+					if (analysisData.functionParamsCounter > 8)
+						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 9, LINE, POSITION);
 					SetName(*temp, analysisData, entryId);
 					SetVisibility(*temp, analysisData, entryId);
 					switch (SetValue(*temp, analysisData, entryId))
 					{
 					case GOING_BEYOND_UINT:
 						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 3, LINE, POSITION);
-						break;
-					case GOING_BEYOND_FLOAT:
-						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 5, LINE, POSITION);
 						break;
 					case GOING_BEYOND_STRING:
 						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 4, LINE, POSITION);
@@ -56,12 +55,27 @@ namespace LexAnalysis
 						if (entryId.idType == IT::LITERAL)
 							analysisData.literalId--;
 						break;
+					case ID_FUNC_MATCHES_FUNC_LIB:
+						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 15, LINE, POSITION);
+						break;
+					case PROTOTYPE_NOT_FOUND:
+						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 14, LINE, POSITION);
+						break;
 					}
 					SetIdxTI(idTable, entryId, entryLex);
 					ResetAnalysisData(analysisData, entryId);
 				}
 				else
-					CheckLexema(*temp, analysisData, entryLex);
+					switch (CheckLexema(*temp, analysisData, entryLex))
+					{
+					case EXCESS_BRACESRIGHT:
+						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 7, LINE, POSITION);
+						break;
+					case EXCESS_SEMICOLON:
+						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 17, LINE, POSITION);
+					case CLEAR:
+						break;
+					}
 				SetLexEntry(entryLex, temp->lexema, LINE, POSITION);
 				if (analysisData.functionNeedUpdate)
 					UpdateFunctionParamsInfo(analysisData, idTable);
@@ -69,8 +83,12 @@ namespace LexAnalysis
 				ResetEntryLex(entryLex);
 			}
 			else
-				throw ERROR_THROW_IN(LEX_ERROR_SERIES + 1, LINE, POSITION)
+				throw ERROR_THROW_IN(LEX_ERROR_SERIES, LINE, POSITION)
 		}
+		if (analysisData.mainWas == 0)
+			throw ERROR_THROW(SEMANTICS_ERROR_SERIES + 6)
+		else if (analysisData.mainWas > 1)
+			throw ERROR_THROW(SEMANTICS_ERROR_SERIES + 5);
 	}
 
 	bool FindGraph(const std::vector<FST::FST*> graph, FST::FST*& temp)
@@ -84,7 +102,7 @@ namespace LexAnalysis
 		return ExecuteDone;
 	}
 
-	void CheckLexema(const FST::FST& temp, AnalysisData& analysisData, LT::Entry& entryLex)
+	LexemaReturnCode CheckLexema(const FST::FST& temp, AnalysisData& analysisData, LT::Entry& entryLex)
 	{
 		switch (temp.lexema)
 		{
@@ -147,23 +165,20 @@ namespace LexAnalysis
 		case LEX_BRACES_RIGHT:
 			analysisData.bracesCounter--;
 			if (analysisData.visibilityList.empty())
-			{
-				// Error! Лишняя закрывающая скобка.
-			}
+				return EXCESS_BRACESRIGHT;
 			analysisData.visibilityList.pop_front();
-			break;
-		case LEX_BRACKETS_LEFT:
-			break;
-		case LEX_BRACKETS_RIGHT:
 			break;
 		case LEX_BINARIES:
 		case LEX_COMPARISONS:
 		case LEX_UNARY:
 			entryLex.operationType = temp.operationType;
 			break;
+		case LEX_PROTOTYPE:
+			analysisData.idType = IT::PROTOTYPE;
 		default:
 			break;
 		}
+		return CLEAR;
 	}
 
 	void SetIdType_IdDataType_IdxFirstLE(const FST::FST& temp, AnalysisData& analysisData, IT::Entry& entry, int idxLex, int idxId)
@@ -228,6 +243,8 @@ namespace LexAnalysis
 			entry.visibility = analysisData.visibilityList;
 			analysisData.visibilityList.push_front(entry.idName);
 			break;
+		case IT::PROTOTYPE:
+			entry.visibility.push_front(STANDART_VISIBILITY);
 		default:
 			entry.visibility = analysisData.visibilityList;
 			break;
@@ -242,8 +259,12 @@ namespace LexAnalysis
 			{
 			case IT::UINT:
 			{
-				// Нужно ещё проверять на 8-ые числа
-				long long checkNumber = strtoll(*temp.string, NULL, DEC_NUMBER_SYMBOL);
+				int length = strlen(*temp.string) - 1;
+				long long checkNumber = 0;
+				if (temp.nodes[0].n_relation == 9)
+					checkNumber = strtoll(*temp.string, NULL, OCT_NUMBER_SYMBOL);
+				else
+					checkNumber = strtoll(*temp.string, NULL, DEC_NUMBER_SYMBOL);
 				if (checkNumber >= UINT_MIN && checkNumber <= UINT_MAX)
 					entry.value.vUint = checkNumber;
 				else
@@ -256,15 +277,6 @@ namespace LexAnalysis
 					entry.value.vBool = true;
 				if (*temp.string[FIRST_SYMBOL] == FIRST_SYMBOL_FALSE)
 					entry.value.vBool = false;
-				break;
-			}
-			case IT::FLOAT:
-			{
-				double checkNumber = strtod(*temp.string, NULL);
-				if (checkNumber >= FLT_MIN && checkNumber <= FLT_MAX)
-					entry.value.vFloat = checkNumber;
-				else
-					return GOING_BEYOND_FLOAT;
 				break;
 			}
 			case IT::STRING:
@@ -288,9 +300,6 @@ namespace LexAnalysis
 			case IT::BOOL:
 				entry.value.vBool = false;
 				break;
-			case IT::FLOAT:
-				entry.value.vFloat = 0;
-				break;
 			case IT::STRING:
 				entry.value.vString.string[0] = TI_STR_DEFAULT;
 				entry.value.vString.length = 0;
@@ -302,6 +311,28 @@ namespace LexAnalysis
 
 	CheckIdentificatorReturnCode CheckForIdentificator(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
 	{
+		// Проверяем правильно ли написано имя прототипа.
+		if (entryId.idType == IT::PROTOTYPE)
+		{
+			bool tempCheckPrototype = false;
+			for (int i = 0; i < idTable.functionLibNames.size(); i++)
+			{
+				if (strcmp(entryId.idName, idTable.functionLibNames[i].c_str()) == 0)
+					tempCheckPrototype = true;
+			}
+			if (tempCheckPrototype)
+				return OK;
+			else
+				return PROTOTYPE_NOT_FOUND;
+		}
+
+		// Проверяем не совпадают ли имена функции с прототипом.
+		if (entryId.idType == IT::FUNCTION)
+			for (int i = 0; i < idTable.functionLibNames.size(); i++)
+			{
+				if (strcmp(entryId.idName, idTable.functionLibNames[i].c_str()) == 0)
+					return ID_FUNC_MATCHES_FUNC_LIB;
+			}
 		// Проверяем не объявлена ли переменная вне функции.
 		if (*entryId.visibility.begin() == STANDART_VISIBILITY && entryId.idType == IT::VARIABLE)
 			return GLOBAL_DECLARATION;
@@ -318,10 +349,6 @@ namespace LexAnalysis
 					break;
 				case IT::BOOL:
 					if (entryId.value.vBool == idTable.table[i].value.vBool)
-						return ALREADY_EXIST;
-					break;
-				case IT::FLOAT:
-					if (entryId.value.vFloat == idTable.table[i].value.vFloat)
 						return ALREADY_EXIST;
 					break;
 				case IT::STRING:

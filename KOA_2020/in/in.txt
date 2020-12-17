@@ -1,8 +1,14 @@
 include "DateTime.lib"
+string prototype GetDate();
+string prototype GetTime();
+uint prototype cWrite();
+uint prototype cWriteLine();
+string prototype UintToChar();
+uint prototype GetRandom();
 
 string function GetCurrentTime()
 {
-    string time =  "Date: " + GetDate() + ". Time: " + GetTime() ".";
+    string time = "Date: " + GetDate() + ". Time: " + GetTime() + ".";
     return time;
 }
 

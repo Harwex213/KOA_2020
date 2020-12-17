@@ -11,6 +11,7 @@
 
 #define FIRST_SYMBOL_TRUE 't'
 #define FIRST_SYMBOL_FALSE 'f'
+#define SYMBOL_OCT	'e'
 
 #define UINT_MIN 0
 #define DEC_NUMBER_SYMBOL 10
@@ -25,12 +26,15 @@
 
 namespace LexAnalysis
 {
-	enum CheckIdentificatorReturnCode { OK = 1, GLOBAL_DECLARATION = 2, RE_DECLARATION = 3, ALREADY_EXIST = 4, NOT_DECLARED = 5, VARIABLE_ALREADY_DEAD = 6 };
+	enum CheckIdentificatorReturnCode { OK = 1, GLOBAL_DECLARATION = 2, RE_DECLARATION = 3, ALREADY_EXIST = 4, NOT_DECLARED = 5, VARIABLE_ALREADY_DEAD = 6, ID_FUNC_MATCHES_FUNC_LIB = 7, PROTOTYPE_NOT_FOUND = 8};
 	enum SetValueReturnCode { SUCCESS = 1, GOING_BEYOND_UINT = 2, GOING_BEYOND_FLOAT = 3, GOING_BEYOND_STRING = 4};
+	enum LexemaReturnCode { CLEAR = 1, EXCESS_BRACESRIGHT = 2, EXCESS_SEMICOLON = 3};
 	struct AnalysisData
 	{
 		// See that we are in Function.
 		bool functionIn = false;
+		// See that we are in ProtoType.
+		bool prototypeIn = false;
 		// See that need update IdFunction.
 		bool functionNeedUpdate = false;
 		// See that need update info about function params.
@@ -66,13 +70,14 @@ namespace LexAnalysis
 
 	void Lexer(const In::IN& in, LT::LexTable& lextable, IT::IdTable& idtable);
 	bool FindGraph(const std::vector<FST::FST*> graph, FST::FST*& temp);
-	void CheckLexema(const FST::FST& temp, AnalysisData& analysisData, LT::Entry& entryLex);
+	LexemaReturnCode CheckLexema(const FST::FST& temp, AnalysisData& analysisData, LT::Entry& entryLex);
 	void SetIdType_IdDataType_IdxFirstLE(const FST::FST& temp, AnalysisData& analysisData, IT::Entry& entry, int idxLex, int idxId);
 	void SetFunctionParams(AnalysisData& analysisData, int id);
 	void SetName(const FST::FST& temp, AnalysisData& analysisData, IT::Entry& entry);
 	void SetVisibility(const FST::FST& temp, AnalysisData& analysisData, IT::Entry& entry);
 	bool ViewVisibility(std::forward_list<std::string> visibilityCurrentId, std::forward_list<std::string> visibilityExistingId);
 	SetValueReturnCode SetValue(const FST::FST& temp, AnalysisData& analysisData, IT::Entry& entry);
+	bool CheckOnLibsFunction(char* name);
 	CheckIdentificatorReturnCode CheckForIdentificator(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
 	void SetIdxTI(const IT::IdTable& idTable, const IT::Entry& entryId, LT::Entry& entryLex);
 	void SetLexEntry(LT::Entry& entry, char lexema, int line, int position);
