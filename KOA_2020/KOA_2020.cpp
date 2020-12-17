@@ -28,15 +28,15 @@ int wmain(int argc, wchar_t* argv[])
 
 		// Parse Stage.
 		// For Debug:
-		MFST::Mfst mfst(lexTable, GRB::getGreibach());
-		if (!mfst.start(log))
-			throw ERROR_THROW(140);
-		mfst.printRules(log);
+		//MFST::Mfst mfst(lexTable, GRB::getGreibach());
+		//if (!mfst.start(log))
+		//	throw ERROR_THROW(140);
+		//mfst.printRules(log);
 
-		// Polish Notation Stage.
-		PolishNotation::TransformToPolishNotation(lexTable, idTable);
-		Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
-		Log::WriteLogLexTable(log, lexTable);
+		//// Polish Notation Stage.
+		//PolishNotation::TransformToPolishNotation(lexTable, idTable);
+		//Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
+		//Log::WriteLogLexTable(log, lexTable);
 
 		//// Code Generation Stage.
 		//CodeGeneration::Start(mfst, lexTable, idTable);

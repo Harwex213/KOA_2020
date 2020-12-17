@@ -68,6 +68,8 @@ namespace LexAnalysis
 					case EXCESS_BRACESRIGHT:
 						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 7, LINE, POSITION);
 						break;
+					case EXCESS_SEMICOLON:
+						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 7, LINE, POSITION);
 					case CLEAR:
 						break;
 					}
@@ -174,7 +176,12 @@ namespace LexAnalysis
 			break;
 		case LEX_SEMICOLON:
 			if (analysisData.prototypeIn)
+			{
 				analysisData.functionNeedUpdate = true;
+				if (analysisData.visibilityList.empty())
+					return EXCESS_SEMICOLON;
+				analysisData.visibilityList.pop_front();
+			}
 			analysisData.prototypeIn = false;
 			break;
 		default:
@@ -241,12 +248,11 @@ namespace LexAnalysis
 		case IT::LITERAL:
 			entry.visibility.push_front(LITERAL_VISIBILITY);
 			break;
+		case IT::PROTOTYPE:
 		case IT::FUNCTION:
 			entry.visibility = analysisData.visibilityList;
 			analysisData.visibilityList.push_front(entry.idName);
 			break;
-		case IT::PROTOTYPE:
-			entry.visibility.push_front(STANDART_VISIBILITY);
 		default:
 			entry.visibility = analysisData.visibilityList;
 			break;
@@ -327,10 +333,13 @@ namespace LexAnalysis
 	CheckIdentificatorReturnCode CheckForIdentificator(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
 	{
 		// Проверяем название и возвращаемый тип у прототипа
-		if (entryId.idType == IT::PROTOTYPE && !CheckPrototypeId(idTable, entryId, analysisData))
-			return PROTOTYPE_NOT_FOUND;
-		else
-			return OK;
+		if (entryId.idType == IT::PROTOTYPE)
+		{
+			if (CheckPrototypeId(idTable, entryId, analysisData))
+				return PROTOTYPE_NOT_FOUND;
+			else
+				return OK;
+		}
 		// Проверяем не объявлена ли переменная вне функции.
 		if (*entryId.visibility.begin() == STANDART_VISIBILITY && entryId.idType == IT::VARIABLE)
 			return GLOBAL_DECLARATION;
