@@ -249,11 +249,10 @@ namespace LexAnalysis
 			entry.visibility.push_front(LITERAL_VISIBILITY);
 			break;
 		case IT::FUNCTION:
+		case IT::PROTOTYPE:
 			entry.visibility = analysisData.visibilityList;
 			analysisData.visibilityList.push_front(entry.idName);
 			break;
-		case IT::PROTOTYPE:
-			entry.visibility.push_front(STANDART_VISIBILITY);
 		default:
 			entry.visibility = analysisData.visibilityList;
 			break;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+//#define IN_DEBUG
 
 namespace In
 {
@@ -61,7 +62,9 @@ namespace In
 		}
 		else
 			cout << "\nFound NULL in function 'addword' while chek 'entry.text'\n";
+#ifdef IN_DEBUG
 		cout << entry.text << "\t\tposition: " << entry.position << "\t" << entry.line << endl;
+#endif // IN_DEBUG
 		in.wordCounter++;
 	};
 

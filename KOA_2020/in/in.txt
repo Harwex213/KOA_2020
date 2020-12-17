@@ -48,10 +48,11 @@ main
         }
     }
 
-    if(xIsTheBiggest) { resultString =  UintToChar(x) + "Самое большое число!"; }
-    if(yIsTheBiggest) { resultString =  UintToChar(y) + "Самое большое число!"; }
-    if(zIsTheBiggest) { resultString =  UintToChar(z) + "Самое большое число!"; }
+    if(xIsTheBiggest) { resultString =  UintToChar(x); }
+    if(yIsTheBiggest) { resultString =  UintToChar(y); }
+    if(zIsTheBiggest) { resultString =  UintToChar(z); }
 
+    resultString =  resultString + "Самое большое число!";
     cWriteLine(resultString);
  	return 0;
 }
