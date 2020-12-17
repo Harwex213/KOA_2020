@@ -150,7 +150,6 @@
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="LT.cpp" />
     <ClCompile Include="MFST.cpp" />
-    <ClCompile Include="Out.cpp" />
     <ClCompile Include="Parm.cpp" />
     <ClCompile Include="PolishNotation.cpp" />
     <ClCompile Include="Semantic.cpp" />
@@ -167,7 +166,6 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="LT.h" />
     <ClInclude Include="MFST.h" />
-    <ClInclude Include="Out.h" />
     <ClInclude Include="Parm.h" />
     <ClInclude Include="PolishNotation.h" />
     <ClInclude Include="Semantic.h" />
@@ -177,6 +175,7 @@
     <Text Include="in\in.txt" />
     <Text Include="in\log.idTable.txt" />
     <Text Include="in\log.lexTable.txt" />
+    <Text Include="in\log.parsing.txt" />
     <Text Include="in\log.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

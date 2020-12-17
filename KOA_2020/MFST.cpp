@@ -62,7 +62,7 @@ namespace MFST
 		nrulechain = -1;
 	}
 
-	Mfst::RC_STEP Mfst::step()
+	Mfst::RC_STEP Mfst::step(Log::LOG log)
 	{
 		RC_STEP rc = SURPRISE;
 		if (lenta_position < lenta_size)
@@ -78,7 +78,7 @@ namespace MFST
 #ifdef DEBUG
 						MFST_TRACE1;
 #endif // DEBUG
-						saveState();
+						saveState(log);
 						st.pop();
 						push_chain(chain);
 						rc = NS_OK;
@@ -92,7 +92,7 @@ namespace MFST
 						MFST_TRACE4("NS_NORULECHAIN/NS_RULE");
 #endif // DEBUG
 						saveDiagnosis(NS_NORULECHAIN);
-						rc = restState() ? NS_NORULECHAIN : NS_NORULE;
+						rc = restState(log) ? NS_NORULECHAIN : NS_NORULE;
 					}
 				}
 				else
@@ -115,7 +115,7 @@ namespace MFST
 #ifdef DEBUG
 				MFST_TRACE4("TS_NOK/NS_NORULECHAIN");
 #endif // DEBUG
-				rc = restState() ? TS_NOK : NS_NORULECHAIN;
+				rc = restState(log) ? TS_NOK : NS_NORULECHAIN;
 			}
 		}
 		else
@@ -138,7 +138,7 @@ namespace MFST
 		return true; //Почему нельзя сделать void??? И на 132 строке тоже
 	}
 
-	bool Mfst::saveState()
+	bool Mfst::saveState(Log::LOG log)
 	{
 		storestate.push(MfstState(lenta_position, st, nrule, nrulechain));
 #ifdef DEBUG
@@ -147,7 +147,7 @@ namespace MFST
 		return true;
 	}
 
-	bool Mfst::restState()
+	bool Mfst::restState(Log::LOG log)
 	{
 		bool rc = false;
 
@@ -190,32 +190,44 @@ namespace MFST
 		return rc;
 	}
 
-	bool Mfst::start()
+	bool Mfst::start(Log::LOG log)
 	{
+		time_t rawtime;
+		struct tm timeinfo;			//структура хранящая текущее время
+		char buffer[PARM_MAX_SIZE];
+
+		time(&rawtime);					//текущая дата в секундах
+		localtime_s(&timeinfo, &rawtime);	//текущее локальное время, представленное в структуре
+
+		*log.streamParsing << "----- Протокол ----- ";
+		strftime(buffer, 300, " Дата: %d.%m.%Y %H:%M:%S", &timeinfo);
+		*log.streamParsing << buffer << " ----- " << endl;
+
+		MFST_TRACE_START;
 		bool rc = false;
 		RC_STEP rc_step = SURPRISE;
 		char buf[MFST_DIAGN_MAXSIZE];
-		rc_step = step();
+		rc_step = step(log);
 		
 		while(rc_step == NS_OK || rc_step == NS_NORULECHAIN || rc_step == TS_OK || rc_step == TS_NOK)
-			rc_step = step();
+			rc_step = step(log);
 
 		switch (rc_step)
 		{
 		case MFST::Mfst::LENTA_END:
 			MFST_TRACE4("------>LENTA END");
-			cout << "------------------------------------------------------------------------------------------   ------" << endl;
+			*log.streamParsing << "------------------------------------------------------------------------------------------   ------" << endl;
 			sprintf_s(buf, MFST_DIAGN_MAXSIZE, "%d: всего строк %d, синтаксический анализ выполнен без ошибок", 0, lenta_size);
-			cout << setw(4) << left << 0 << "всего строк " << lenta_size << ", синтаксический анализ выполнен без ошибок" << endl;
+			*log.streamParsing << setw(4) << left << 0 << "всего строк " << lenta_size << ", синтаксический анализ выполнен без ошибок" << endl;
 			rc = true;
 			break;
 
 		case MFST::Mfst::NS_NORULE:
 			MFST_TRACE4("------>NS_NORULE");
-			cout << "------------------------------------------------------------------------------------------   ------" << std::endl;
-			cout << getDiagnosis(buf, 0) << endl;
-			cout << getDiagnosis(buf, 1) << endl;
-			cout << getDiagnosis(buf, 2) << endl;
+			*log.streamParsing << "------------------------------------------------------------------------------------------   ------" << std::endl;
+			*log.streamParsing << getDiagnosis(buf, 0) << endl;
+			*log.streamParsing << getDiagnosis(buf, 1) << endl;
+			*log.streamParsing << getDiagnosis(buf, 2) << endl;
 			break;
 
 		case MFST::Mfst::NS_NORULECHAIN:
@@ -286,7 +298,7 @@ namespace MFST
 		return rc;
 	}
 
-	void Mfst::printRules()
+	void Mfst::printRules(Log::LOG log)
 	{
 		MfstState state;
 		GRB::Rule rule;
@@ -305,8 +317,8 @@ namespace MFST
 			}
 
 			rule = grebach.getRule(state.nrule);
-			std::cout.width(4);  std::cout << state.lenta_position << ": ";						\
-				std::cout.width(20); std::cout << rule.getCRule(rbuf, state.nrulechain) << std::endl;
+			log.streamParsing->width(4);  *log.streamParsing << state.lenta_position << ": ";						\
+				log.streamParsing->width(20); *log.streamParsing << rule.getCRule(rbuf, state.nrulechain) << std::endl;
 		}
 	}
 

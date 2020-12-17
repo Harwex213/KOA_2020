@@ -6,7 +6,6 @@
 using namespace std;
 #pragma warning(disable: 4996)
 
-
 namespace Log
 {
 	struct LOG
@@ -14,12 +13,14 @@ namespace Log
 		wchar_t logfile[PARM_MAX_SIZE]{ L"" };
 		wchar_t logLexTableFile[PARM_MAX_SIZE]{ L"" };
 		wchar_t logIdTableFile[PARM_MAX_SIZE]{ L"" };
+		wchar_t logParsing[PARM_MAX_SIZE]{ L"" };
 		ofstream* stream{ nullptr };
 		ofstream* streamLexTable{ nullptr };
 		ofstream* streamIdTable{ nullptr };
+		ofstream* streamParsing{ nullptr };
 	};
 
-	LOG getlog(wchar_t logfile[], wchar_t logLexTableFile[], wchar_t logIdTableFile[]);
+	LOG getlog(wchar_t logfile[], wchar_t logLexTableFile[], wchar_t logIdTableFile[], wchar_t logParsingFile[]);
 	void WriteLine(LOG log, const char* c, ...);
 	void WriteLineLexLog(LOG log, const char* c, ...);
 	void WriteLine(LOG log, const wchar_t* c, ...);

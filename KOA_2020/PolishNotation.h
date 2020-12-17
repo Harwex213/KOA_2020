@@ -31,6 +31,7 @@
 
 #define LEX_CALL_FUNCTION '@'
 #define LEX_ARRAY_ADDRES  '$'
+#define LEX_FILLER		   -128
 
 namespace PolishNotation 
 {
@@ -156,7 +157,7 @@ namespace PolishNotation
 		{
 			// Проверяем чтобы количество фактических и ожидаемых параметров было одинаково.
 			if (!Semantic::CheckFunctionCountParams(stackCFunc.stackParams[stackCFunc.countFunction], stackCFunc.calledFunction[stackCFunc.countFunction], idTable))
-				throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 1, tempLexEntry.line, tempLexEntry.position);
+				throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 11, tempLexEntry.line, tempLexEntry.position);
 			// Заносим вызов функции в результирующую цепочку, предварительно поменяв её лексему.
 			stackCFunc.calledFunction[stackCFunc.countFunction].lexema = LEX_CALL_FUNCTION;
 			resultChain.push_back(stackCFunc.calledFunction[stackCFunc.countFunction]);
@@ -202,7 +203,7 @@ namespace PolishNotation
 
 		void UpdateTables(int positionAfterAssignment, int endPosition, LT::LexTable& lexTable, IT::IdTable& idtable)
 		{
-			LT::Entry entry; entry.lexema = -6; entry.line = resultChain[resultChain.size()-1].line;
+			LT::Entry entry; entry.lexema = LEX_FILLER; entry.line = resultChain[resultChain.size()-1].line;
 			for (int i = positionAfterAssignment + resultChain.size(); i < endPosition; i++)
 				resultChain.push_back(entry);
 			lexTable.table.erase(lexTable.table.begin() + positionAfterAssignment, lexTable.table.begin() + endPosition);

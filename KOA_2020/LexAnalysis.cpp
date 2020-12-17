@@ -4,6 +4,9 @@ namespace LexAnalysis
 {
 	void Lexer(const In::IN& in, LT::LexTable& lexTable, IT::IdTable& idTable)
 	{
+		// Траблы с прототипами библиотечных функций:
+		// 1) Заносим вручную инфу о функциях в конструкторе
+		// 2) В прототипе сравниваем правильно ли всё введено
 		Graphs::GRAPHS automat;
 		AnalysisData analysisData;
 		FST::FST* temp;

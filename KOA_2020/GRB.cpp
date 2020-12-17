@@ -25,7 +25,7 @@ namespace GRB
 				// Instructions. 
 				NS('I'),
 				GRB_ERROR_SERIES + 2,
-				12,
+				16,
 				// Блок повторяющихся.
 				// Объявление и присваивание.
 				Rule::Chain(6, TS('t'), TS('i'), TS('='), NS('E'), TS(';'), NS('I')),
@@ -33,11 +33,15 @@ namespace GRB
 				Rule::Chain(4, TS('t'), TS('i'), TS(';'), NS('I')),
 				// Присваивание.
 				Rule::Chain(5, TS('i'), TS('='), NS('E'), TS(';'), NS('I')),
+				// Вызов функции.
+				Rule::Chain(6, TS('i'), TS('('), NS('C'), TS(')'), TS(';'), NS('I')),
+				// Вызов функции без параметров.
+				Rule::Chain(5, TS('i'), TS('('), TS(')'), TS(';'), NS('I')),
 				// Цикл
 				Rule::Chain(8, TS('w'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
 				// if -> else
 				Rule::Chain(12, TS('q'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), TS('e'), TS('{'), NS('I'), TS('}'), NS('I')),
-				// if
+				// if.
 				Rule::Chain(8, TS('q'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
 				
 				// Блок конечных.
@@ -47,6 +51,10 @@ namespace GRB
 				Rule::Chain(3, TS('t'), TS('i'), TS(';')),
 				// Присваивание.
 				Rule::Chain(4, TS('i'), TS('='), NS('E'), TS(';')),
+				// Вызов функции.
+				Rule::Chain(5, TS('i'), TS('('), NS('C'), TS(')'), TS(';')),
+				// Вызов функции без параметров.
+				Rule::Chain(4, TS('i'), TS('('), TS(')'), TS(';')),
 				// Цикл
 				Rule::Chain(7, TS('w'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}')),
 				// if -> else
@@ -115,21 +123,17 @@ namespace GRB
 				// Params while calling.
 				NS('C'),
 				GRB_ERROR_SERIES + 5,
-				8,
+				12,
 				Rule::Chain(3, TS('i'), TS(','), NS('C')),
 				Rule::Chain(4, TS('i'), NS('O'), TS(','), NS('C')),
-				// Вызов функции.
-				Rule::Chain(4, TS('i'), TS('('), NS('C'), TS(')'), NS('C')),
-				// Вызов функции без параметров.
-				Rule::Chain(3, TS('i'), TS('('), TS(')'), NS('C')),
+				Rule::Chain(5, TS('i'), TS('('), NS('C'), TS(')'), NS('C')),
+				Rule::Chain(4, TS('i'), TS('('), TS(')'), NS('C')),
 				Rule::Chain(3, TS('l'), TS(','), NS('C')),
 				Rule::Chain(4, TS('l'), NS('O'), TS(','), NS('C')),
 
 				Rule::Chain(1, TS('i')),
 				Rule::Chain(2, TS('i'), NS('O')),
-				// Вызов функции.
 				Rule::Chain(4, TS('i'), TS('('), NS('C'), TS(')')),
-				// Вызов функции без параметров.
 				Rule::Chain(3, TS('i'), TS('('), TS(')')),
 				Rule::Chain(1, TS('l')),
 				Rule::Chain(2, TS('l'), NS('O'))

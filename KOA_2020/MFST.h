@@ -12,39 +12,39 @@ typedef std::stack<short> MFSTSTSTACK;
 static int FST_TRACE_n = -1;
 static char rbuf[205]{}, sbuf[205]{}, lbuf[1024]{};
 
-#define MFST_TRACE_START	std::cout.setf(std::ios::left);									\
-							std::cout.width (4); std::cout <<" Шаг"<< ':';					\
-							std::cout.width(20); std::cout <<" Правило";					\
-							std::cout.width(30); std::cout <<" Входная лента";				\
-							std::cout.width(20); std::cout <<" Стек";						\
-							std::cout <<std::endl;
+#define MFST_TRACE_START	log.streamParsing->setf(std::ios::left);									\
+							log.streamParsing->width (4); *log.streamParsing <<" Шаг"<< ':';					\
+							log.streamParsing->width(20); *log.streamParsing <<" Правило";					\
+							log.streamParsing->width(30); *log.streamParsing <<" Входная лента";				\
+							log.streamParsing->width(20); *log.streamParsing <<" Стек";						\
+							*log.streamParsing <<std::endl;
 
-#define MFST_TRACE1			std::cout.setf(std::ios::left);									\
-							std::cout.width (4); std::cout<<++FST_TRACE_n << ": ";			\
-							std::cout.width(20); std::cout<<rule.getCRule(rbuf, nrulechain);\
-							std::cout.width(30); std::cout<<getCLenta(lbuf, lenta_position);\
-							std::cout.width(20); std::cout<<getCSt(sbuf);					\
-							std::cout <<std::endl;
+#define MFST_TRACE1			log.streamParsing->setf(std::ios::left);									\
+							log.streamParsing->width (4); *log.streamParsing<<++FST_TRACE_n << ": ";			\
+							log.streamParsing->width(20); *log.streamParsing<<rule.getCRule(rbuf, nrulechain);\
+							log.streamParsing->width(30); *log.streamParsing<<getCLenta(lbuf, lenta_position);\
+							log.streamParsing->width(20); *log.streamParsing<<getCSt(sbuf);					\
+							*log.streamParsing <<std::endl;
 
-#define MFST_TRACE2			std::cout.setf(std::ios::left);									\
-							std::cout.width (4); std::cout<<FST_TRACE_n<< ": ";				\
-							std::cout.width(20); std::cout<< " ";							\
-							std::cout.width(30); std::cout<<getCLenta(lbuf, lenta_position);\
-							std::cout.width(20); std::cout<<getCSt(sbuf);					\
-							std::cout <<std::endl;
+#define MFST_TRACE2			log.streamParsing->setf(std::ios::left);									\
+							log.streamParsing->width (4); *log.streamParsing<<FST_TRACE_n<< ": ";				\
+							log.streamParsing->width(20); *log.streamParsing<< " ";							\
+							log.streamParsing->width(30); *log.streamParsing<<getCLenta(lbuf, lenta_position);\
+							log.streamParsing->width(20); *log.streamParsing<<getCSt(sbuf);					\
+							*log.streamParsing <<std::endl;
 
-#define MFST_TRACE3			std::cout.setf(std::ios::left);									\
-							std::cout.width (4); std::cout<<++FST_TRACE_n << ": ";			\
-							std::cout.width(20); std::cout<< " ";							\
-							std::cout.width(30); std::cout<<getCLenta(lbuf, lenta_position);\
-							std::cout.width(20); std::cout<<getCSt(sbuf);					\
-							std::cout <<std::endl;
+#define MFST_TRACE3			log.streamParsing->setf(std::ios::left);									\
+							log.streamParsing->width (4); *log.streamParsing<<++FST_TRACE_n << ": ";			\
+							log.streamParsing->width(20); *log.streamParsing<< " ";							\
+							log.streamParsing->width(30); *log.streamParsing<<getCLenta(lbuf, lenta_position);\
+							log.streamParsing->width(20); *log.streamParsing<<getCSt(sbuf);					\
+							*log.streamParsing <<std::endl;
 
-#define MFST_TRACE4(c)		std::cout.width(4);  std::cout << ++FST_TRACE_n << ": "; std::cout.width(20); std::cout << c << std::endl;
-#define MFST_TRACE5(c)		std::cout.width(4);  std::cout << FST_TRACE_n   << ": "; std::cout.width(20); std::cout << c << std::endl;
-#define MFST_TRACE6(c,k)	std::cout.width(4);  std::cout << FST_TRACE_n   << ": "; std::cout.width(20); std::cout << c << k << std::endl;
-#define	MFST_TRACE7			std::cout.width(4);  std::cout << state.lenta_position<<": ";						\
-							std::cout.width(20); std::cout << rule.getCRule(rbuf, state.nrulechain) << std::endl;
+#define MFST_TRACE4(c)		log.streamParsing->width(4);  *log.streamParsing << ++FST_TRACE_n << ": "; log.streamParsing->width(20); *log.streamParsing << c << std::endl;
+#define MFST_TRACE5(c)		log.streamParsing->width(4);  *log.streamParsing << FST_TRACE_n   << ": "; log.streamParsing->width(20); *log.streamParsing << c << std::endl;
+#define MFST_TRACE6(c,k)	log.streamParsing->width(4);  *log.streamParsing << FST_TRACE_n   << ": "; log.streamParsing->width(20); *log.streamParsing << c << k << std::endl;
+#define	MFST_TRACE7			log.streamParsing->width(4);  *log.streamParsing << state.lenta_position<<": ";						\
+							log.streamParsing->width(20); *log.streamParsing << rule.getCRule(rbuf, state.nrulechain) << std::endl;
 
 namespace MFST
 {
@@ -118,17 +118,17 @@ namespace MFST
 		char* getCSt(char* buf);			// получить содержимое стека
 		char* getCLenta(char* buf, short pos, short n = 25);	// лента: n символов с pos
 		char* getDiagnosis(char* buf, short n);		// получить n-ую строку диагностики или 0х00
-		bool saveState();					// сохранить состояние автомата
-		bool restState();					// восстановить состояние автомата
+		bool saveState(Log::LOG log);					// сохранить состояние автомата
+		bool restState(Log::LOG log);					// восстановить состояние автомата
 		bool push_chain(					// поместить цепочку правила в стек
 			GRB::Rule::Chain chain			// цепочка правила
 		);
-		RC_STEP	step();						// выполнить шаг автомата
-		bool start();						// запустить автомат
+		RC_STEP	step(Log::LOG log);						// выполнить шаг автомата
+		bool start(Log::LOG log);						// запустить автомат
 		bool saveDiagnosis(
 			RC_STEP pprc_step				// код завершения шага
 		);
-		void printRules();					// вывести последовательность правил
+		void printRules(Log::LOG log);					// вывести последовательность правил
 
 		struct Deducation					// вывод
 		{

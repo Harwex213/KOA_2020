@@ -10,7 +10,7 @@ int wmain(int argc, wchar_t* argv[])
 		//std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
 		Parm::PARM parm = Parm::getparm(argc, argv);
-		log = Log::getlog(parm.log, parm.logLexTable, parm.logIdTable);
+		log = Log::getlog(parm.log, parm.logLexTable, parm.logIdTable, parm.logParsing);
 
 		// Lex Analysis Stage.
 		In::IN in = In::getin(parm.in);
@@ -27,15 +27,15 @@ int wmain(int argc, wchar_t* argv[])
 
 		// Parse Stage.
 		// For Debug:
-		MFST_TRACE_START;
 		MFST::Mfst mfst(lexTable, GRB::getGreibach());
-		mfst.start();
-		mfst.printRules();
+		if (!mfst.start(log))
+			throw ERROR_THROW(140);
+		mfst.printRules(log);
 
-		//// Polish Notation Stage.
-		//PolishNotation::TransformToPolishNotation(lexTable, idTable);
-		//Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
-		//Log::WriteLogLexTable(log, lexTable);
+		// Polish Notation Stage.
+		PolishNotation::TransformToPolishNotation(lexTable, idTable);
+		Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
+		Log::WriteLogLexTable(log, lexTable);
 
 		//// Code Generation Stage.
 		//CodeGeneration::Start(mfst, lexTable, idTable);

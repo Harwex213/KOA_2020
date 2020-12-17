@@ -1,4 +1,4 @@
-include "DateTime.lib"
+#include "DateTime.lib"
 string prototype GetDate();
 string prototype GetTime();
 uint prototype cWrite();
@@ -22,7 +22,7 @@ main
     bool zIsTheBiggest;
     uint x = GetRandom(0, 2077);
     uint y = GetRandom(0, 2077);
-    uint z = GetRandom(0, 2077;
+    uint z = GetRandom(0, 2077);
     string startInfo = "Найти максимальное среди чисел: " + UintToChar(x) + ", " + UintToChar(x) + ", "  + UintToChar(x);
     cWriteLine(startInfo);
     if(x > y)
@@ -48,11 +48,10 @@ main
         }
     }
 
-    if(xIsTheBiggest) { resultString =  UintToChar(x) + "Самое большое число!" }
-    if(yIsTheBiggest) { resultString =  UintToChar(y) + "Самое большое число!" }
-    if(zIsTheBiggest) { resultString =  UintToChar(z) + "Самое большое число!" }
+    if(xIsTheBiggest) { resultString =  UintToChar(x) + "Самое большое число!"; }
+    if(yIsTheBiggest) { resultString =  UintToChar(y) + "Самое большое число!"; }
+    if(zIsTheBiggest) { resultString =  UintToChar(z) + "Самое большое число!"; }
 
     cWriteLine(resultString);
-
  	return 0;
 }

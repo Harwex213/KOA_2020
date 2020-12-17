@@ -35,7 +35,7 @@ namespace PolishNotation
 
 					// Смотрим -> фунция или переменная.
 					IT::Entry tempIdEntry = IT::GetEntry(idTable, data.tempLexEntry.idxTI);
-					if (tempIdEntry.idType == IT::FUNCTION)
+					if (tempIdEntry.idType == IT::FUNCTION || tempIdEntry.idType == IT::PROTOTYPE)
 					{
 						// Мы в параметрах.
 						data.stackCFunc.isParams = true;
@@ -103,7 +103,11 @@ namespace PolishNotation
 		for (int i = 0; i < data.resultChain.size(); i++)
 		{
 			if (data.resultChain[i].operationType == LT::NONE)
+			{
+				if (data.resultChain[i].lexema == LEX_FILLER)
+					continue;
 				cout << data.resultChain[i].lexema;
+			}
 			else
 				cout << LT::GetOperationSymbol(data.resultChain[i]);
 		}
@@ -198,7 +202,11 @@ namespace PolishNotation
 		for (int i = 0; i < data.resultChain.size(); i++)
 		{
 			if (data.resultChain[i].operationType == LT::NONE)
+			{
+				if (data.resultChain[i].lexema == LEX_FILLER)
+					continue;
 				cout << data.resultChain[i].lexema;
+			}
 			else
 				cout << LT::GetOperationSymbol(data.resultChain[i]);
 		}

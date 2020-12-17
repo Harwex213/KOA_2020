@@ -2,15 +2,17 @@
 
 namespace Log
 {
-	LOG getlog(wchar_t logfile[], wchar_t logLexTableFile[], wchar_t logIdTableFile[])
+	LOG getlog(wchar_t logfile[], wchar_t logLexTableFile[], wchar_t logIdTableFile[], wchar_t logParsingFile[])
 	{
 		LOG temp;
 		temp.stream = new ofstream;
 		temp.streamLexTable = new ofstream;
 		temp.streamIdTable = new ofstream;
+		temp.streamParsing = new ofstream;
 		temp.stream->open(logfile);
 		temp.streamLexTable->open(logLexTableFile);
 		temp.streamIdTable->open(logIdTableFile);
+		temp.streamParsing->open(logParsingFile);
 		if (!temp.stream->is_open() && !temp.streamLexTable->is_open() && !temp.streamIdTable->is_open())
 		{
 			temp.stream->close();

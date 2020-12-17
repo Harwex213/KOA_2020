@@ -41,8 +41,7 @@ namespace Parm
 				wcscpy_s(sample.out, (temp_out + wcslen(PARM_OUT)));
 			else
 			{
-				wcscpy_s(sample.out, sample.in);
-				wcscat_s(sample.out, PARM_OUT_DEFAULT_EXT);
+				wcscpy_s(sample.out, PARM_OUT_DEFAULT_NAME);
 			}
 
 			if (check_log)
@@ -52,6 +51,8 @@ namespace Parm
 				wcscat_s(sample.logLexTable, PARM_LOG_LEXTABLE_EXT);
 				wcsncpy_s(sample.logIdTable, sample.log, wcslen(sample.log) - 4);
 				wcscat_s(sample.logIdTable, PARM_LOG_IDTABLE_EXT);
+				wcsncpy_s(sample.logParsing, sample.log, wcslen(sample.log) - 4);
+				wcscat_s(sample.logParsing, PARM_LOG_PARSING_EXT);
 			}
 			else
 			{
