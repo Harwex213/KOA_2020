@@ -9,55 +9,55 @@ namespace IT
 		entryTemp.visibility.push_front(STANDART_VISIBILITY);
 		// 0
 		GET_DATE_FUNCTION;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 1
 		GET_TIME_FUNCTION;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 2
 		CWRITE_FUNCTION;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 3 (2.1)
 		CWRITE_PARAM_1;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 4
 		CWRITE_LINE_FUNCTION;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 5 (4.1)
 		CWRITE_LINE_PARAM_1;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 6
 		GET_RANDOM_FUNCTION;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 7 (6.1)
 		GET_RANDOM_PARAM_1;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 8 (6.2)
 		GET_RANDOM_PARAM_2;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 9
 		BOOLTOCHAR_FUNCTION;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 10 (9.1)
 		BOOLTOCHAR_PARAM_1;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 11
 		UINTTOCHAR_FUNCTION;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 12 (11.1)
 		UINTTOCHAR_PARAM_1;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 13
 		CHARTOUINT_FUNCTION;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 14 (13.1)
 		CHARTOUINT_PARAM_1;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 15
 		CHARTOBOOL_FUNCTION;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 		// 16 (15.1)
 		CHARTOBOOL_PARAM_1;
-		AddEntry(idTable, entryTemp);
+		AddLibEntry(idTable, entryTemp);
 	}
 
 	void AddEntry(IdTable& idtable, Entry entry)
@@ -66,6 +66,12 @@ namespace IT
 		idtable.table[idtable.current_size].idName = new char[strlen(entry.idName) + 1];
 		strcpy(idtable.table[idtable.current_size].idName, entry.idName);
 		idtable.current_size++;
+	}
+	void AddLibEntry(IdTable& idtable, Entry entry)
+	{
+		idtable.tableLibId.push_back(entry);
+		idtable.tableLibId[idtable.current_size].idName = new char[strlen(entry.idName) + 1];
+		strcpy(idtable.tableLibId[idtable.current_size].idName, entry.idName);
 	}
 	Entry GetEntry(const IdTable& idtable, int n)
 	{
@@ -121,6 +127,7 @@ namespace IT
 		for (int i = 0; i < idtable.current_size; i++)
 		{
 			delete[] idtable.table[i].idName;
+			delete[] idtable.tableLibId[i].idName;
 		}
 	}
 }

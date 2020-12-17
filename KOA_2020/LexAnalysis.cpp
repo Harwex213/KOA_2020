@@ -58,7 +58,7 @@ namespace LexAnalysis
 						if (entryId.idType == IT::LITERAL)
 							analysisData.literalId--;
 						break;
-					case ID_FUNC_MATCHES_FUNC_LIB:
+					case ID_FUNC_MATCHES_ID_FUNC_LIB:
 						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 15, LINE, POSITION);
 						break;
 					case PROTOTYPE_NOT_FOUND:
@@ -112,16 +112,15 @@ namespace LexAnalysis
 		case LEX_DATATYPE:
 			// Устанавливаем тип данных будущего идентификатора и тип идентификатора как переменная.
 			analysisData.idType = IT::VARIABLE;
-			// Если мы в функции -> устанавливаем тип идентификатора как параметр
+			// Если мы в функции -> устанавливаем тип идентификатора как параметр.
 			if (analysisData.functionIn)
 			{
 				analysisData.idType = IT::PARAM;
 				analysisData.infoFunctionParamsNeedUpdate = true;
 			}
+			// Если мы в прототипе -> устанавливаем тип идентификатора как параметр.
 			if (analysisData.prototypeIn)
-			{
-
-			}
+				analysisData.idType = IT::PARAM;
 			analysisData.idDataType = temp.idDataType;
 			break;
 		case LEX_FUNCTION:
@@ -204,10 +203,6 @@ namespace LexAnalysis
 		// Сохраняем id текущей функции.
 		if (analysisData.functionIn && entry.idType == IT::FUNCTION)
 			analysisData.currentFunctionId = idxId;
-		if (analysisData.prototypeIn)
-		{
-
-		}
 	}
 
 	void SetFunctionParams(AnalysisData& analysisData, int idx)
@@ -323,30 +318,55 @@ namespace LexAnalysis
 		return SUCCESS;
 	}
 
+	bool CheckOnLibsFunction(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
+	{
+		for (int i = 0; i < LIB_IDENTIFICATOR_AMOUNT; i++)
+		{
+			if (strcmp(entryId.idName, idTable.table[i].idName) == 0 && entryId.idDataType == idTable.table[i].idDataType)
+			{
+				// Если названия и возвращаемый тип данных совпали, то заносим информацию о том, какой у нас прототип
+				// и возвращаем что прототип найден.
+				analysisData.currentPrototypeId = i;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool CheckPrototypeParam(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
+	{
+
+		for (int i = 0; i < analysisData.functionParamsCounter; i++)
+		{
+			if (entryId.idDataType == idTable.table[idTable.table[analysisData.currentPrototypeId].].idDataType)
+				return true;
+		}
+		return false;
+	}
+
+	bool CheckOnCoincideIdNameLibFunctions(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
+	{
+		for (int i = 0; i < LIB_IDENTIFICATOR_AMOUNT; i++)
+		{
+			if (strcmp(entryId.idName, idTable.table[i].idName) == 0)
+				return true;
+		}
+		return false;
+	}
+
 	CheckIdentificatorReturnCode CheckForIdentificator(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
 	{
-		// Проверяем правильно ли написано имя прототипа.
-		if (entryId.idType == IT::PROTOTYPE)
-		{
-			bool tempCheckPrototype = false;
-			for (int i = 0; i < idTable.functionLibNames.size(); i++)
-			{
-				if (strcmp(entryId.idName, idTable.functionLibNames[i].c_str()) == 0)
-					tempCheckPrototype = true;
-			}
-			if (tempCheckPrototype)
-				return OK;
-			else
-				return PROTOTYPE_NOT_FOUND;
-		}
+		// Проверяем правильно ли написан прототип.
+		if (entryId.idType == IT::PROTOTYPE && !CheckOnLibsFunction(idTable, entryId, analysisData))
+			return PROTOTYPE_NOT_FOUND;
+
+		if (analysisData.prototypeIn && entryId.idDataType == IT::PARAM && !CheckPrototypeParam(idTable, entryId, analysisData))
+			return PROTOTYPE_NOT_FOUND;
 
 		// Проверяем не совпадают ли имена функции с прототипом.
-		if (entryId.idType == IT::FUNCTION)
-			for (int i = 0; i < idTable.functionLibNames.size(); i++)
-			{
-				if (strcmp(entryId.idName, idTable.functionLibNames[i].c_str()) == 0)
-					return ID_FUNC_MATCHES_FUNC_LIB;
-			}
+		if (entryId.idType == IT::FUNCTION && !CheckOnCoincideIdNameLibFunctions(idTable, entryId, analysisData))
+			return ID_FUNC_MATCHES_ID_FUNC_LIB;
+
 		// Проверяем не объявлена ли переменная вне функции.
 		if (*entryId.visibility.begin() == STANDART_VISIBILITY && entryId.idType == IT::VARIABLE)
 			return GLOBAL_DECLARATION;

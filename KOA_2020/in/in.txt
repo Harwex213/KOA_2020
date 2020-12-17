@@ -1,10 +1,10 @@
 #include "DateTime.lib"
 string prototype GetDate();
 string prototype GetTime();
-uint prototype cWrite();
-uint prototype cWriteLine();
-string prototype UintToChar();
-uint prototype GetRandom();
+uint prototype cWrite(string str);
+uint prototype cWriteLine(string str);
+string prototype UintToChar(uint value);
+uint prototype GetRandom(uint min, uint max);
 
 string function GetCurrentTime()
 {

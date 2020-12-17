@@ -22,7 +22,7 @@
 
 namespace LexAnalysis
 {
-	enum CheckIdentificatorReturnCode { OK = 1, GLOBAL_DECLARATION = 2, RE_DECLARATION = 3, ALREADY_EXIST = 4, NOT_DECLARED = 5, VARIABLE_ALREADY_DEAD = 6, ID_FUNC_MATCHES_FUNC_LIB = 7, PROTOTYPE_NOT_FOUND = 8};
+	enum CheckIdentificatorReturnCode { OK = 1, GLOBAL_DECLARATION = 2, RE_DECLARATION = 3, ALREADY_EXIST = 4, NOT_DECLARED = 5, VARIABLE_ALREADY_DEAD = 6, ID_FUNC_MATCHES_ID_FUNC_LIB = 7, PROTOTYPE_NOT_FOUND = 8};
 	enum SetValueReturnCode { SUCCESS = 1, GOING_BEYOND_UINT = 2, GOING_BEYOND_FLOAT = 3, GOING_BEYOND_STRING = 4};
 	enum LexemaReturnCode { CLEAR = 1, EXCESS_BRACESRIGHT = 2, EXCESS_SEMICOLON = 3};
 	struct AnalysisData
@@ -35,8 +35,10 @@ namespace LexAnalysis
 		bool functionNeedUpdate = false;
 		// See that need update info about function params.
 		bool infoFunctionParamsNeedUpdate = false;
-		// Id of cureent Function.
+		// Id of current Function.
 		int currentFunctionId = 0;
+		// Id of current ProtoType.
+		int currentPrototypeId = 0;
 		// Function Params Counter.
 		int functionParamsCounter = 0;
 		// Counter main. If > 1 ==> Error.
@@ -73,7 +75,9 @@ namespace LexAnalysis
 	void SetVisibility(const FST::FST& temp, AnalysisData& analysisData, IT::Entry& entry);
 	bool ViewVisibility(std::forward_list<std::string> visibilityCurrentId, std::forward_list<std::string> visibilityExistingId);
 	SetValueReturnCode SetValue(const FST::FST& temp, AnalysisData& analysisData, IT::Entry& entry);
-	bool CheckOnLibsFunction(char* name);
+	bool CheckOnLibsFunction(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
+	bool CheckPrototypeParam(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
+	bool CheckOnCoincideIdNameLibFunctions(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
 	CheckIdentificatorReturnCode CheckForIdentificator(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
 	void SetIdxTI(const IT::IdTable& idTable, const IT::Entry& entryId, LT::Entry& entryLex);
 	void SetLexEntry(LT::Entry& entry, char lexema, int line, int position);
