@@ -55,9 +55,6 @@ namespace LexAnalysis
 						if (entryId.idType == IT::LITERAL)
 							analysisData.literalId--;
 						break;
-					case ID_FUNC_MATCHES_ID_FUNC_LIB:
-						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 15, LINE, POSITION);
-						break;
 					case PROTOTYPE_NOT_FOUND:
 						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 14, LINE, POSITION);
 						break;
@@ -71,8 +68,6 @@ namespace LexAnalysis
 					case EXCESS_BRACESRIGHT:
 						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 7, LINE, POSITION);
 						break;
-					case EXCESS_SEMICOLON:
-						throw ERROR_THROW_IN(SEMANTICS_ERROR_SERIES + 17, LINE, POSITION);
 					case CLEAR:
 						break;
 					}
@@ -316,12 +311,24 @@ namespace LexAnalysis
 
 	bool CheckPrototypeId(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
 	{
-		return true;
+		for (int i = 0; i < idTable.tableLibId.size(); i++)
+		{
+			if (strcmp(entryId.idName, idTable.tableLibId[i].idName) == 0 && entryId.idDataType == idTable.tableLibId[i].idDataType)
+			{
+				analysisData.currentPrototypeId = i;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	CheckIdentificatorReturnCode CheckForIdentificator(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
 	{
-
+		// Проверяем название и возвращаемый тип у прототипа
+		if (entryId.idType == IT::PROTOTYPE && !CheckPrototypeId(idTable, entryId, analysisData))
+			return PROTOTYPE_NOT_FOUND;
+		else
+			return OK;
 		// Проверяем не объявлена ли переменная вне функции.
 		if (*entryId.visibility.begin() == STANDART_VISIBILITY && entryId.idType == IT::VARIABLE)
 			return GLOBAL_DECLARATION;
@@ -417,21 +424,31 @@ namespace LexAnalysis
 		entry.operationType = LT::NONE;
 	}
 
-	bool CheckPrototypeParam(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
+	bool CheckPrototypeParam(const IT::IdTable& idTable, int idxPrototype, int idxFunctionLib)
 	{
-		return true;
+		bool check = true;
+		auto iteratorPrototype = idTable.table[idxPrototype].paramsIdx.begin();
+		auto iteratorFunctionLib = idTable.tableLibId[idxFunctionLib].paramsIdx.begin();
+		for (;(iteratorPrototype != idTable.table[idxPrototype].paramsIdx.end()) || (iteratorFunctionLib != idTable.tableLibId[idxFunctionLib].paramsIdx.end()); iteratorPrototype++, iteratorFunctionLib++)
+		{
+			if (idTable.table[*iteratorPrototype].idDataType != idTable.tableLibId[*iteratorFunctionLib].idDataType)
+				check = false;
+		}
+		if ((iteratorPrototype != idTable.table[idxPrototype].paramsIdx.end()) && iteratorFunctionLib != idTable.tableLibId[idxFunctionLib].paramsIdx.end())
+			check = false;
+		return check;
 	}
 
 	bool UpdateFunctionParamsInfo(AnalysisData& analysisData, IT::IdTable& idTable)
 	{
 		analysisData.functionNeedUpdate = false;
-		// Проверяем параметры прототипа на правильность.
-		if (idTable.table[analysisData.currentFunctionId].idType == IT::PROTOTYPE && !CheckPrototypeParam(idTable, idTable.table[analysisData.currentFunctionId], analysisData))
-			return false;
 		idTable.table[analysisData.currentFunctionId].paramsIdx = analysisData.paramsIdx;
 		idTable.table[analysisData.currentFunctionId].functionParamsCount = analysisData.functionParamsCounter;
 		analysisData.paramsIdx.clear();
 		analysisData.functionParamsCounter = 0;
+		// Проверяем параметры прототипа на правильность.
+		if (idTable.table[analysisData.currentFunctionId].idType == IT::PROTOTYPE && !CheckPrototypeParam(idTable, analysisData.currentFunctionId, analysisData.currentPrototypeId))
+			return false;
 		return true;
 	}
 }
