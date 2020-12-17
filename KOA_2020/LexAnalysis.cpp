@@ -1,12 +1,12 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 
 namespace LexAnalysis
 {
 	void Lexer(const In::IN& in, LT::LexTable& lexTable, IT::IdTable& idTable)
 	{
-		// Траблы с прототипами библиотечных функций:
-		// 1) Заносим вручную инфу о функциях в конструкторе
-		// 2) В прототипе сравниваем правильно ли всё введено
+		// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:
+		// 1) пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		// 2) пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		Graphs::GRAPHS automat;
 		AnalysisData analysisData;
 		FST::FST* temp;
@@ -110,9 +110,9 @@ namespace LexAnalysis
 		switch (temp.lexema)
 		{
 		case LEX_DATATYPE:
-			// Устанавливаем тип данных будущего идентификатора и тип идентификатора как переменная.
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 			analysisData.idType = IT::VARIABLE;
-			// Если мы в функции или в прототипе -> устанавливаем тип идентификатора как параметр.
+			// пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ -> пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 			if (analysisData.functionIn || analysisData.prototypeIn)
 			{
 				analysisData.idType = IT::PARAM;
@@ -121,7 +121,7 @@ namespace LexAnalysis
 			analysisData.idDataType = temp.idDataType;
 			break;
 		case LEX_FUNCTION:
-			// Предполагаем что мы в функции и устанавливаем тип идентификатора как функцию.
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 			analysisData.functionIn = true;
 			analysisData.idType = IT::FUNCTION;
 			break;
@@ -130,11 +130,11 @@ namespace LexAnalysis
 		case LEX_PARENTHESES_RIGHT:
 			if (analysisData.functionIn)
 				analysisData.functionNeedUpdate = true;
-			// В любом случае выходим из функции.
+			// пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 			analysisData.functionIn = false;
 			break;
 		case LEX_MAIN:
-			// Устанавливаем видимость "main"
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "main"
 			analysisData.visibilityList.push_front(*temp.string);
 			analysisData.mainWas++;
 			break;
@@ -199,14 +199,14 @@ namespace LexAnalysis
 		entry.idType = analysisData.idType;
 		entry.idDataType = analysisData.idDataType;
 		entry.idxfirstLE = idxLex;
-		// Сохраняем id текущей функции (прототипа).
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ id пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ).
 		if ((analysisData.functionIn && entry.idType == IT::FUNCTION) || (analysisData.prototypeIn && entry.idType == IT::PROTOTYPE))
 			analysisData.currentFunctionId = idxId;
 	}
 
 	void SetFunctionParams(AnalysisData& analysisData, int idx)
 	{
-		// Вносим информацию об действительных параметрах функции.
+		// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 		analysisData.functionParamsCounter++;
 		analysisData.paramsIdx.push_front(idx);
 		analysisData.infoFunctionParamsNeedUpdate = false;
@@ -231,7 +231,7 @@ namespace LexAnalysis
 			length = strlen(*temp.string);
 			if (length > ID_MAXSIZE)
 			{
-				cout << "Произошло усечение идентификатора: " << *temp.string << endl;
+				cout << "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: " << *temp.string << endl;
 				length = ID_MAXSIZE;
 			}
 			entry.idName = new char[length + 1];
@@ -317,23 +317,61 @@ namespace LexAnalysis
 		return SUCCESS;
 	}
 
-	bool CheckPrototypeId(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
+	bool CheckOnLibsFunction(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
+	{
+		for (int i = 0; i < LIB_IDENTIFICATOR_AMOUNT; i++)
+		{
+			if (strcmp(entryId.idName, idTable.table[i].idName) == 0 && entryId.idDataType == idTable.table[i].idDataType)
+			{
+				// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+				// пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
+				analysisData.currentPrototypeId = i;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool CheckPrototypeParam(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
 	{
 
+		for (int i = 0; i < analysisData.functionParamsCounter; i++)
+		{
+			if (entryId.idDataType == idTable.table[idTable.table[analysisData.currentPrototypeId].].idDataType)
+				return true;
+		}
+		return false;
+	}
+
+	bool CheckOnCoincideIdNameLibFunctions(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
+	{
+		for (int i = 0; i < LIB_IDENTIFICATOR_AMOUNT; i++)
+		{
+			if (strcmp(entryId.idName, idTable.table[i].idName) == 0)
+				return true;
+		}
+		return false;
 	}
 
 	CheckIdentificatorReturnCode CheckForIdentificator(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
 	{
-		// Проверяем правильно ли написаны имя и возвращаемый тип прототипа.
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 		if (entryId.idType == IT::PROTOTYPE && !CheckPrototypeId(idTable, entryId, analysisData))
 			return PROTOTYPE_NOT_FOUND;
 
-		// Проверяем не объявлена ли переменная вне функции.
+		if (analysisData.prototypeIn && entryId.idDataType == IT::PARAM && !CheckPrototypeParam(idTable, entryId, analysisData))
+			return PROTOTYPE_NOT_FOUND;
+
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+		if (entryId.idType == IT::FUNCTION && !CheckOnCoincideIdNameLibFunctions(idTable, entryId, analysisData))
+			return ID_FUNC_MATCHES_ID_FUNC_LIB;
+
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 		if (*entryId.visibility.begin() == STANDART_VISIBILITY && entryId.idType == IT::VARIABLE)
 			return GLOBAL_DECLARATION;
 		for (int i = 0; i < idTable.current_size; i++)
 		{
-			// Проверяем по значению литерала, не был ли создан такой же ранее.
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.
 			if (entryId.visibility == idTable.table[i].visibility && entryId.idType == IT::LITERAL)
 			{
 				switch (entryId.idDataType)
@@ -352,8 +390,8 @@ namespace LexAnalysis
 					break;
 				}
 			}
-			// Смотрим по видимости + совпадении имени идентификатора.
-			// Далее смотрим по типу идентификатора. U - объявление уже было. 
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ + пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+			// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. U - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ. 
 			if (ViewVisibility(entryId.visibility, idTable.table[i].visibility) && (strcmp(entryId.idName, idTable.table[i].idName) == 0))
 			{
 				switch (entryId.idType)
@@ -367,8 +405,8 @@ namespace LexAnalysis
 				}
 			}
 		}
-		// Если совпадений ранее не нашли, но тип идентификатора не определён
-		// (не было ключевого слова ранее) ==> использование необъявленного идентификатора.
+		// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		// (пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ) ==> пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 		if (entryId.idType == IT::U)
 			return NOT_DECLARED;
 		return OK;
@@ -395,7 +433,7 @@ namespace LexAnalysis
 
 	void SetIdxTI(const IT::IdTable& idTable, const IT::Entry& entryId, LT::Entry& entryLex)
 	{
-		// Выставляем у лексемы ссылку на id в таблице идентификаторов.
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ id пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 		entryLex.idxTI = IT::GetId(idTable, entryId);
 	}
 
@@ -423,15 +461,10 @@ namespace LexAnalysis
 		entry.operationType = LT::NONE;
 	}
 
-	bool CheckPrototypeParam(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
-	{
-
-	}
-
-	bool UpdateFunctionParamsInfo(AnalysisData& analysisData, IT::IdTable& idTable)
+	void UpdateFunctionParamsInfo(AnalysisData& analysisData, IT::IdTable& idTable)
 	{
 		analysisData.functionNeedUpdate = false;
-		// Если параметры прототипа не совпали -> возвращаем информацию о том, что нужно кинуть исключение.
+		// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ -> пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 		if (idTable.table[analysisData.currentFunctionId].idType == IT::PROTOTYPE && !CheckPrototypeParam(idTable, idTable.table[analysisData.currentFunctionId], analysisData))
 			return false;
 		idTable.table[analysisData.currentFunctionId].paramsIdx = analysisData.paramsIdx;
