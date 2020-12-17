@@ -37,8 +37,6 @@ namespace LexAnalysis
 		bool infoFunctionParamsNeedUpdate = false;
 		// Id of current Function.
 		int currentFunctionId = 0;
-		// Id of current ProtoType.
-		int currentPrototypeId = 0;
 		// Function Params Counter.
 		int functionParamsCounter = 0;
 		// Counter main. If > 1 ==> Error.
@@ -75,13 +73,12 @@ namespace LexAnalysis
 	void SetVisibility(const FST::FST& temp, AnalysisData& analysisData, IT::Entry& entry);
 	bool ViewVisibility(std::forward_list<std::string> visibilityCurrentId, std::forward_list<std::string> visibilityExistingId);
 	SetValueReturnCode SetValue(const FST::FST& temp, AnalysisData& analysisData, IT::Entry& entry);
-	bool CheckOnLibsFunction(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
-	bool CheckPrototypeParam(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
-	bool CheckOnCoincideIdNameLibFunctions(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
 	CheckIdentificatorReturnCode CheckForIdentificator(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
 	void SetIdxTI(const IT::IdTable& idTable, const IT::Entry& entryId, LT::Entry& entryLex);
 	void SetLexEntry(LT::Entry& entry, char lexema, int line, int position);
 	void ResetAnalysisData(AnalysisData& analysisData, IT::Entry& entry);
 	void ResetEntryLex(LT::Entry& entry);
-	void UpdateFunctionParamsInfo(AnalysisData& analysisData, IT::IdTable& idTable);
+	bool UpdateFunctionParamsInfo(AnalysisData& analysisData, IT::IdTable& idTable);
+	bool CheckPrototypeId(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
+	bool CheckPrototypeParam(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData);
 }	
