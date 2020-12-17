@@ -171,10 +171,12 @@ namespace LexAnalysis
 		case LEX_PROTOTYPE:
 			analysisData.idType = IT::PROTOTYPE;
 			analysisData.prototypeIn = true;
+			break;
 		case LEX_SEMICOLON:
 			if (analysisData.prototypeIn)
 				analysisData.functionNeedUpdate = true;
 			analysisData.prototypeIn = false;
+			break;
 		default:
 			break;
 		}
@@ -429,12 +431,14 @@ namespace LexAnalysis
 		bool check = true;
 		auto iteratorPrototype = idTable.table[idxPrototype].paramsIdx.begin();
 		auto iteratorFunctionLib = idTable.tableLibId[idxFunctionLib].paramsIdx.begin();
-		for (;(iteratorPrototype != idTable.table[idxPrototype].paramsIdx.end()) || (iteratorFunctionLib != idTable.tableLibId[idxFunctionLib].paramsIdx.end()); iteratorPrototype++, iteratorFunctionLib++)
+		for (;(iteratorPrototype != idTable.table[idxPrototype].paramsIdx.end()) && (iteratorFunctionLib != idTable.tableLibId[idxFunctionLib].paramsIdx.end()); iteratorPrototype++, iteratorFunctionLib++)
 		{
 			if (idTable.table[*iteratorPrototype].idDataType != idTable.tableLibId[*iteratorFunctionLib].idDataType)
 				check = false;
 		}
-		if ((iteratorPrototype != idTable.table[idxPrototype].paramsIdx.end()) && iteratorFunctionLib != idTable.tableLibId[idxFunctionLib].paramsIdx.end())
+		if (iteratorPrototype != idTable.table[idxPrototype].paramsIdx.end())
+			check = false;
+		if (iteratorFunctionLib != idTable.tableLibId[idxFunctionLib].paramsIdx.end())
 			check = false;
 		return check;
 	}

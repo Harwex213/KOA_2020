@@ -23,14 +23,15 @@ FST::NODE(1, FST::RELATION('o', 3)), \
 FST::NODE(1, FST::RELATION('l', 4)), \
 FST::NODE()
 
-#define GRAPH_INCLUDE LEX_INCLUDE, string, 8, \
-FST::NODE(1, FST::RELATION('i', 1)), \
-FST::NODE(1, FST::RELATION('n', 2)), \
-FST::NODE(1, FST::RELATION('c', 3)), \
-FST::NODE(1, FST::RELATION('l', 4)), \
-FST::NODE(1, FST::RELATION('u', 5)), \
-FST::NODE(1, FST::RELATION('d', 6)), \
-FST::NODE(1, FST::RELATION('e', 7)), \
+#define GRAPH_INCLUDE LEX_INCLUDE, string, 9, \
+FST::NODE(1, FST::RELATION('#', 1)), \
+FST::NODE(1, FST::RELATION('i', 2)), \
+FST::NODE(1, FST::RELATION('n', 3)), \
+FST::NODE(1, FST::RELATION('c', 4)), \
+FST::NODE(1, FST::RELATION('l', 5)), \
+FST::NODE(1, FST::RELATION('u', 6)), \
+FST::NODE(1, FST::RELATION('d', 7)), \
+FST::NODE(1, FST::RELATION('e', 8)), \
 FST::NODE()
 
 #define GRAPH_PROTOTYPE LEX_PROTOTYPE, string, 10, \

@@ -46,6 +46,8 @@
 								entryTemp.paramsIdx.push_front(16);																										// 15
 #define CHARTOBOOL_PARAM_1		entryTemp.idName = (char*)""; entryTemp.idType = PARAM; entryTemp.idDataType = STRING;													// 16
 
+#define	CLEAR_PARAMSIDX			entry.paramsIdx.clear();
+
 #define LIB_IDENTIFICATOR_AMOUNT	17
 
 namespace IT
@@ -84,7 +86,7 @@ namespace IT
 
 	void SetLibFunctions(IdTable& idtable);
 	void AddEntry(IdTable& idtable, Entry entry);
-	void AddLibEntry(IdTable& idtable, Entry entry);
+	void AddLibEntry(IdTable& idtable, Entry& entry);
 	Entry GetEntry(const IdTable& idtable, int n);
 	int GetId(const IdTable& idTable, char* id, std::forward_list<std::string> visibility);
 	int GetId(const IdTable& idTable, Entry entry);

@@ -67,11 +67,12 @@ namespace IT
 		strcpy(idtable.table[idtable.current_size].idName, entry.idName);
 		idtable.current_size++;
 	}
-	void AddLibEntry(IdTable& idtable, Entry entry)
+	void AddLibEntry(IdTable& idtable, Entry& entry)
 	{
 		idtable.tableLibId.push_back(entry);
-		idtable.tableLibId[idtable.current_size].idName = new char[strlen(entry.idName) + 1];
-		strcpy(idtable.tableLibId[idtable.current_size].idName, entry.idName);
+		idtable.tableLibId[idtable.tableLibId.size()-1].idName = new char[strlen(entry.idName) + 1];
+		strcpy(idtable.tableLibId[idtable.tableLibId.size()-1].idName, entry.idName);
+		CLEAR_PARAMSIDX;
 	}
 	Entry GetEntry(const IdTable& idtable, int n)
 	{
