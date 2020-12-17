@@ -4,9 +4,6 @@ namespace LexAnalysis
 {
 	void Lexer(const In::IN& in, LT::LexTable& lexTable, IT::IdTable& idTable)
 	{
-		// ������ � ����������� ������������ �������:
-		// 1) ������� ������� ���� � �������� � ������������
-		// 2) � ��������� ���������� ��������� �� �� �������
 		Graphs::GRAPHS automat;
 		AnalysisData analysisData;
 		FST::FST* temp;
@@ -110,9 +107,9 @@ namespace LexAnalysis
 		switch (temp.lexema)
 		{
 		case LEX_DATATYPE:
-			// ������������� ��� ������ �������� �������������� � ��� �������������� ��� ����������.
+			// Устанавливаем тип данных будущего идентификатора и тип идентификатора как переменная.
 			analysisData.idType = IT::VARIABLE;
-			// ���� �� � ������� ��� � ��������� -> ������������� ��� �������������� ��� ��������.
+			// Если мы в функции -> устанавливаем тип идентификатора как параметр
 			if (analysisData.functionIn || analysisData.prototypeIn)
 			{
 				analysisData.idType = IT::PARAM;
@@ -121,7 +118,7 @@ namespace LexAnalysis
 			analysisData.idDataType = temp.idDataType;
 			break;
 		case LEX_FUNCTION:
-			// ������������ ��� �� � ������� � ������������� ��� �������������� ��� �������.
+			// Предполагаем что мы в функции и устанавливаем тип идентификатора как функцию.
 			analysisData.functionIn = true;
 			analysisData.idType = IT::FUNCTION;
 			break;
@@ -130,11 +127,11 @@ namespace LexAnalysis
 		case LEX_PARENTHESES_RIGHT:
 			if (analysisData.functionIn)
 				analysisData.functionNeedUpdate = true;
-			// � ����� ������ ������� �� �������.
+			// В любом случае выходим из функции.
 			analysisData.functionIn = false;
 			break;
 		case LEX_MAIN:
-			// ������������� ��������� "main"
+			// Устанавливаем видимость "main"
 			analysisData.visibilityList.push_front(*temp.string);
 			analysisData.mainWas++;
 			break;
@@ -199,14 +196,14 @@ namespace LexAnalysis
 		entry.idType = analysisData.idType;
 		entry.idDataType = analysisData.idDataType;
 		entry.idxfirstLE = idxLex;
-		// ��������� id ������� ������� (���������).
+		// Сохраняем id текущей функции.
 		if ((analysisData.functionIn && entry.idType == IT::FUNCTION) || (analysisData.prototypeIn && entry.idType == IT::PROTOTYPE))
 			analysisData.currentFunctionId = idxId;
 	}
 
 	void SetFunctionParams(AnalysisData& analysisData, int idx)
 	{
-		// ������ ���������� �� �������������� ���������� �������.
+		// Вносим информацию об действительных параметрах функции.
 		analysisData.functionParamsCounter++;
 		analysisData.paramsIdx.push_front(idx);
 		analysisData.infoFunctionParamsNeedUpdate = false;
@@ -231,7 +228,7 @@ namespace LexAnalysis
 			length = strlen(*temp.string);
 			if (length > ID_MAXSIZE)
 			{
-				cout << "��������� �������� ��������������: " << *temp.string << endl;
+				cout << "Произошло усечение идентификатора: " << *temp.string << endl;
 				length = ID_MAXSIZE;
 			}
 			entry.idName = new char[length + 1];
@@ -317,61 +314,20 @@ namespace LexAnalysis
 		return SUCCESS;
 	}
 
-	bool CheckOnLibsFunction(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
+	bool CheckPrototypeId(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
 	{
-		for (int i = 0; i < LIB_IDENTIFICATOR_AMOUNT; i++)
-		{
-			if (strcmp(entryId.idName, idTable.table[i].idName) == 0 && entryId.idDataType == idTable.table[i].idDataType)
-			{
-				// ���� �������� � ������������ ��� ������ �������, �� ������� ���������� � ���, ����� � ��� ��������
-				// � ���������� ��� �������� ������.
-				analysisData.currentPrototypeId = i;
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool CheckPrototypeParam(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
-	{
-
-		for (int i = 0; i < analysisData.functionParamsCounter; i++)
-		{
-			if (entryId.idDataType == idTable.table[idTable.table[analysisData.currentPrototypeId].].idDataType)
-				return true;
-		}
-		return false;
-	}
-
-	bool CheckOnCoincideIdNameLibFunctions(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
-	{
-		for (int i = 0; i < LIB_IDENTIFICATOR_AMOUNT; i++)
-		{
-			if (strcmp(entryId.idName, idTable.table[i].idName) == 0)
-				return true;
-		}
-		return false;
+		return true;
 	}
 
 	CheckIdentificatorReturnCode CheckForIdentificator(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
 	{
-		// ��������� ��������� �� �������� ��� � ������������ ��� ���������.
-		if (entryId.idType == IT::PROTOTYPE && !CheckPrototypeId(idTable, entryId, analysisData))
-			return PROTOTYPE_NOT_FOUND;
 
-		if (analysisData.prototypeIn && entryId.idDataType == IT::PARAM && !CheckPrototypeParam(idTable, entryId, analysisData))
-			return PROTOTYPE_NOT_FOUND;
-
-		// ��������� �� ��������� �� ����� ������� � ����������.
-		if (entryId.idType == IT::FUNCTION && !CheckOnCoincideIdNameLibFunctions(idTable, entryId, analysisData))
-			return ID_FUNC_MATCHES_ID_FUNC_LIB;
-
-		// ��������� �� ��������� �� ���������� ��� �������.
+		// Проверяем не объявлена ли переменная вне функции.
 		if (*entryId.visibility.begin() == STANDART_VISIBILITY && entryId.idType == IT::VARIABLE)
 			return GLOBAL_DECLARATION;
 		for (int i = 0; i < idTable.current_size; i++)
 		{
-			// ��������� �� �������� ��������, �� ��� �� ������ ����� �� �����.
+			// Проверяем по значению литерала, не был ли создан такой же ранее.
 			if (entryId.visibility == idTable.table[i].visibility && entryId.idType == IT::LITERAL)
 			{
 				switch (entryId.idDataType)
@@ -390,8 +346,8 @@ namespace LexAnalysis
 					break;
 				}
 			}
-			// ������� �� ��������� + ���������� ����� ��������������.
-			// ����� ������� �� ���� ��������������. U - ���������� ��� ����. 
+			// Смотрим по видимости + совпадении имени идентификатора.
+			// Далее смотрим по типу идентификатора. U - объявление уже было. 
 			if (ViewVisibility(entryId.visibility, idTable.table[i].visibility) && (strcmp(entryId.idName, idTable.table[i].idName) == 0))
 			{
 				switch (entryId.idType)
@@ -405,8 +361,8 @@ namespace LexAnalysis
 				}
 			}
 		}
-		// ���� ���������� ����� �� �����, �� ��� �������������� �� ��������
-		// (�� ���� ��������� ����� �����) ==> ������������� �������������� ��������������.
+		// Если совпадений ранее не нашли, но тип идентификатора не определён
+		// (не было ключевого слова ранее) ==> использование необъявленного идентификатора.
 		if (entryId.idType == IT::U)
 			return NOT_DECLARED;
 		return OK;
@@ -433,7 +389,7 @@ namespace LexAnalysis
 
 	void SetIdxTI(const IT::IdTable& idTable, const IT::Entry& entryId, LT::Entry& entryLex)
 	{
-		// ���������� � ������� ������ �� id � ������� ���������������.
+		// Выставляем у лексемы ссылку на id в таблице идентификаторов.
 		entryLex.idxTI = IT::GetId(idTable, entryId);
 	}
 
@@ -461,10 +417,15 @@ namespace LexAnalysis
 		entry.operationType = LT::NONE;
 	}
 
-	void UpdateFunctionParamsInfo(AnalysisData& analysisData, IT::IdTable& idTable)
+	bool CheckPrototypeParam(const IT::IdTable& idTable, IT::Entry& entryId, AnalysisData& analysisData)
+	{
+		return true;
+	}
+
+	bool UpdateFunctionParamsInfo(AnalysisData& analysisData, IT::IdTable& idTable)
 	{
 		analysisData.functionNeedUpdate = false;
-		// ���� ��������� ��������� �� ������� -> ���������� ���������� � ���, ��� ����� ������ ����������.
+		// Проверяем параметры прототипа на правильность.
 		if (idTable.table[analysisData.currentFunctionId].idType == IT::PROTOTYPE && !CheckPrototypeParam(idTable, idTable.table[analysisData.currentFunctionId], analysisData))
 			return false;
 		idTable.table[analysisData.currentFunctionId].paramsIdx = analysisData.paramsIdx;
