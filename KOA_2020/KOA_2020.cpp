@@ -16,6 +16,7 @@ int wmain(int argc, wchar_t* argv[])
 		In::IN in = In::getin(parm.in);
 		LT::LexTable lexTable;
 		IT::IdTable idTable;
+		IT::SetLibFunctions(idTable);
 		LexAnalysis::Lexer(in, lexTable, idTable);
 
 		// Write results Stage.

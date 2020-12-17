@@ -118,6 +118,10 @@ namespace LexAnalysis
 				analysisData.idType = IT::PARAM;
 				analysisData.infoFunctionParamsNeedUpdate = true;
 			}
+			if (analysisData.prototypeIn)
+			{
+
+			}
 			analysisData.idDataType = temp.idDataType;
 			break;
 		case LEX_FUNCTION:
@@ -178,6 +182,9 @@ namespace LexAnalysis
 			break;
 		case LEX_PROTOTYPE:
 			analysisData.idType = IT::PROTOTYPE;
+			analysisData.prototypeIn = true;
+		case LEX_SEMICOLON:
+			analysisData.prototypeIn = false;
 		default:
 			break;
 		}
@@ -197,6 +204,10 @@ namespace LexAnalysis
 		// Сохраняем id текущей функции.
 		if (analysisData.functionIn && entry.idType == IT::FUNCTION)
 			analysisData.currentFunctionId = idxId;
+		if (analysisData.prototypeIn)
+		{
+
+		}
 	}
 
 	void SetFunctionParams(AnalysisData& analysisData, int idx)

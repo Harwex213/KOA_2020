@@ -5,10 +5,6 @@
 #include "FST.h"
 #include <forward_list>
 
-#define STANDART_VISIBILITY "GLOBAL"
-#define LITERAL_VISIBILITY "LITERAL"
-#define FUNCTION_VISIBILITY "FUNCTION"
-
 #define FIRST_SYMBOL_TRUE 't'
 #define FIRST_SYMBOL_FALSE 'f'
 #define SYMBOL_OCT	'e'
