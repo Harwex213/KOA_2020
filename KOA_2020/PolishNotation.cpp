@@ -7,8 +7,13 @@ namespace PolishNotation
 	{
 		// Если в параметрах поставить просто арифмитическое действие, то сломается
 
-		for (int i = 0; i < lexTable.current_size; i++)
+		for (auto i = mfst.storestate.begin(); i != mfst.storestate.end(); i++)
 		{
+			// Если нашли Инструкцию.
+			if (i->nrule == )
+			{
+
+			}
 			if (lexTable.table[i].lexema == LEX_ASSIGNMENT)
 				PolishNotationExpression(i + 1, lexTable, idTable);
 			if (lexTable.table[i].lexema == LEX_WHILE || lexTable.table[i].lexema == LEX_IF)

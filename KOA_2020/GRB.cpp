@@ -12,9 +12,17 @@ namespace GRB
 				NS('S'),
 				GRB_ERROR_SERIES + 1,
 				5,
+				// Include.
+				// 0
 				Rule::Chain(3, TS('d'), TS('l'), NS('S')),
+				// Prototype.
+				// 1
 				Rule::Chain(8, TS('t'), TS('p'), TS('i'), TS('('), NS('P'), TS(')'), TS(';'), NS('S')),
+				// Function.
+				// 2
 				Rule::Chain(13, TS('t'), TS('f'), TS('i'), TS('('), NS('P'), TS(')'), TS('{'), NS('I'), TS('r'), NS('E'), TS(';'), TS('}'), NS('S')),
+				// Main.
+				// 3
 				Rule::Chain(5, TS('m'), TS('{'), NS('I'), TS('}'), NS('S')),
 				Rule::Chain()
 			),
@@ -23,18 +31,23 @@ namespace GRB
 				NS('I'),
 				GRB_ERROR_SERIES + 2,
 				8,
-				// Блок повторяющихся.
-				// Объявление и присваивание.
+				// Declaration and assignment.
+				// 0
 				Rule::Chain(6, TS('t'), TS('i'), TS('='), NS('E'), TS(';'), NS('I')),
-				// Объявление.
+				// Declaration.
+				// 1
 				Rule::Chain(4, TS('t'), TS('i'), TS(';'), NS('I')),
-				// Присваивание.
+				// Assignment.
+				// 2
 				Rule::Chain(5, TS('i'), TS('='), NS('E'), TS(';'), NS('I')),
-				// Вызов функции.
+				// Calling Function.
+				// 3
 				Rule::Chain(6, TS('i'), TS('('), NS('C'), TS(')'), TS(';'), NS('I')),
 				// if -> else
+				// 4
 				Rule::Chain(12, TS('q'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), TS('e'), TS('{'), NS('I'), TS('}'), NS('I')),
 				// if.
+				// 5
 				Rule::Chain(8, TS('q'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
 				// Цикл
 				Rule::Chain(8, TS('w'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
@@ -45,30 +58,29 @@ namespace GRB
 				NS('E'),
 				GRB_ERROR_SERIES + 3,
 				7,
-				// Блок с операциями.
-				// Идентификатор.
+				// Identificator.
 				Rule::Chain(2, TS('i'), NS('O')),
-				// Литерал.
+				// Literal.
 				Rule::Chain(2, TS('l'), NS('O')),
-				// Вызов функции.
+				// Calling Function.
 				Rule::Chain(5, TS('i'), TS('('), NS('C'), TS(')'), NS('O')),
-				// Выражения со скобками.
+				// Expression in Parenthesis.
 				Rule::Chain(4, TS('('), NS('E'), TS(')'), NS('O')),
-				// Идентификатор.
+				// Identificator with Unary.
 				Rule::Chain(3, TS('b'), TS('i'), NS('O')),
-				// Литерал.
+				// Literal with Unary.
 				Rule::Chain(3, TS('b'), TS('l'), NS('O')),
-				// Вызов функции.
+				// Calling Function with Unary.
 				Rule::Chain(6, TS('b'), TS('i'), TS('('), NS('C'), TS(')'), NS('O'))
 			),
 		Rule(
-				// Operations: {+ - * / | & ~}. (and == > < >= <=)?
+				// Operations.
 				NS('O'),
 				GRB_ERROR_SERIES + 3,
 				3,
 				// Binaries: {+ - * / | &}
 				Rule::Chain(3, TS('v'), NS('U'), NS('E')),
-				// Comparisons { == > < >= <=}
+				// Comparisons { == != > < >= <=}
 				Rule::Chain(3, TS('g'), NS('U'), NS('E')),
 				Rule::Chain()
 			),
@@ -77,6 +89,7 @@ namespace GRB
 				NS('U'),
 				GRB_ERROR_SERIES + 3,
 				2,
+				// { ~ }
 				Rule::Chain(1, TS('b')),
 				Rule::Chain()
 		),

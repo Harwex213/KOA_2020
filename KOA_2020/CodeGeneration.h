@@ -1,90 +1,91 @@
-//#pragma once
-//
-////#define GENERATION_DEBUG
-//
-//#define S_RULE				0
-//
-//#define SR_INCLUDE_CHAIN	0
-//#define SR_MAIN_CHAIN		1
-//#define SR_FUNCTION_CHAIN	2
-//
-//#define I_RULE					1
-//
-//#define IR_DECL_INIT_CHAIN		0
-//#define IR_DECL_CHAIN			1
-//#define IR_INIT_CHAIN			2
-//#define IR_WHILE				3
-//#define IR_IF_ELSE				4
-//#define IR_IF					5
-//
-//#define E_RULE	2
-//
-//#define HEAD_BEGIN_INDEX		1
-//#define HEAD_LIBS_INDEX			2
-//#define HEAD_PROTOS_INDEX		3
-//#define CONSTS_INDEX			4
-//#define DATA_INDEX				5
-//#define FUNC_BEGIN_INDEX		6
-//#define FUNC_CODE_INDEX			7
-//#define FUNC_END_INDEX			8
-//
-//#define PUSH_VAR_COUNT			16
-//
-//#define IDX_MAIN	-2
-//#define IDX_FUNC	1
-//
-//#define VAR_NAME(name) "V_" + name
-//#define PVAR_NAME(id) "PV_" + std::to_string(id)
-//
-//#define COMMENT(value) "; " + value + "\n"
-//#define NEWLINE	"\n"
-//
-//#define STANDART_HEAD_BEGIN		".586\n" + \
-//								".model flat, stdcall\n"
-//#define STANDART_HEAD_LIBS		"includelib kernel32.lib\n" + \
-//								"includelib libucrt.lib\n" + \
-//								"includelib Standart.lib\n"
-//#define STANDART_HEAD_PROTOS	"ExitProcess PROTO: DWORD\n"
-//
-//#define STANDART_CONST_BEGIN	".const\n"
-//#define STANDART_DATA_BEGIN		".data\n"
-//#define STANDART_CODE_BEGIN		".code\n"
-//#define STANDART_CODE_END		"end main\n"
-//
-//#define INCLUDE_LIB(name) "includelib " + name + "\n"
-//
-//#define STACK(value) ".stack " + std::to_string(value) + "\n"
-//
-//#define	INSERT_FUNCTION_PROTO(name) name + " PROTO : "
-//#define INSERT_FIRST_DWORD			"DWORD"
-//#define INSERT_DWORD				", : DWORD"
-//
-//#define INSERT_VARS(name, type, value) name + " " + type + "\t" + value + "\n"
-//
-//#define STANDART_FUNC_BEGIN(name)			name + " PROC"
-//#define INSERT_FUNCTION_PARAM(name, type)	", " + name + ": " + type
-//#define RET(name)							"\t mov eax, " + name + "\n"
-//#define RETZX(name)							"\t movzx eax, " + name + "\n"
-//#define STANDART_FUNC_END(name)				"\t ret\n" + name + " ENDP\n"
-//#define MAIN_BEGIN	"main PROC\n"
-//#define MAIN_END	"\t call ExitProcess\n" "main ENDP\n"
-//
-//#define PUSH(name)		"\t push " + name + "\n"
-//#define PUSHZX(name)	"\t movzx eax, " + name + "\n" + "\t push eax\n"
-//#define	POP(name)		"\t pop " + name + "\n"
-//#define	POPZX(name)		"\t pop eax\n" + "\t mov " name + ", al\n"
-//#define ADD				"\t pop eax\n" + "\t pop ebx\n" + "\t add eax, ebx\n" + "\t push eax\n"
-//#define SUB				"\t pop eax\n" + "\t pop ebx\n" + "\t sub eax, ebx\n" + "\t push eax\n"
-//#define MUL				"\t pop eax\n" + "\t pop ebx\n" + "\t mul ebx\n" + "\t push eax\n"
-//#define DIV				"\t pop eax\n" + "\t pop ebx\n" + "\t div ebx\n" + "\t push eax\n"
-//#define BIT_OR			"\t pop eax\n" + "\t pop ebx\n" + "\t or  eax, ebx\n" + "\t push eax\n"
-//#define BIT_AND			"\t pop eax\n" + "\t pop ebx\n" + "\t and eax, ebx\n" + "\t push eax\n"
-//#define BIT_NOT			"\t pop eax\n" + "\t not eax\n" + "\t push eax\n"
-//
-//#define INVOKE_FUNCTION(name) "\t invoke " + name
-//#define ADD_FUNCTION_PARAM(name) ", " + name
-//#define PUSH_RESULT_FUNCTION "\t push eax\n"
-//
+#pragma once
+
+//#define GENERATION_DEBUG
+
+#define S_RULE					0
+
+#define Srule_INCLUDE			0
+#define Srule_PROTOTYPE			1
+#define Srule_FUNCTION			2
+#define Srule_MAIN				3
+
+#define I_RULE					1
+
+#define Irule_DECL_AND_INIT		0
+#define Irule_DECL				1
+#define Irule_INIT				2
+#define Irule_CALL_FUNCTION		3
+#define Irule_IF_ELSE			4
+#define Irule_IF				5
+
+#define E_RULE	2
+
+#define HEAD_BEGIN_INDEX		1
+#define HEAD_LIBS_INDEX			2
+#define HEAD_PROTOS_INDEX		3
+#define CONSTS_INDEX			4
+#define DATA_INDEX				5
+#define FUNC_BEGIN_INDEX		6
+#define FUNC_CODE_INDEX			7
+#define FUNC_END_INDEX			8
+
+#define PUSH_VAR_COUNT			16
+
+#define IDX_MAIN	-2
+#define IDX_FUNC	1
+
+#define VAR_NAME(name) "V_" + name
+#define PVAR_NAME(id) "PV_" + std::to_string(id)
+
+#define COMMENT(value) "; " + value + "\n"
+#define NEWLINE	"\n"
+
+#define STANDART_HEAD_BEGIN		".586\n" + \
+								".model flat, stdcall\n"
+#define STANDART_HEAD_LIBS		"includelib kernel32.lib\n" + \
+								"includelib libucrt.lib\n" + \
+								"includelib Standart.lib\n"
+#define STANDART_HEAD_PROTOS	"ExitProcess PROTO: DWORD\n"
+
+#define STANDART_CONST_BEGIN	".const\n"
+#define STANDART_DATA_BEGIN		".data\n"
+#define STANDART_CODE_BEGIN		".code\n"
+#define STANDART_CODE_END		"end main\n"
+
+#define INCLUDE_LIB(name) "includelib " + name + "\n"
+
+#define STACK(value) ".stack " + std::to_string(value) + "\n"
+
+#define	INSERT_FUNCTION_PROTO(name) name + " PROTO : "
+#define INSERT_FIRST_DWORD			"DWORD"
+#define INSERT_DWORD				", : DWORD"
+
+#define INSERT_VARS(name, type, value) name + " " + type + "\t" + value + "\n"
+
+#define STANDART_FUNC_BEGIN(name)			name + " PROC"
+#define INSERT_FUNCTION_PARAM(name, type)	", " + name + ": " + type
+#define RET(name)							"\t mov eax, " + name + "\n"
+#define RETZX(name)							"\t movzx eax, " + name + "\n"
+#define STANDART_FUNC_END(name)				"\t ret\n" + name + " ENDP\n"
+#define MAIN_BEGIN	"main PROC\n"
+#define MAIN_END	"\t call ExitProcess\n" "main ENDP\n"
+
+#define PUSH(name)		"\t push " + name + "\n"
+#define PUSHZX(name)	"\t movzx eax, " + name + "\n" + "\t push eax\n"
+#define	POP(name)		"\t pop " + name + "\n"
+#define	POPZX(name)		"\t pop eax\n" + "\t mov " name + ", al\n"
+#define ADD				"\t pop eax\n" + "\t pop ebx\n" + "\t add eax, ebx\n" + "\t push eax\n"
+#define SUB				"\t pop eax\n" + "\t pop ebx\n" + "\t sub eax, ebx\n" + "\t push eax\n"
+#define MUL				"\t pop eax\n" + "\t pop ebx\n" + "\t mul ebx\n" + "\t push eax\n"
+#define DIV				"\t pop eax\n" + "\t pop ebx\n" + "\t div ebx\n" + "\t push eax\n"
+#define BIT_OR			"\t pop eax\n" + "\t pop ebx\n" + "\t or  eax, ebx\n" + "\t push eax\n"
+#define BIT_AND			"\t pop eax\n" + "\t pop ebx\n" + "\t and eax, ebx\n" + "\t push eax\n"
+#define BIT_NOT			"\t pop eax\n" + "\t not eax\n" + "\t push eax\n"
+
+#define INVOKE_FUNCTION(name) "\t invoke " + name
+#define ADD_FUNCTION_PARAM(name) ", " + name
+#define PUSH_RESULT_FUNCTION "\t push eax\n"
+
 //namespace CodeGeneration
 //{
 //	struct CodeHead
