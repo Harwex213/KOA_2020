@@ -20,6 +20,10 @@ main
     cWriteLine("-----------------------------------------------");
     string resultString;
     bool xIsTheBiggest;
+    if(xIsTheBiggest)
+    {
+        cWriteLine("Super");
+    }
     bool yIsTheBiggest;
     bool zIsTheBiggest;
     uint x = GetRandom(0, 2077);

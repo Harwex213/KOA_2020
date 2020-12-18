@@ -6,9 +6,10 @@ namespace GRB
 	Greibach greibach(
 		NS('S'),
 		TS('$'),
-		9,
+		10,
 		Rule(
 				// Functions and Main.
+				// 0
 				NS('S'),
 				GRB_ERROR_SERIES + 1,
 				5,
@@ -20,7 +21,7 @@ namespace GRB
 				Rule::Chain(8, TS('t'), TS('p'), TS('i'), TS('('), NS('P'), TS(')'), TS(';'), NS('S')),
 				// Function.
 				// 2
-				Rule::Chain(13, TS('t'), TS('f'), TS('i'), TS('('), NS('P'), TS(')'), TS('{'), NS('I'), TS('r'), NS('E'), TS(';'), TS('}'), NS('S')),
+				Rule::Chain(11, TS('t'), TS('f'), TS('i'), TS('('), NS('P'), TS(')'), TS('{'), NS('I'), NS('R'), TS('}'), NS('S')),
 				// Main.
 				// 3
 				Rule::Chain(5, TS('m'), TS('{'), NS('I'), TS('}'), NS('S')),
@@ -28,6 +29,7 @@ namespace GRB
 			),
 		Rule(
 				// Instructions. 
+				// 1
 				NS('I'),
 				GRB_ERROR_SERIES + 2,
 				8,
@@ -55,6 +57,7 @@ namespace GRB
 			),
 		Rule(
 				// Expressions.
+				// 2
 				NS('E'),
 				GRB_ERROR_SERIES + 3,
 				7,
@@ -72,6 +75,14 @@ namespace GRB
 				Rule::Chain(3, TS('b'), TS('l'), NS('O')),
 				// Calling Function with Unary.
 				Rule::Chain(6, TS('b'), TS('i'), TS('('), NS('C'), TS(')'), NS('O'))
+			),
+		Rule(
+				// Return.
+				// 3
+				NS('R'),
+				GRB_ERROR_SERIES + 6,
+				1,
+				Rule::Chain(3, TS('r'), NS('E'), TS(';'))
 			),
 		Rule(
 				// Operations.
