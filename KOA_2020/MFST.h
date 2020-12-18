@@ -4,6 +4,7 @@
 #include "LT.h"
 #include <stack>
 #include <string>
+#include <list>
 
 #define MFST_DIAGN_MAXSIZE 2 * ERRORMASSAGE_MAX_SIZE
 #define MFST_DIAGN_NUMBER 3
@@ -107,7 +108,7 @@ namespace MFST
 		GRB::Greibach grebach;				// грамматика Грейбах
 		LT::LexTable lex;					// результат работы лексического анализатора
 		MFSTSTSTACK st;						// стек автомата
-		std::stack<MfstState> storestate;	// стек для сохранения состояний
+		std::list<MfstState> storestate;	// стек для сохранения состояний
 		
 		Mfst();
 		Mfst(								

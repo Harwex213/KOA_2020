@@ -1,5 +1,5 @@
 #include "stdafx.h"
-//#define DEBUG
+#define DEBUG
 
 namespace MFST
 {
@@ -141,7 +141,7 @@ namespace MFST
 
 	bool Mfst::saveState(Log::LOG log)
 	{
-		storestate.push(MfstState(lenta_position, st, nrule, nrulechain));
+		storestate.push_back(MfstState(lenta_position, st, nrule, nrulechain));
 #ifdef DEBUG
 		MFST_TRACE6("SAVESTATE:", storestate.size());
 #endif // DEBUG
@@ -156,14 +156,14 @@ namespace MFST
 
 		if (rc = (storestate.size() > 0))
 		{
-			state = storestate.top();
+			state = *storestate.rbegin();
 
 			lenta_position = state.lenta_position;
 			st = state.st;
 			nrule = state.nrule;
 			nrulechain = state.nrulechain;
 
-			storestate.pop();
+			storestate.pop_back();
 #ifdef DEBUG
 			MFST_TRACE5("RESTSTATE");
 			MFST_TRACE2;
@@ -303,19 +303,9 @@ namespace MFST
 	{
 		MfstState state;
 		GRB::Rule rule;
-		for (unsigned short k = 0; k < storestate.size(); k++)
+		for (auto k = storestate.begin(); k != storestate.end(); k++)
 		{
-			std::stack<MfstState> temp_storestate = storestate;
-			short j = temp_storestate.size() - 1;
-
-			while (!temp_storestate.empty() && j-- != k)
-				temp_storestate.pop();
-
-			if (!temp_storestate.empty())
-			{
-				state = temp_storestate.top();
-				temp_storestate.pop();
-			}
+			state = *k;
 
 			rule = grebach.getRule(state.nrule);
 			log.streamParsing->width(4);  *log.streamParsing << state.lenta_position << ": ";						\
@@ -327,23 +317,14 @@ namespace MFST
 	{
 		MfstState state;
 		GRB::Rule rule;
-
-		for (unsigned short k = 0; k < storestate.size(); k++)
+		int k = 0;
+		for (auto i = storestate.begin(); i != storestate.end(); i++)
 		{
-			std::stack<MfstState> temp_storestate = storestate;
-			short j = temp_storestate.size();
-
-			while (!temp_storestate.empty() && j-- != k)
-				temp_storestate.pop();
-			
-			if (!temp_storestate.empty())
-			{
-				state = temp_storestate.top();
-				temp_storestate.pop();
-			}
+			state = *i;
 
 			deducation.nrules[k] = state.nrule;
 			deducation.nrulechains[k] = state.nrulechain;
+			k++;
 		}
 
 		return true;
