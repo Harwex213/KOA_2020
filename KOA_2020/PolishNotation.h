@@ -210,6 +210,7 @@ namespace PolishNotation
 			lexTable.table.shrink_to_fit();
 			lexTable.current_size = lexTable.table.size();
 		}
+
 	};
 
 	void TransformToPolishNotation(MFST::Mfst& mfst, LT::LexTable& lexTable, IT::IdTable& idTable);

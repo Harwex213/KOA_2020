@@ -25,6 +25,9 @@ namespace PolishNotation
 				case Irule_DECL_AND_INIT:
 					PolishNotationExpression(i->lenta_position + 3, lexTable, idTable);
 					break;
+				case Irule_CALL_FUNCTION:
+					PolishNotationExpression(i->lenta_position, lexTable, idTable);
+					break;
 				}
 			}
 		}
