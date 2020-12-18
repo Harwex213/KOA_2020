@@ -83,9 +83,6 @@ namespace Log
 		*log.streamLexTable << "----- Протокол ----- ";
 		strftime(buffer, 300, " Дата: %d.%m.%Y %H:%M:%S", &timeinfo);
 		*log.streamLexTable << buffer << " ----- " << endl;
-		*log.streamLexTable << endl;
-		Log::WriteLineLexLog(log, "...Лексический анализ произведён без ошибок...\n", "");
-		*log.streamLexTable << endl;
 		*log.streamLexTable << "Размер: " << lexTable.current_size << endl;
 		int counter = 0;
 		for (int i = 0; i < lexTable.table[lexTable.current_size - 1].line; i++)
@@ -93,8 +90,13 @@ namespace Log
 			*log.streamLexTable << lexTable.table[counter].line << ' ';
 			while (counter < lexTable.table.size() && lexTable.table[counter].line == i + 1)
 			{
+				if (lexTable.table[counter].lexema == LEX_FILLER)
+				{
+					counter++;
+					continue;
+				}
 				*log.streamLexTable << lexTable.table[counter].lexema;
-				if (lexTable.table[counter].lexema == LEX_IDENTIFICATOR || lexTable.table[counter].lexema== LEX_LITERAL)
+				if (lexTable.table[counter].lexema == LEX_IDENTIFICATOR || lexTable.table[counter].lexema== LEX_LITERAL || lexTable.table[counter].lexema == LEX_CALL_FUNCTION)
 				{
 					*log.streamLexTable << "(" << lexTable.table[counter].idxTI << ")";
 				}

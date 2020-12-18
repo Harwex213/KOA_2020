@@ -162,16 +162,14 @@ namespace PolishNotation
 			stackCFunc.calledFunction[stackCFunc.countFunction].lexema = LEX_CALL_FUNCTION;
 			resultChain.push_back(stackCFunc.calledFunction[stackCFunc.countFunction]);
 			stackCFunc.countFunction--;
+			// Очищаем данные о функции.
+			stackCFunc.stackParams.pop_back();
+			stackCFunc.stackParams.shrink_to_fit();
+			stackCFunc.calledFunction.pop_back();
+			stackCFunc.calledFunction.shrink_to_fit();
 			// Смотрим пуст ли стек с количеством параметров. Если да -> функции закончились. Если нет -> убираем последнюю функцию из вектора.
 			if (stackCFunc.stackParams.empty())
 				stackCFunc.isParams = false;
-			if (stackCFunc.isParams)
-			{
-				stackCFunc.calledFunction.pop_back();
-				stackCFunc.calledFunction.shrink_to_fit();
-				stackCFunc.stackParams.pop_back();
-				stackCFunc.stackParams.shrink_to_fit();
-			}
 		}
 
 		void MetComma()

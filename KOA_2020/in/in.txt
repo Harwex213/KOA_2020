@@ -4,11 +4,13 @@ string prototype GetTime();
 uint prototype cWrite(string str);
 uint prototype cWriteLine(string str);
 string prototype UintToChar(uint value);
+uint prototype CharToUint(string str);
 uint prototype GetRandom(uint min, uint max);
 
 string function GetCurrentTime()
 {
     string time = "Date: " + GetDate() + ". Time: " + GetTime() + ".";
+    uint x = CharToUint(GetDate());
     return time;
 }
 

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#define DEBUG_PN
+//#define DEBUG_PN
 
 namespace PolishNotation
 {

@@ -20,6 +20,7 @@ int wmain(int argc, wchar_t* argv[])
 		LexAnalysis::Lexer(in, lexTable, idTable);
 
 		// Write results Stage.
+		Log::WriteLineLexLog(log, "...Лексический анализ произведён без ошибок...\n", "");
 		Log::WriteLogLexTable(log, lexTable);
 		Log::WriteLogIdTable(log, idTable);
 		Log::WriteLog(log);
@@ -32,10 +33,10 @@ int wmain(int argc, wchar_t* argv[])
 			throw ERROR_THROW(140);
 		mfst.printRules(log);
 
-		//// Polish Notation Stage.
-		//PolishNotation::TransformToPolishNotation(lexTable, idTable);
-		//Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
-		//Log::WriteLogLexTable(log, lexTable);
+		// Polish Notation Stage.
+		PolishNotation::TransformToPolishNotation(lexTable, idTable);
+		Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
+		Log::WriteLogLexTable(log, lexTable);
 
 		//// Code Generation Stage.
 		//CodeGeneration::Start(mfst, lexTable, idTable);
