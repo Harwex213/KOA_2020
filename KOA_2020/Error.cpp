@@ -52,7 +52,7 @@ namespace Error
 		ERROR_ENTRY(143, "Ошибочное выражение"),
 		ERROR_ENTRY(144, "Ошибка в параметрах функции"),
 		ERROR_ENTRY(145, "Ошибка в параметрах вызываемой функции"),
-		ERROR_ENTRY(145, "Пропущена лексема окончания выражения"),
+		ERROR_ENTRY(146, "Пропущена лексема окончания выражения"),
 		ERROR_ENTRY_NODEF(147),
 		ERROR_ENTRY_NODEF(148),
 		ERROR_ENTRY_NODEF(149),

@@ -47,7 +47,7 @@ namespace GRB
 				// Expressions.
 				NS('E'),
 				GRB_ERROR_SERIES + 3,
-				5,
+				6,
 				// Блок с операциями.
 				// Идентификатор.
 				Rule::Chain(2, TS('i'), NS('O')),
@@ -57,8 +57,10 @@ namespace GRB
 				Rule::Chain(5, TS('i'), TS('('), NS('C'), TS(')'), NS('O')),
 				// Выражения со скобками.
 				Rule::Chain(4, TS('('), NS('E'), TS(')'), NS('O')),
-				// Начало с унарного выражения.
-				Rule::Chain(3, TS('b'), NS('E'), NS('O'))
+				// Идентификатор.
+				Rule::Chain(3, TS('b'), TS('i'), NS('O')),
+				// Литерал.
+				Rule::Chain(3, TS('b'), TS('l'), NS('O'))
 			),
 		Rule(
 				// Operations: {+ - * / | & ~}. (and == > < >= <=)?
@@ -66,9 +68,9 @@ namespace GRB
 				GRB_ERROR_SERIES + 3,
 				3,
 				// Binaries: {+ - * / | &}
-				Rule::Chain(4, TS('v'), NS('U'), NS('E'), NS('O')),
+				Rule::Chain(3, TS('v'), NS('U'), NS('E')),
 				// Comparisons { == > < >= <=}
-				Rule::Chain(4, TS('g'), NS('U'),  NS('E'), NS('O')),
+				Rule::Chain(3, TS('g'), NS('U'), NS('E')),
 				Rule::Chain()
 			),
 		Rule(
@@ -84,7 +86,7 @@ namespace GRB
 				NS('P'),
 				GRB_ERROR_SERIES + 4,
 				2,
-				Rule::Chain(3, TS('t'), TS('i'), NS('A')),
+				Rule::Chain(3, TS('t'), TS('i'), NS('B')),
 				Rule::Chain()
 			),
 		Rule(
@@ -101,20 +103,20 @@ namespace GRB
 				Rule::Chain()
 			),
 		Rule(
-				// Comma
-				NS('A'),
+				// Params creating.
+				NS('B'),
 				GRB_ERROR_SERIES + 4,
-				3,
+				2,
 				Rule::Chain(2, TS(','), NS('P')),
-				Rule::Chain(2, TS(','), NS('C')),
 				Rule::Chain()
 			),
 		Rule(
-				// Comma
-				NS('L'),
-				GRB_ERROR_SERIES + 4,
-				1,
-				Rule::Chain(1, TS(';'))
+				// Params calling.
+				NS('A'),
+				GRB_ERROR_SERIES + 5,
+				2,
+				Rule::Chain(2, TS(','), NS('C')),
+				Rule::Chain()
 			)
 	);
 
