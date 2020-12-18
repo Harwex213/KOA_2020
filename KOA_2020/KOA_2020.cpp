@@ -27,11 +27,10 @@ int wmain(int argc, wchar_t* argv[])
 		Log::WriteIn(log, in);
 
 		// Parse Stage.
-		// For Debug:
-		//MFST::Mfst mfst(lexTable, GRB::getGreibach());
-		//if (!mfst.start(log))
-		//	throw ERROR_THROW(140);
-		//mfst.printRules(log);
+		MFST::Mfst mfst(lexTable, GRB::getGreibach());
+		if (!mfst.start(log))
+			throw ERROR_THROW(140);
+		mfst.printRules(log);
 
 		//// Polish Notation Stage.
 		//PolishNotation::TransformToPolishNotation(lexTable, idTable);
