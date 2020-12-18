@@ -82,6 +82,7 @@ namespace MFST
 						st.pop();
 						push_chain(chain);
 						rc = NS_OK;
+						nrulechain = -1;
 #ifdef DEBUG
 						MFST_TRACE2;
 #endif // DEBUG

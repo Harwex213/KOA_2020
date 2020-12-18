@@ -29,7 +29,7 @@ main
     {
        if(x > z)
        {
-            xIsTheBiggest = true;
+            xIsTheBiggest = true
        }
        else
        {

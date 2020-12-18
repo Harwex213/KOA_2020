@@ -18,7 +18,7 @@ namespace GRB
 			short size;			// длина цепочки
 			GRBALPHABET* nt;	// цепочка терминалов (> 0) и нетерминалов (< 0)
 
-			Chain() { size = 0; nt = 0; };
+			Chain() { size = 0; nt = new GRBALPHABET[1]{}; };
 			Chain(
 				short psize,				// количество символов в цепочке
 				GRBALPHABET s, ...			// символы (терминал или не терминал)

@@ -1,4 +1,4 @@
------ Протокол -----  Дата: 18.12.2020 02:03:42 ----- 
+----- Протокол -----  Дата: 18.12.2020 03:56:24 ----- 
 
 |Params|
 ID Name                            idx First LE                       Visibility Init                    DataType                           Value UINT                         Value FLOAT                        Value BOOL                         Value STRING
@@ -50,4 +50,4 @@ L6                                 109                                LITERAL   
 L7                                 135                                LITERAL                            2                                  -                                  -                                  -                                  "Найти максимальное среди чисел: " 
 L8                                 142                                LITERAL                            2                                  -                                  -                                  -                                  ", "                               
 L9                                 177                                LITERAL                            3                                  -                                  -                                  1                                  -                                  
-L10                                253                                LITERAL                            2                                  -                                  -                                  -                                  "Самое большое число!"             
+L10                                252                                LITERAL                            2                                  -                                  -                                  -                                  "Самое большое число!"             

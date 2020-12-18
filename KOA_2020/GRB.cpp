@@ -9,7 +9,7 @@ namespace GRB
 	Greibach greibach(
 		NS('S'),
 		TS('$'),
-		6,
+		9,
 		Rule(
 				// Functions and Main.
 				NS('S'),
@@ -25,7 +25,7 @@ namespace GRB
 				// Instructions. 
 				NS('I'),
 				GRB_ERROR_SERIES + 2,
-				9,
+				8,
 				// Блок повторяющихся.
 				// Объявление и присваивание.
 				Rule::Chain(6, TS('t'), TS('i'), TS('='), NS('E'), TS(';'), NS('I')),
@@ -35,8 +35,6 @@ namespace GRB
 				Rule::Chain(5, TS('i'), TS('='), NS('E'), TS(';'), NS('I')),
 				// Вызов функции.
 				Rule::Chain(6, TS('i'), TS('('), NS('C'), TS(')'), TS(';'), NS('I')),
-				// Вызов функции без параметров.
-				Rule::Chain(5, TS('i'), TS('('), TS(')'), TS(';'), NS('I')),
 				// Цикл
 				Rule::Chain(8, TS('w'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
 				// if -> else
@@ -86,7 +84,7 @@ namespace GRB
 				NS('P'),
 				GRB_ERROR_SERIES + 4,
 				2,
-				Rule::Chain(4, TS('t'), TS('i'), NS('A')),
+				Rule::Chain(3, TS('t'), TS('i'), NS('A')),
 				Rule::Chain()
 			),
 		Rule(
@@ -110,7 +108,14 @@ namespace GRB
 				Rule::Chain(2, TS(','), NS('P')),
 				Rule::Chain(2, TS(','), NS('C')),
 				Rule::Chain()
-		)
+			),
+		Rule(
+				// Comma
+				NS('L'),
+				GRB_ERROR_SERIES + 4,
+				1,
+				Rule::Chain(1, TS(';'))
+			)
 	);
 
 	Greibach getGreibach() { return greibach; }
