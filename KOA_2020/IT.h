@@ -74,7 +74,6 @@ namespace IT
 				char string[TI_STR_MAXSIZE - 1];
 			} vString;
 		} value;
-
 	};
 
 	struct IdTable

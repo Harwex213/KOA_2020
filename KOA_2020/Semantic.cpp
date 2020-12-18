@@ -55,9 +55,56 @@ namespace Semantic
 		}
 	}
 
-	SemanticReturnCode CheckOnIncongruity(int& PositionToCheck, const LT::LexTable& lextable, const IT::IdTable& idTable, TYPE_OF_CHECK typeOfCheck)
+	SemanticReturnCode CheckOnIncongruity(int& PositionToCheck, const LT::LexTable& lexTable, const IT::IdTable& idTable, TYPE_OF_CHECK typeOfCheck)
 	{
-		return NORMAL;
+		SemanticReturnCode returnCode = NORMAL;
+		switch (typeOfCheck)
+		{
+		case Semantic::EXPRESSION:
+		{
+			// Доходим до идентификатора (которому по идеи должны присвоить данные).
+			while (lexTable.table[PositionToCheck].lexema != LEX_IDENTIFICATOR)
+				PositionToCheck++;
+			// Сохраняем его возвращаемый тип данных.
+			IT::IDDATATYPE idDataTypeAssignmentId = idTable.table[lexTable.table[PositionToCheck].idxTI].idDataType;
+			// Временные переменные.
+			IT::Entry entryId;
+			while (lexTable.table[PositionToCheck].lexema != LEX_SEMICOLON)
+			{
+				entryId = idTable.table[lexTable.table[PositionToCheck].idxTI];
+				if (entryId.idType == IT::FUNCTION && entryId.idDataType != idDataTypeAssignmentId && !CheckParamsType(PositionToCheck, idTable, lexTable))
+				{
+
+				}
+
+
+				PositionToCheck++;
+			}
+			break;
+		}
+		case Semantic::CONDITION:
+
+			break;
+		case Semantic::RETURN_EXPRESSION:
+
+			break;
+		}
+		return returnCode;
+	}
+
+	bool CheckParamsType(int positionOfCalling, const IT::IdTable& idTable, const LT::LexTable& lexTable)
+	{
+		int positionTemp = positionOfCalling;
+		auto paramsIdx = idTable.table[positionOfCalling].paramsIdx;
+		paramsIdx.reverse();
+		auto idParam = paramsIdx.begin();
+		bool paramsCoindence = true;
+		for (int i = 0; i < idTable.table[positionOfCalling].functionParamsCount; i++)
+		{
+			if (idTable.table[lexTable.table[positionTemp--].idxTI].idDataType != idTable.table[*idParam].idDataType)
+				paramsCoindence = false;
+		}
+		return paramsCoindence;
 	}
 
 	bool CheckFunctionCountParams(int deFactoParamsCount, LT::Entry& entry, const IT::IdTable& idTable)
