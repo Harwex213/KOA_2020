@@ -18,7 +18,7 @@ namespace GRB
 				Rule::Chain(3, TS('d'), TS('l'), NS('S')),
 				Rule::Chain(8, TS('t'), TS('p'), TS('i'), TS('('), NS('P'), TS(')'), TS(';'), NS('S')),
 				Rule::Chain(13, TS('t'), TS('f'), TS('i'), TS('('), NS('P'), TS(')'), TS('{'), NS('I'), TS('r'), NS('E'), TS(';'), TS('}'), NS('S')),
-				Rule::Chain(8, TS('m'), TS('{'), NS('I'), TS('r'), NS('E'), TS(';'), TS('}'), NS('S')),
+				Rule::Chain(6, TS('m'), TS('{'), NS('I'), TS(';'), TS('}'), NS('S')),
 				Rule::Chain()
 			),
 		Rule(
@@ -35,19 +35,19 @@ namespace GRB
 				Rule::Chain(5, TS('i'), TS('='), NS('E'), TS(';'), NS('I')),
 				// Вызов функции.
 				Rule::Chain(6, TS('i'), TS('('), NS('C'), TS(')'), TS(';'), NS('I')),
-				// Цикл
-				Rule::Chain(8, TS('w'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
 				// if -> else
 				Rule::Chain(12, TS('q'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), TS('e'), TS('{'), NS('I'), TS('}'), NS('I')),
 				// if.
 				Rule::Chain(8, TS('q'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
+				// Цикл
+				Rule::Chain(8, TS('w'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
 				Rule::Chain()
 			),
 		Rule(
 				// Expressions.
 				NS('E'),
 				GRB_ERROR_SERIES + 3,
-				6,
+				7,
 				// Блок с операциями.
 				// Идентификатор.
 				Rule::Chain(2, TS('i'), NS('O')),
@@ -60,7 +60,9 @@ namespace GRB
 				// Идентификатор.
 				Rule::Chain(3, TS('b'), TS('i'), NS('O')),
 				// Литерал.
-				Rule::Chain(3, TS('b'), TS('l'), NS('O'))
+				Rule::Chain(3, TS('b'), TS('l'), NS('O')),
+				// Вызов функции.
+				Rule::Chain(6, TS('b'), TS('i'), TS('('), NS('C'), TS(')'), NS('O'))
 			),
 		Rule(
 				// Operations: {+ - * / | & ~}. (and == > < >= <=)?

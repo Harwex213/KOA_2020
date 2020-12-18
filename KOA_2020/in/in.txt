@@ -56,5 +56,4 @@ main
 
     resultString =  resultString + "Самое большое число!";
     cWriteLine(resultString);
- 	return 0;
 }

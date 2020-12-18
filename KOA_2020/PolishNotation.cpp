@@ -3,7 +3,7 @@
 
 namespace PolishNotation
 {
-	void TransformToPolishNotation(LT::LexTable& lexTable, IT::IdTable& idTable)
+	void TransformToPolishNotation(MFST::Mfst& mfst, LT::LexTable& lexTable, IT::IdTable& idTable)
 	{
 		// Если в параметрах поставить просто арифмитическое действие, то сломается
 
