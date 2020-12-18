@@ -2,6 +2,7 @@
 #include "LT.h"
 #include "IT.h"
 #include "Error.h"
+#include "MFST.h"
 // | Priority	| Operation |
 // | 0			| {			|
 // | 0			| }			|
@@ -210,7 +211,8 @@ namespace PolishNotation
 			lexTable.current_size = lexTable.table.size();
 		}
 	};
-	void TransformToPolishNotation(LT::LexTable& lextable, IT::IdTable& idtable);
+
+	void TransformToPolishNotation(MFST::Mfst& mfst, LT::LexTable& lexTable, IT::IdTable& idTable);
 	void PolishNotationExpression(int positionAfterAssignment, LT::LexTable& lextable, IT::IdTable& idtable);
 	void PolishNotationCondition(int positionAfterParenthesis, LT::LexTable& lextable, IT::IdTable& idtable);
 };

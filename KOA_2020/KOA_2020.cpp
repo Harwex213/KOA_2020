@@ -34,7 +34,7 @@ int wmain(int argc, wchar_t* argv[])
 		mfst.printRules(log);
 
 		// Polish Notation Stage.
-		PolishNotation::TransformToPolishNotation(lexTable, idTable);
+		PolishNotation::TransformToPolishNotation(mfst, lexTable, idTable);
 		Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
 		Log::WriteLogLexTable(log, lexTable);
 

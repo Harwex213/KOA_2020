@@ -3,9 +3,6 @@
 
 namespace GRB
 {
-	// Что можно добавить:
-	// 1) Объявление константы с инверсией.
-	// 2) ...
 	Greibach greibach(
 		NS('S'),
 		TS('$'),
@@ -18,7 +15,7 @@ namespace GRB
 				Rule::Chain(3, TS('d'), TS('l'), NS('S')),
 				Rule::Chain(8, TS('t'), TS('p'), TS('i'), TS('('), NS('P'), TS(')'), TS(';'), NS('S')),
 				Rule::Chain(13, TS('t'), TS('f'), TS('i'), TS('('), NS('P'), TS(')'), TS('{'), NS('I'), TS('r'), NS('E'), TS(';'), TS('}'), NS('S')),
-				Rule::Chain(6, TS('m'), TS('{'), NS('I'), TS(';'), TS('}'), NS('S')),
+				Rule::Chain(5, TS('m'), TS('{'), NS('I'), TS('}'), NS('S')),
 				Rule::Chain()
 			),
 		Rule(
