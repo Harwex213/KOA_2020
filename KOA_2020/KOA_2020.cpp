@@ -38,6 +38,8 @@ int wmain(int argc, wchar_t* argv[])
 		Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
 		Log::WriteLogLexTable(log, lexTable);
 
+		// Semantic Stage.
+
 		//// Code Generation Stage.
 		//CodeGeneration::Start(mfst, lexTable, idTable);
 

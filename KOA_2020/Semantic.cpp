@@ -6,6 +6,5 @@ namespace Semantic
 	{
 		IT::Entry tempIdEntry = IT::GetEntry(idTable, entry.idxTI);
 		return tempIdEntry.functionParamsCount == deFactoParamsCount;
-			
 	}
 }

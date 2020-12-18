@@ -9,15 +9,24 @@ namespace PolishNotation
 
 		for (auto i = mfst.storestate.begin(); i != mfst.storestate.end(); i++)
 		{
-			// Если нашли Инструкцию.
-			if (i->nrule == )
+			// Если нашли правило с Инструкцией.
+			if (i->nrule == I_RULE)
 			{
-
+				// Смотрим по подходящей цепочке.
+				switch (i->nrulechain)
+				{
+				case Irule_IF_ELSE:
+				case Irule_IF:
+					PolishNotationCondition(i->lenta_position + 1, lexTable, idTable);
+					break;
+				case Irule_INIT:
+					PolishNotationExpression(i->lenta_position + 2, lexTable, idTable);
+					break;
+				case Irule_DECL_AND_INIT:
+					PolishNotationExpression(i->lenta_position + 3, lexTable, idTable);
+					break;
+				}
 			}
-			if (lexTable.table[i].lexema == LEX_ASSIGNMENT)
-				PolishNotationExpression(i + 1, lexTable, idTable);
-			if (lexTable.table[i].lexema == LEX_WHILE || lexTable.table[i].lexema == LEX_IF)
-				PolishNotationCondition(i + 1, lexTable, idTable);
 		}
 	}
 

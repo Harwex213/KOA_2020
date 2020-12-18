@@ -1,4 +1,4 @@
------ Протокол -----  Дата: 18.12.2020 22:34:19 ----- 
+----- Протокол -----  Дата: 18.12.2020 23:03:39 ----- 
 
 |Params|
 ID Name                            idx First LE                       Visibility Init                    DataType                           Value UINT                         Value FLOAT                        Value BOOL                         Value STRING
