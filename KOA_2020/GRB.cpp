@@ -24,7 +24,7 @@ namespace GRB
 				Rule::Chain(11, TS('t'), TS('f'), TS('i'), TS('('), NS('P'), TS(')'), TS('{'), NS('I'), NS('R'), TS('}'), NS('S')),
 				// Main.
 				// 3
-				Rule::Chain(5, TS('m'), TS('{'), NS('I'), TS('}'), NS('S')),
+				Rule::Chain(6, TS('m'), TS('{'), NS('I'), NS('R'), TS('}'), NS('S')),
 				Rule::Chain()
 			),
 		Rule(
@@ -79,10 +79,15 @@ namespace GRB
 				// 3
 				NS('R'),
 				GRB_ERROR_SERIES + 6,
-				1,
-				Rule::Chain(3, TS('r'), NS('E'), TS(';'))
+				4,
+				Rule::Chain(3, TS('r'), TS('i'), TS(';')),
+				Rule::Chain(3, TS('r'), TS('l'), TS(';')),
+				// Identificator with Unary.
+				Rule::Chain(4, TS('r'), TS('b'), TS('i'), TS(';')),
+				// Literal with Unary.
+				Rule::Chain(4, TS('r'), TS('b'), TS('l'), TS(';'))
 			),
-			Rule(
+		Rule(
 				// Expressions without Operations.
 				// 4
 				NS('N'),

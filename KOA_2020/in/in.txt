@@ -20,44 +20,9 @@ main
     cWriteLine("-----------------------------------------------");
     string resultString;
     bool xIsTheBiggest;
-    if(xIsTheBiggest)
-    {
-        cWriteLine("Super");
-    }
-    bool yIsTheBiggest;
-    bool zIsTheBiggest;
-    uint x = GetRandom(0, 2077);
-    uint y = GetRandom(0, 2077);
-    uint z = GetRandom(0, 4035e);
-    string startInfo = "Найти максимальное среди чисел: " + UintToChar(x) + ", " + UintToChar(x) + ", "  + UintToChar(x);
-    cWriteLine(startInfo);
-    if(x * 7 + GetRandom(0, 2077) > y)
-    {
-       if(x > z)
-       {
-            xIsTheBiggest = true;
-       }
-       else
-       {
-            zIsTheBiggest = true;
-       }
-    }
-    else
-    {
-        if(y > z)
-        {
-            yIsTheBiggest = true;
-        }
-        else
-        {
-            zIsTheBiggest = true;
-        }
-    }
 
-    if(xIsTheBiggest) { resultString =  UintToChar(x); }
-    if(yIsTheBiggest) { resultString =  UintToChar(y); }
-    if(zIsTheBiggest) { resultString =  UintToChar(z); }
+    resultString = "Havok" + "Joker";
+    uint j = 100 + 70 + GetRandom(1,2);
 
-    resultString =  resultString + "Самое большое число!";
-    cWriteLine(resultString);
+    return 0;
 }

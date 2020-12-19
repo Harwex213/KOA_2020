@@ -42,7 +42,7 @@ int wmain(int argc, wchar_t* argv[])
 		//Semantic::Start(mfst, lexTable, idTable);
 
 		//// Code Generation Stage.
-		//CodeGeneration::Start(mfst, lexTable, idTable);
+		CodeGeneration::Start(mfst, lexTable, idTable, parm.out);
 
 		// Clear RAM Stage.
 		LT::Delete(lexTable);
