@@ -4,11 +4,12 @@ namespace Semantic
 {
 	void Start(MFST::Mfst& mfst, LT::LexTable& lexTable, IT::IdTable& idTable)
 	{
+		SemanticData data;
 		for (auto i = mfst.storestate.begin(); i != mfst.storestate.end(); i++)
 		{
 			if (i->nrule == I_RULE)
 			{
-				int position = i->nrulechain;
+				int position = i->lenta_position;
 				switch (i->nrulechain)
 				{
 				case Irule_CALL_FUNCTION:
@@ -23,15 +24,11 @@ namespace Semantic
 				case Irule_IF_ELSE:
 				case Irule_IF:
 					while (lexTable.table[position].lexema != LEX_BRACES_LEFT)
+					{
+						data.EntryIdStack.push_back(idTable.table[lexTable.table[position].idxTI]);
 						position++;
-					if (lexTable.table[position].operationType == LT::NONE)
-					{
-
 					}
-					else
-					{
 
-					}
 					break;
 				}
 			}

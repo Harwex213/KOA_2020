@@ -1,6 +1,6 @@
 #pragma once
 
-//#define GENERATION_DEBUG
+#define GENERATION_DEBUG
 
 #define S_RULE					0
 
@@ -87,7 +87,7 @@
 #define INVOKE_FUNCTION(name) "\t invoke " + name
 #define ADD_FUNCTION_PARAM(name) ", " + name
 #define PUSH_RESULT_FUNCTION "\t push eax\n"
-
+//
 //namespace CodeGeneration
 //{
 //	struct CodeHead

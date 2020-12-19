@@ -19,7 +19,7 @@ main
     cWriteLine(GetRandom(0, 2077+201));
     cWriteLine("-----------------------------------------------");
     string resultString;
-    bool xIsTheBiggest;
+    bool xIsTheBiggest = 10 > 5 > 7;
     if(xIsTheBiggest)
     {
         cWriteLine("Super");
