@@ -151,7 +151,7 @@ namespace PolishNotation
 
 				// Смотрим -> фунция или переменная.
 				IT::Entry tempIdEntry = IT::GetEntry(idTable, data.tempLexEntry.idxTI);
-				if (tempIdEntry.idType == IT::FUNCTION)
+				if (tempIdEntry.idType == IT::FUNCTION || tempIdEntry.idType == IT::PROTOTYPE)
 				{
 					// Мы в параметрах.
 					data.stackCFunc.isParams = true;

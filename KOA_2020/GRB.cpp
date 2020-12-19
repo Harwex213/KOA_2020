@@ -6,7 +6,7 @@ namespace GRB
 	Greibach greibach(
 		NS('S'),
 		TS('$'),
-		10,
+		12,
 		Rule(
 				// Functions and Main.
 				// 0
@@ -32,7 +32,7 @@ namespace GRB
 				// 1
 				NS('I'),
 				GRB_ERROR_SERIES + 2,
-				8,
+				7,
 				// Declaration and assignment.
 				// 0
 				Rule::Chain(6, TS('t'), TS('i'), TS('='), NS('E'), TS(';'), NS('I')),
@@ -47,12 +47,10 @@ namespace GRB
 				Rule::Chain(6, TS('i'), TS('('), NS('C'), TS(')'), TS(';'), NS('I')),
 				// if -> else
 				// 4
-				Rule::Chain(12, TS('q'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), TS('e'), TS('{'), NS('I'), TS('}'), NS('I')),
+				Rule::Chain(13, TS('q'), TS('('), NS('E'), NS('X'), TS(')'), TS('{'), NS('I'), TS('}'), TS('e'), TS('{'), NS('I'), TS('}'), NS('I')),
 				// if.
 				// 5
-				Rule::Chain(8, TS('q'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
-				// Цикл
-				Rule::Chain(8, TS('w'), TS('('), NS('E'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
+				Rule::Chain(9, TS('q'), TS('('), NS('E'), NS('X'), TS(')'), TS('{'), NS('I'), TS('}'), NS('I')),
 				Rule::Chain()
 			),
 		Rule(
@@ -84,17 +82,45 @@ namespace GRB
 				1,
 				Rule::Chain(3, TS('r'), NS('E'), TS(';'))
 			),
+			Rule(
+				// Expressions without Operations.
+				// 4
+				NS('N'),
+				GRB_ERROR_SERIES + 3,
+				7,
+				// Identificator.
+				Rule::Chain(1, TS('i')),
+				// Literal.
+				Rule::Chain(1, TS('l')),
+				// Calling Function.
+				Rule::Chain(4, TS('i'), TS('('), NS('C'), TS(')')),
+				// Expression in Parenthesis.
+				Rule::Chain(3, TS('('), NS('E'), TS(')')),
+				// Identificator with Unary.
+				Rule::Chain(2, TS('b'), TS('i')),
+				// Literal with Unary.
+				Rule::Chain(2, TS('b'), TS('l')),
+				// Calling Function with Unary.
+				Rule::Chain(2, TS('b'), TS('i'))
+			),
 		Rule(
 				// Operations.
 				NS('O'),
 				GRB_ERROR_SERIES + 3,
-				3,
+				2,
 				// Binaries: {+ - * / | &}
 				Rule::Chain(3, TS('v'), NS('U'), NS('E')),
-				// Comparisons { == != > < >= <=}
-				Rule::Chain(3, TS('g'), NS('U'), NS('E')),
 				Rule::Chain()
 			),
+		Rule(
+				// Operations.
+				NS('X'),
+				GRB_ERROR_SERIES + 3,
+				2,
+				// Comparisons: { > < >= <= }
+				Rule::Chain(3, TS('g'), NS('U'), NS('E')),
+				Rule::Chain()
+		),
 		Rule(
 				// Unary Operations
 				NS('U'),

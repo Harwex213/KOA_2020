@@ -16,10 +16,10 @@ string function GetCurrentTime()
 
 main
 {
-    cWriteLine(GetRandom(0, 2077+201));
+    cWriteLine(GetCurrentTime());
     cWriteLine("-----------------------------------------------");
     string resultString;
-    bool xIsTheBiggest = 10 > 5 > 7;
+    bool xIsTheBiggest;
     if(xIsTheBiggest)
     {
         cWriteLine("Super");
@@ -28,10 +28,10 @@ main
     bool zIsTheBiggest;
     uint x = GetRandom(0, 2077);
     uint y = GetRandom(0, 2077);
-    uint z = GetRandom(0, 2077);
+    uint z = GetRandom(0, 4035e);
     string startInfo = "Найти максимальное среди чисел: " + UintToChar(x) + ", " + UintToChar(x) + ", "  + UintToChar(x);
     cWriteLine(startInfo);
-    if(x > y)
+    if(x * 7 + GetRandom(0, 2077) > y)
     {
        if(x > z)
        {
