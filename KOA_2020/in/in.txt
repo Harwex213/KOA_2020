@@ -16,7 +16,7 @@ string function GetCurrentTime()
 
 main
 {
-    cWriteLine(GetCurrentTime());
+    cWriteLine(GetRandom(0, 2077+201));
     cWriteLine("-----------------------------------------------");
     string resultString;
     bool xIsTheBiggest;

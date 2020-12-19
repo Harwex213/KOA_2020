@@ -39,7 +39,7 @@ int wmain(int argc, wchar_t* argv[])
 		Log::WriteLogLexTable(log, lexTable);
 
 		// Semantic Stage.
-		//Semantic::Start(mfst, lexTable, idTable);
+		Semantic::Start(mfst, lexTable, idTable);
 
 		//// Code Generation Stage.
 		//CodeGeneration::Start(mfst, lexTable, idTable);
