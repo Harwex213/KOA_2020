@@ -53,7 +53,7 @@ namespace Error
 		ERROR_ENTRY(144, "Ошибка в параметрах функции"),
 		ERROR_ENTRY(145, "Ошибка в параметрах вызываемой функции"), //done
 		ERROR_ENTRY(146, "Пропущена лексема окончания выражения"), //done
-		ERROR_ENTRY(147, "Функция должна возвращать параметр"), //done
+		ERROR_ENTRY(147, "Ошибка в возвращаемых параметрах"), //done
 		ERROR_ENTRY(148, "Ошибка в выражении: пропущена операция"), //done
 		ERROR_ENTRY_NODEF(149),
 		ERROR_ENTRY_NODEF10(150),	ERROR_ENTRY_NODEF10(160),

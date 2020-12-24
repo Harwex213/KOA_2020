@@ -4,13 +4,11 @@ string prototype GetTime();
 uint prototype cWrite(string str);
 uint prototype cWriteLine(string str);
 string prototype UintToChar(uint value);
-uint prototype CharToUint(string str);
 uint prototype GetRandom(uint min, uint max);
 
 string function GetCurrentTime()
 {
     string time = "Date: " + GetDate() + ". Time: " + GetTime() + ".";
-    uint x = CharToUint(GetDate());
     return time;
 }
 
@@ -20,9 +18,25 @@ main
     cWriteLine("-----------------------------------------------");
     string resultString;
     bool xIsTheBiggest;
+    bool yIsTheBiggest;
+    uint x = GetRandom(0, 2077);
+    uint y = GetRandom(0, 2077);
+    string startInfo = "Найти максимальное среди чисел: " + UintToChar(x) + ", " + UintToChar(y);
+    cWriteLine(startInfo);
+    if(x > y)
+    {
+            xIsTheBiggest = true;
+            xIsTheBiggest = true;
+    }
+    else
+    {
+            yIsTheBiggest = true;
+    }
 
-    resultString = "Havok" + "Joker";
-    uint j = 100 + 70 + GetRandom(1,2);
+    if(xIsTheBiggest) { resultString =  UintToChar(x); }
+    if(yIsTheBiggest) { resultString =  UintToChar(y); }
 
-    return 0;
+    resultString =  resultString + "Самое большое число!";
+    cWriteLine(resultString);
+ 	return 0;
 }
