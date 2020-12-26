@@ -31,8 +31,6 @@
 #define FUNC_CODE_INDEX			7
 #define FUNC_END_INDEX			8
 
-#define CALLING_VAR_COUNT			16
-
 #define IDX_MAIN	-2
 #define IDX_NONE	-1
 #define IDX_FUNC	1
@@ -77,7 +75,9 @@
 #define INSERT_DWORD				", : DWORD"
 
 #define VAR_NAME(var_name) "V_" + var_name
-#define PVAR_NAME(id) "PV_" + std::to_string(id)
+
+#define CALLING_VAR_COUNT			16
+#define TEMP_VAR_NAME(id) "PV_" + std::to_string(id)
 
 #define INSERT_VARS(name, type, value) name + "\t " + type + "\t" + value
 #define STR_END	", 0"
@@ -131,7 +131,7 @@
 #define PUSH_RESULT_FUNCTION "\t push eax\n"
 
 #define IF_CONDITION		"\t pop eax\n" + "\t pop ebx\n" + "\t cmp eax, ebx\n"
-#define IF_CONDITION_BOOL	"\t pop eax\n" + "\t cmp eax, 0h"
+#define IF_CONDITION_BOOL	"\t pop eax\n" + "\t cmp eax, 0h\n"
 #define ELSE_BODY(label)			"\t jmp " + label + "\n"
 #define IF_BODY(label)				label + ":\n"
 #define IF_END(label)				label + ":\n"
@@ -178,257 +178,23 @@ namespace CodeGeneration
 		int dwordTemp = CALLING_VAR_COUNT / 2 - 1;
 		int byteTemp = CALLING_VAR_COUNT;
 
-		void ResetPVars()
-		{
-			dwordTemp = CALLING_VAR_COUNT / 2 - 1;
-			byteTemp = CALLING_VAR_COUNT;
-		}
-
-		void SetPVarsToInvoke()
-		{
-			dwordTemp = 0;
-			byteTemp = CALLING_VAR_COUNT / 2;
-		}
-
-		std::string IdNameToString(int id)
-		{
-			return VAR_NAME(std::to_string(id));
-		}
-
-		std::string IdDataTypeToString(IT::Entry& entryId)
-		{
-			switch (entryId.idDataType)
-			{
-			case IT::UINT:
-				return "DWORD";
-			case IT::STRING:
-				return "BYTE";
-			case IT::BOOL:
-				return "BYTE";
-			}
-		}
-
-		std::string ValueToString(IT::Entry& entryId)
-		{
-			switch (entryId.idDataType)
-			{
-			case IT::UINT:
-				return std::to_string(entryId.value.vUint);
-			case IT::STRING:
-				if (entryId.idType != IT::LITERAL)
-					return "512 DUP(0)";
-				return entryId.value.vString.string;
-			case IT::BOOL:
-				return std::to_string(entryId.value.vBool);
-			}
-		}
-
-		void PushVar(IT::Entry& entryId, int id)
-		{
-			switch (entryId.idDataType)
-			{
-			case IT::UINT:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + PUSH(IdNameToString(id));
-				break;
-			case IT::BOOL:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + PUSHZX(IdNameToString(id));
-				break;
-			case IT::STRING:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + PUSHSTR(IdNameToString(id));
-				break;
-			}
-		}
-
-		void PopVar(IT::Entry& entryId, int id)
-		{
-			switch (entryId.idDataType)
-			{
-			case IT::UINT:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + POP(IdNameToString(id));
-				break;
-			case IT::BOOL:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + POPZX(IdNameToString(id));
-				break;
-			case IT::STRING:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + POPSTR(IdNameToString(id));
-				break;
-			}
-		}
-
-		void RetVar(IT::Entry& entryId, int id)
-		{
-			switch (entryId.idDataType)
-			{
-			case IT::UINT:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + RET(IdNameToString(id));
-				break;
-			case IT::BOOL:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + RETZX(IdNameToString(id));
-				break;
-			case IT::STRING:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + RETSTR(IdNameToString(id));
-				break;
-			}
-		}
-
-		void PushPVar(IT::Entry& entryId)
-		{
-			switch (entryId.idDataType)
-			{
-			case IT::UINT:
-			case IT::STRING:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + ADD_INVOKE_PARAM(PVAR_NAME(++dwordTemp));
-				break;
-			case IT::BOOL:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + ADD_INVOKE_PARAM(PVAR_NAME(++byteTemp));
-				break;
-			}
-		}
-
-		void PopPVar(IT::Entry& entryId)
-		{
-			switch (entryId.idDataType)
-			{
-			case IT::UINT:
-			case IT::STRING:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + POP(PVAR_NAME(dwordTemp--));
-				break;
-			case IT::BOOL:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + POPZX(PVAR_NAME(byteTemp--));
-				break;
-			}
-		}
-
-		void WriteComment(int indexOfBlock, const char* comment)
-		{
-			switch (indexOfBlock)
-			{
-			case HEAD_BEGIN_INDEX:
-				head.begin = head.begin + COMMENT(comment);
-				break;
-			case HEAD_LIBS_INDEX:
-				head.libs = head.libs + COMMENT(comment);
-				break;
-			case HEAD_PROTOS_INDEX:
-				head.protos = head.protos + COMMENT(comment);
-				break;
-			case CONSTS_INDEX:
-				consts = consts + COMMENT(comment);
-				break;
-			case DATA_INDEX:
-				data = data + COMMENT(comment);
-				break;
-			case FUNC_BEGIN_INDEX:
-				entryFunctionData.funcBegin = entryFunctionData.funcBegin + COMMENT(comment);
-				break;
-			case FUNC_CODE_INDEX:
-				entryFunctionData.funcCode = entryFunctionData.funcCode + COMMENT(comment);
-				break;
-			case FUNC_END_INDEX:
-				entryFunctionData.funcEnd = entryFunctionData.funcEnd + COMMENT(comment);
-				break;
-			}
-		}
-
-		void FillStandartLines()
-		{
-			head.begin = head.begin + STANDART_HEAD_BEGIN;
-			head.begin = head.begin + STACK(4096);
-			head.libs = head.libs + STANDART_HEAD_LIBS;
-			head.protos = head.protos + STANDART_HEAD_PROTOS;
-			consts = consts + STANDART_CONST_BEGIN;
-			data = data + STANDART_DATA_BEGIN;
-			for (int i = 0; i < CALLING_VAR_COUNT / 2; i++)
-			{
-				data = data + INSERT_VARS(PVAR_NAME(i), "DWORD", "?");
-				data = data + NEWLINE;
-			}
-			for (int i = CALLING_VAR_COUNT / 2; i < CALLING_VAR_COUNT; i++)
-			{
-				data = data + INSERT_VARS(PVAR_NAME(i), "BYTE", "?");
-				data = data + NEWLINE;
-			}
-			data = data + STANDART_VARS;
-		}
-
-		void FillDataAndProtos(IT::IdTable& idTable, LT::LexTable& lexTable)
-		{
-			WriteComment(HEAD_PROTOS_INDEX, "----- User and Libs Function Protos -----");
-			for (int i = 0; i < idTable.current_size; i++)
-			{
-				switch (idTable.table[i].idType)
-				{
-				case IT::FUNCTION:
-					head.protos = head.protos + INSERT_FUNCTION_PROTO(idTable.table[i].idName);
-					if (idTable.table[i].functionParamsCount > 0)
-						head.protos = head.protos + INSERT_FIRST_DWORD;
-					for (int j = 1; j < idTable.table[i].functionParamsCount; j++)
-						head.protos = head.protos + INSERT_DWORD;
-					head.protos = head.protos + NEWLINE;
-					break;
-				case IT::VARIABLE:
-					data = data + INSERT_VARS(IdNameToString(i), IdDataTypeToString(idTable.table[i]), ValueToString(idTable.table[i]));
-					data = data + NEWLINE;
-					break;
-				case IT::LITERAL:
-					consts = consts + INSERT_VARS(IdNameToString(i), IdDataTypeToString(idTable.table[i]), ValueToString(idTable.table[i]));
-					if (idTable.table[i].idDataType == IT::STRING)
-						consts = consts + STR_END;
-					consts = consts + NEWLINE;
-					break;
-				}
-			}
-			WriteComment(HEAD_PROTOS_INDEX, "----- End User and Libs Function Protos -----");
-		}
-
-		void ChooseSChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable)
-		{
-			IT::Entry entryId;
-			switch (nrulechain)
-			{
-			case Srule_INCLUDE:
-				// Доходим до литерала.
-				while (lexTable.table[lexTablePosition].lexema != LEX_LITERAL)
-					lexTablePosition++;
-				// Присваиваем в tempEntry путь библиотеки.
-				entryId = idTable.table[lexTable.table[lexTablePosition].idxTI];
-				// Подключаем библиотеку.
-				head.libs = head.libs + INCLUDE_LIB(ValueToString(entryId));
-				break;
-			case Srule_FUNCTION:
-			{
-				// Ставим, что функция была.
-				FunctionWas = true;
-				// Доходим до идентификатора (функции).
-				while (lexTable.table[lexTablePosition].lexema != LEX_IDENTIFICATOR)
-					lexTablePosition++;
-				// Присваиваем в tempEntry идентификатор функции.
-				entryId = idTable.table[lexTable.table[lexTablePosition].idxTI];
-				// Ставим id функции, в которой находимся.
-				entryFunctionData.idxFunction = lexTable.table[lexTablePosition].idxTI;
-				// Начинаем писать функцию.
-				entryFunctionData.funcBegin = entryFunctionData.funcBegin + STANDART_FUNC_BEGIN(entryId.idName);
-				// Пишем параметры функции.
-				entryId.paramsIdx.reverse();
-				auto idParam = entryId.paramsIdx.begin();
-				while (entryId.functionParamsCount > 0 && idParam != entryId.paramsIdx.end())
-				{
-					entryFunctionData.funcBegin = entryFunctionData.funcBegin + INSERT_FUNCTION_PARAM(IdNameToString(*idParam), IdDataTypeToString(idTable.table[*idParam]));
-					idParam++;
-				}
-				entryFunctionData.funcBegin = entryFunctionData.funcBegin + NEWLINE;
-				break;
-			}
-			case Srule_MAIN:
-				// Ставим, что функция была.
-				FunctionWas = true;
-				// Начинаем писать мейн.
-				entryFunctionData.funcBegin = entryFunctionData.funcBegin + MAIN_BEGIN;
-				// Ставим id мейна.
-				entryFunctionData.idxFunction = IDX_MAIN;
-				break;
-			}
-		}
+		void WriteComment(int indexOfBlock, const char* comment);
+		// Initial actions.
+		void FillStandartLines();
+		void FillDataAndProtos(IT::IdTable& idTable, LT::LexTable& lexTable);
+		// Action on Vars.
+		void PushVar(IT::Entry& entryId, int id);
+		void PopVar(IT::Entry& entryId, int id);
+		void RetVar(IT::Entry& entryId, int id);
+		// Action on Temp Vars (required for correct function call)
+		void ResetTempVars();
+		void SetTempVarsToInvoke();
+		void PushTempVar(IT::Entry& entryId);
+		void PopTempVar(IT::Entry& entryId);
+		// Code Generation Actions.
+		void StartCode(LT::LexTable& lexTable, IT::IdTable& idTable);
+		void ChooseConstructionChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable);
+		void WriteCodeGeneration();
 
 		void ExecuteOperation(LT::OperationType operationType, IT::Entry& entry)
 		{
@@ -487,7 +253,7 @@ namespace CodeGeneration
 			return check;
 		}
 
-		void ChooseIChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable)
+		void ChooseInstructionChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable)
 		{
 			// Выводим в комментарий разбираемую строку.
 			std::string tempString;
@@ -524,13 +290,13 @@ namespace CodeGeneration
 						{
 							// Снимаем во временные переменные данные.
 							for (int k = 0; k < idTable.table[lexTable.table[i].idxTI].functionParamsCount; k++)
-								PopPVar(idTable.table[lexTable.table[i].idxTI]);
+								PopTempVar(idTable.table[lexTable.table[i].idxTI]);
 							// Вызываем функцию через Invoke.
 							entryFunctionData.funcCode = entryFunctionData.funcCode + INVOKE_FUNCTION(idTable.table[lexTable.table[i].idxTI].idName);
 							// Пишем её параметры в обратной порядке.
 							for (int k = 0; k < idTable.table[lexTable.table[i].idxTI].functionParamsCount; k++)
-								PushPVar(idTable.table[lexTable.table[i].idxTI]);
-							ResetPVars();
+								PushTempVar(idTable.table[lexTable.table[i].idxTI]);
+							ResetTempVars();
 							entryFunctionData.funcCode = entryFunctionData.funcCode + NEWLINE;
 							bool checkCWrite = true;
 							if ((strcmp(idTable.table[lexTable.table[i].idxTI].idName, CWRITE_FUNC) == 0) ||
@@ -573,13 +339,13 @@ namespace CodeGeneration
 						{
 							// Снимаем во временные переменные данные.
 							for (int k = 0; k < idTable.table[lexTable.table[i].idxTI].functionParamsCount; k++)
-								PopPVar(idTable.table[lexTable.table[i].idxTI]);
+								PopTempVar(idTable.table[lexTable.table[i].idxTI]);
 							// Вызываем функцию через Invoke.
 							entryFunctionData.funcCode = entryFunctionData.funcCode + INVOKE_FUNCTION(idTable.table[lexTable.table[i].idxTI].idName);
 							// Пишем её параметры в обратной порядке.
 							for (int k = 0; k < idTable.table[lexTable.table[i].idxTI].functionParamsCount; k++)
-								PushPVar(idTable.table[lexTable.table[i].idxTI]);
-							ResetPVars();
+								PushTempVar(idTable.table[lexTable.table[i].idxTI]);
+							ResetTempVars();
 							entryFunctionData.funcCode = entryFunctionData.funcCode + NEWLINE;
 							bool checkCWrite = true;
 							if ((strcmp(idTable.table[lexTable.table[i].idxTI].idName, CWRITE_FUNC) == 0) ||
@@ -619,13 +385,13 @@ namespace CodeGeneration
 						{
 							// Снимаем во временные переменные данные.
 							for (int k = 0; k < idTable.table[lexTable.table[i].idxTI].functionParamsCount; k++)
-								PopPVar(idTable.table[lexTable.table[i].idxTI]);
+								PopTempVar(idTable.table[lexTable.table[i].idxTI]);
 							// Вызываем функцию через Invoke.
 							entryFunctionData.funcCode = entryFunctionData.funcCode + INVOKE_FUNCTION(idTable.table[lexTable.table[i].idxTI].idName);
 							// Пишем её параметры в обратной порядке.
 							for (int k = 0; k < idTable.table[lexTable.table[i].idxTI].functionParamsCount; k++)
-								PushPVar(idTable.table[lexTable.table[i].idxTI]);
-							ResetPVars();
+								PushTempVar(idTable.table[lexTable.table[i].idxTI]);
+							ResetTempVars();
 							entryFunctionData.funcCode = entryFunctionData.funcCode + NEWLINE;
 							bool checkCWrite = true;
 							if ((strcmp(idTable.table[lexTable.table[i].idxTI].idName, CWRITE_FUNC) == 0) ||
@@ -698,10 +464,10 @@ namespace CodeGeneration
 								{
 								case IT::UINT:
 								case IT::STRING:
-									ifBody = ifBody + POP(PVAR_NAME(dwordTemp--));
+									ifBody = ifBody + POP(TEMP_VAR_NAME(dwordTemp--));
 									break;
 								case IT::BOOL:
-									ifBody = ifBody + POPZX(PVAR_NAME(byteTemp--));
+									ifBody = ifBody + POPZX(TEMP_VAR_NAME(byteTemp--));
 									break;
 								}
 							}
@@ -714,14 +480,14 @@ namespace CodeGeneration
 								{
 								case IT::UINT:
 								case IT::STRING:
-									ifBody = ifBody + ADD_INVOKE_PARAM(PVAR_NAME(++dwordTemp));
+									ifBody = ifBody + ADD_INVOKE_PARAM(TEMP_VAR_NAME(++dwordTemp));
 									break;
 								case IT::BOOL:
-									ifBody = ifBody + ADD_INVOKE_PARAM(PVAR_NAME(++byteTemp));
+									ifBody = ifBody + ADD_INVOKE_PARAM(TEMP_VAR_NAME(++byteTemp));
 									break;
 								}
 							}
-							ResetPVars();
+							ResetTempVars();
 							ifBody = ifBody + NEWLINE;
 							bool checkCWrite = true;
 							if ((strcmp(idTable.table[lexTable.table[i].idxTI].idName, CWRITE_FUNC) == 0) ||
@@ -800,10 +566,10 @@ namespace CodeGeneration
 								{
 								case IT::UINT:
 								case IT::STRING:
-									elseBody = elseBody + POP(PVAR_NAME(dwordTemp--));
+									elseBody = elseBody + POP(TEMP_VAR_NAME(dwordTemp--));
 									break;
 								case IT::BOOL:
-									elseBody = elseBody + POPZX(PVAR_NAME(byteTemp--));
+									elseBody = elseBody + POPZX(TEMP_VAR_NAME(byteTemp--));
 									break;
 								}
 							}
@@ -816,14 +582,14 @@ namespace CodeGeneration
 								{
 								case IT::UINT:
 								case IT::STRING:
-									elseBody = elseBody + ADD_INVOKE_PARAM(PVAR_NAME(++dwordTemp));
+									elseBody = elseBody + ADD_INVOKE_PARAM(TEMP_VAR_NAME(++dwordTemp));
 									break;
 								case IT::BOOL:
-									elseBody = elseBody + ADD_INVOKE_PARAM(PVAR_NAME(++byteTemp));
+									elseBody = elseBody + ADD_INVOKE_PARAM(TEMP_VAR_NAME(++byteTemp));
 									break;
 								}
 							}
-							ResetPVars();
+							ResetTempVars();
 							elseBody = elseBody + NEWLINE;
 							bool checkCWrite = true;
 							if ((strcmp(idTable.table[lexTable.table[i].idxTI].idName, CWRITE_FUNC) == 0) ||
@@ -893,82 +659,10 @@ namespace CodeGeneration
 			}
 			}
 		}
-
-		void StartCode(LT::LexTable& lexTable, IT::IdTable& idTable)
-		{
-			for (auto i = storeState.begin(); i != storeState.end(); i++)
-			{
-				lexTablePosition = i->lenta_position;
-				switch (i->nrule)
-				{
-				case S_RULE:
-					ChooseSChain(i->nrulechain, lexTable, idTable);
-					break;
-				case I_RULE:
-					ChooseIChain(i->nrulechain, lexTable, idTable);
-					break;
-				case R_RULE:
-				{
-					lexTablePosition++;
-					// Проверяем. Если -2 => был мейн. Если нет, была просто функция.
-					switch (entryFunctionData.idxFunction)
-					{
-					case IDX_MAIN:
-						PushVar(idTable.table[lexTable.table[lexTablePosition].idxTI], lexTable.table[lexTablePosition].idxTI);
-						entryFunctionData.funcEnd = entryFunctionData.funcEnd + MAIN_END;
-						break;
-					case IDX_NONE:
-						break;
-					default:
-						RetVar(idTable.table[lexTable.table[lexTablePosition].idxTI], lexTable.table[lexTablePosition].idxTI);
-						entryFunctionData.funcEnd = entryFunctionData.funcEnd + STANDART_FUNC_END(idTable.table[entryFunctionData.idxFunction].idName);
-						break;
-					}
-					// Заносим функцию в вектор.
-					codeArray.push_back(entryFunctionData);
-					currentFunction++;
-					// Очищаем данные о функции.
-					entryFunctionData.funcBegin.clear();
-					entryFunctionData.funcCode.clear();
-					entryFunctionData.funcEnd.clear();
-					entryFunctionData.idxFunction = IDX_NONE;
-					break;
-				}
-				default:
-					break;
-				}
-			}
-		}
-
-		void WriteCodeGeneration()
-		{
-			time_t rawtime;
-			struct tm timeinfo;			//структура хранящая текущее время
-			char buffer[PARM_MAX_SIZE];
-
-			time(&rawtime);					//текущая дата в секундах
-			localtime_s(&timeinfo, &rawtime);	//текущее локальное время, представленное в структуре
-
-			*streamOut << "; Генерация выполнена успешно. ";
-			strftime(buffer, 300, "Дата: %d.%m.%Y %H:%M:%S", &timeinfo);
-			*streamOut << buffer << endl;
-			*streamOut << head.begin;
-			*streamOut << head.libs;
-			*streamOut << head.protos;
-			*streamOut << consts;
-			*streamOut << data;
-			*streamOut << codeBegin;
-			for (unsigned int i = 0; i < codeArray.size(); i++)
-			{
-				*streamOut << codeArray[i].funcBegin;
-				*streamOut << codeArray[i].funcCode;
-				*streamOut << codeArray[i].funcEnd;
-			}
-			*streamOut << codeEnd;
-
-			streamOut->close();
-		}
 	};
 
 	void Start(MFST::Mfst& mfst, LT::LexTable& lexTable, IT::IdTable& idTable, wchar_t outfile[]);
+	std::string IdNameToString(int id);
+	std::string IdDataTypeToString(IT::Entry& entryId);
+	std::string ValueToString(IT::Entry& entryId);
 }

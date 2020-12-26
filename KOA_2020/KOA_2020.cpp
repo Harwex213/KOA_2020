@@ -11,7 +11,7 @@ int wmain(int argc, wchar_t* argv[])
 
 		Parm::PARM parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log, parm.logLexTable, parm.logIdTable, parm.logParsing);
-
+		
 		// Lex Analysis Stage.
 		In::IN in = In::getin(parm.in);
 		LT::LexTable lexTable;
