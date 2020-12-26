@@ -79,13 +79,9 @@ namespace GRB
 				// 3
 				NS('R'),
 				GRB_ERROR_SERIES + 7,
-				4,
+				2,
 				Rule::Chain(3, TS('r'), TS('i'), TS(';')),
-				Rule::Chain(3, TS('r'), TS('l'), TS(';')),
-				// Identificator with Unary.
-				Rule::Chain(4, TS('r'), TS('b'), TS('i'), TS(';')),
-				// Literal with Unary.
-				Rule::Chain(4, TS('r'), TS('b'), TS('l'), TS(';'))
+				Rule::Chain(3, TS('r'), TS('l'), TS(';'))
 			),
 		Rule(
 				// Arithmetic and Logic Binary Operations.
