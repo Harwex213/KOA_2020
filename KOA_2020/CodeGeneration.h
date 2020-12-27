@@ -96,12 +96,20 @@
 #define PUSH(name)		"\t push " + name + "\n"
 #define PUSHZX(name)	"\t movzx eax, " + name + "\n" + "\t push eax\n"
 #define PUSHSTR(name)	"\t push OFFSET " + name + "\n"
+
 #define	POP(name)		"\t pop " + name + "\n"
 #define	POPZX(name)		"\t pop eax\n" + "\t mov " + name + ", al\n"
 #define POPSTR(name)	"\t push OFFSET " + name + "\n\t call AssignmentString\n"
-#define RET(name)		"\t mov eax, " + name + "\n"
-#define RETZX(name)		"\t movzx eax, " + name + "\n"
-#define RETSTR(name)	"\t mov eax, " + "OFFSET " + name + "\n"
+
+#define INVOKE_FUNCTION(name) "\t invoke " + name
+#define ADD_INVOKE_PARAM(name) ", " + name
+#define PUSH_RESULT_FUNCTION "\t push eax\n"
+
+#define IF_CONDITION		"\t pop eax\n" + "\t pop ebx\n" + "\t cmp eax, ebx\n"
+#define IF_CONDITION_BOOL	"\t pop eax\n" + "\t cmp eax, 0h\n"
+#define ELSE_LABEL			"ELSE_BLOCK_"
+#define END_LABEL			"END_BLOCK_"
+
 #define ADD				"\t pop eax\n" + "\t pop ebx\n" + "\t add eax, ebx\n" + "\t push eax\n"
 #define ADD_STR			"\t push OFFSET strTemp\n" + "\t call Concat\n" + "\t push eax\n"
 #define SUB				"\t pop eax\n" + "\t pop ebx\n" + "\t sub ebx, eax\n" + "\t push eax\n"
@@ -110,6 +118,7 @@
 #define BIT_OR			"\t pop eax\n" + "\t pop ebx\n" + "\t or  eax, ebx\n" + "\t push eax\n"
 #define BIT_AND			"\t pop eax\n" + "\t pop ebx\n" + "\t and eax, ebx\n" + "\t push eax\n"
 #define BIT_NOT			"\t pop eax\n" + "\t not eax\n" + "\t push eax\n"
+
 #define EQU(label)		"\t je " + label + "\n"
 #define NOT_EQU(label)	"\t jne " + label + "\n"
 #define MORE(label)		"\t ja " + label + "\n"
@@ -118,15 +127,9 @@
 #define LESS_EQU(label)	"\t jbe " + label + "\n"
 #define BOOL(label)		"\t je " + label + "\n"
 
-#define INVOKE_FUNCTION(name) "\t invoke " + name
-#define ADD_INVOKE_PARAM(name) ", " + name
-#define PUSH_RESULT_FUNCTION "\t push eax\n"
-
-#define IF_CONDITION		"\t pop eax\n" + "\t pop ebx\n" + "\t cmp eax, ebx\n"
-#define IF_CONDITION_BOOL	"\t pop eax\n" + "\t cmp eax, 0h\n"
-#define ELSE_BODY(label)			"\t jmp " + label + "\n"
-#define IF_BODY(label)				label + ":\n"
-#define IF_END(label)				label + ":\n"
+#define RET(name)		"\t mov eax, " + name + "\n"
+#define RETZX(name)		"\t movzx eax, " + name + "\n"
+#define RETSTR(name)	"\t mov eax, " + "OFFSET " + name + "\n"
 
 namespace CodeGeneration
 {
@@ -149,14 +152,31 @@ namespace CodeGeneration
 		std::string funcCode;
 		std::string funcEnd;
 
+		int currentIf = 0;
+		int dwordTempVar = DWORD_TEMP_VAR_INITAL_INDEX;
+		int byteTempVar = BYTE_TEMP_VAR_INITAL_INDEX;
+
+		// Additional Actions.
+		void WriteLineToGenerate(LT::LexTable& lexTable, int lexTablePosition);
 		// Action on Vars.
 		void PushVar(IT::Entry& entryId, int id);
 		void PopVar(IT::Entry& entryId, int id);
 		void RetVar(IT::Entry& entryId, int id);
-		// Action on Functions.
+		// Action on Temp Vars (required for correct function call)
+		void ResetTempVars();
+		void PushTempVar(IT::Entry& entryId);
+		void PopTempVar(IT::Entry& entryId);
+		// Action on Functions.	
 		void StartFunction(IT::IdTable& idTable, int idTableId);
 		void StartMain();
+		void InvokeFunction(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
 		void EndFunction(IT::IdTable& idTable, int idTableId);
+		// Action on Expressions.
+		void ParseExpression(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
+		void ParseFunctionCall(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
+		void ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
+		void ExecuteOperation(LT::OperationType operationType, IT::Entry& entry);
+		void ExecuteCompare(LT::OperationType operationType, IT::Entry& entry);
 	};
 
 	struct AsmCode
@@ -167,9 +187,6 @@ namespace CodeGeneration
 
 		int currentFunction = 0;
 		FunctionData entryTempFunctionData;
-
-		int dwordTempVar = DWORD_TEMP_VAR_INITAL_INDEX;
-		int byteTempVar = BYTE_TEMP_VAR_INITAL_INDEX;
 
 		// Action on Functions.
 		void AddFunction(FunctionData entryFunctionData);
@@ -190,15 +207,10 @@ namespace CodeGeneration
 		// Initial actions.
 		void FillStandartLines();
 		void FillDataAndProtos(IT::IdTable& idTable, LT::LexTable& lexTable);
-		// Action on Temp Vars (required for correct function call)
-		void ResetTempVars();
-		void PushTempVar(IT::Entry& entryId);
-		void PopTempVar(IT::Entry& entryId);
 		// Code Generation Actions.
 		void StartCode(LT::LexTable& lexTable, IT::IdTable& idTable);
 		void ChooseConstructionChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable);
 		void ChooseInstructionChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable);
-		void ExecuteOperation(LT::OperationType operationType, IT::Entry& entry);
 		void WriteCodeGeneration();
 	};
 

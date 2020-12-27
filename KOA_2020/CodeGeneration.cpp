@@ -83,6 +83,24 @@ namespace CodeGeneration
 		}
 	}
 
+	// Write to ASM Comment the current parsed line
+	void FunctionData::WriteLineToGenerate(LT::LexTable& lexTable, int lexTablePosition)
+	{
+		int tempPosition = lexTablePosition;
+		std::string tempString = tempString + std::to_string(lexTable.table[tempPosition].line) + "\t ";
+		while (tempPosition + 1 != lexTable.table.size() && lexTable.table[tempPosition].line == lexTable.table[lexTablePosition].line)
+		{
+			if (lexTable.table[tempPosition].lexema == LEX_FILLER)
+			{
+				tempPosition++;
+				continue;
+			}
+			tempString += lexTable.table[tempPosition++].lexema;
+		}
+		char* s = (char*)tempString.c_str();
+		funcCode = funcCode + COMMENT(tempString);
+	}
+
 #pragma region InitialActions
 	void CodeGenerationData::FillStandartLines()
 	{
@@ -187,36 +205,36 @@ namespace CodeGeneration
 #pragma endregion
 
 #pragma region ActionOnTempVars
-	void CodeGenerationData::ResetTempVars()
+	void FunctionData::ResetTempVars()
 	{
-		code.dwordTempVar = DWORD_TEMP_VAR_INITAL_INDEX;
-		code.byteTempVar = BYTE_TEMP_VAR_INITAL_INDEX;
+		dwordTempVar = DWORD_TEMP_VAR_INITAL_INDEX;
+		byteTempVar = BYTE_TEMP_VAR_INITAL_INDEX;
 	}
 
-	void CodeGenerationData::PushTempVar(IT::Entry& entryId)
+	void FunctionData::PushTempVar(IT::Entry& entryId)
 	{
 		switch (entryId.idDataType)
 		{
 		case IT::UINT:
 		case IT::STRING:
-			code.entryTempFunctionData.funcCode = code.entryTempFunctionData.funcCode + ADD_INVOKE_PARAM(TEMP_VAR_NAME(++code.dwordTempVar));
+			funcCode = funcCode + ADD_INVOKE_PARAM(TEMP_VAR_NAME(++dwordTempVar));
 			break;
 		case IT::BOOL:
-			code.entryTempFunctionData.funcCode = code.entryTempFunctionData.funcCode + ADD_INVOKE_PARAM(TEMP_VAR_NAME(code.byteTempVar));
+			funcCode = funcCode + ADD_INVOKE_PARAM(TEMP_VAR_NAME(++byteTempVar));
 			break;
 		}
 	}
 
-	void CodeGenerationData::PopTempVar(IT::Entry& entryId)
+	void FunctionData::PopTempVar(IT::Entry& entryId)
 	{
 		switch (entryId.idDataType)
 		{
 		case IT::UINT:
 		case IT::STRING:
-			code.entryTempFunctionData.funcCode = code.entryTempFunctionData.funcCode + POP(TEMP_VAR_NAME(code.dwordTempVar--));
+			funcCode = funcCode + POP(TEMP_VAR_NAME(dwordTempVar--));
 			break;
 		case IT::BOOL:
-			code.entryTempFunctionData.funcCode = code.entryTempFunctionData.funcCode + POPZX(TEMP_VAR_NAME(code.byteTempVar--));
+			funcCode = funcCode + POPZX(TEMP_VAR_NAME(byteTempVar--));
 			break;
 		}
 	}
@@ -225,17 +243,14 @@ namespace CodeGeneration
 #pragma region ActionOnFunctions
 	void FunctionData::StartFunction(IT::IdTable& idTable, int idTableFunctionId)
 	{
-		IT::Entry entryId = idTable.table[idTableFunctionId];
+		IT::Entry entryFunctionId = idTable.table[idTableFunctionId];
 		idxFunction = idTableFunctionId;
 		// Writing the Beginning of Function.
-		funcBegin = funcBegin + STANDART_FUNC_BEGIN(entryId.idName);
+		funcBegin = funcBegin + STANDART_FUNC_BEGIN(entryFunctionId.idName);
 		// Writing Params of Function.
-		entryId.paramsIdx.reverse(); auto idParam = entryId.paramsIdx.begin();
-		while (entryId.functionParamsCount > 0 && idParam != entryId.paramsIdx.end())
-		{
+		entryFunctionId.paramsIdx.reverse();
+		for (auto idParam = entryFunctionId.paramsIdx.begin(); idParam != entryFunctionId.paramsIdx.end(); idParam++)
 			funcBegin = funcBegin + INSERT_FUNCTION_PARAM(IdNameToString(*idParam), IdDataTypeToString(idTable.table[*idParam]));
-			idParam++;
-		}
 		funcBegin = funcBegin + NEWLINE;
 	}
 
@@ -243,6 +258,22 @@ namespace CodeGeneration
 	{
 		funcBegin = funcBegin + MAIN_BEGIN;
 		idxFunction = IDX_MAIN;
+	}
+
+	void FunctionData::InvokeFunction(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition)
+	{
+		IT::Entry entryFunctionId = idTable.table[lexTable.table[lexTablePosition].idxTI];
+		// Pop data to Temp Vars.
+		entryFunctionId.paramsIdx.reverse();
+		for (auto idParam = entryFunctionId.paramsIdx.begin(); idParam != entryFunctionId.paramsIdx.end(); idParam++)
+			PopTempVar(idTable.table[*idParam]);
+		// Start writing the invoke of function.
+		funcCode = funcCode + INVOKE_FUNCTION(entryFunctionId.idName);
+		// Writing params of invoke.
+		for (auto idParam = entryFunctionId.paramsIdx.begin(); idParam != entryFunctionId.paramsIdx.end(); idParam++)
+			PushTempVar(idTable.table[*idParam]);
+		funcCode = funcCode + NEWLINE;
+
 	}
 
 	void FunctionData::EndFunction(IT::IdTable& idTable, int idTableId)
@@ -277,6 +308,98 @@ namespace CodeGeneration
 	}
 #pragma endregion
 
+#pragma region ActionOnExpressions
+	void FunctionData::ParseExpression(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition)
+	{
+		for (int i = lexTablePosition; lexTable.table[i].lexema != LEX_SEMICOLON; i++)
+		{
+			switch (lexTable.table[i].lexema)
+			{
+			case LEX_CALL_FUNCTION:
+				InvokeFunction(lexTable, idTable, i);
+				break;
+			case LEX_IDENTIFICATOR:
+			case LEX_LITERAL:
+				PushVar(idTable.table[lexTable.table[i].idxTI], lexTable.table[i].idxTI);
+				break;
+			case LEX_BINARIES:
+			case LEX_UNARY:
+				ExecuteOperation(lexTable.table[i].operationType, idTable.table[lexTable.table[i - 1].idxTI]);
+				break;
+			}
+		}
+	}
+
+	void FunctionData::ParseFunctionCall(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition)
+	{
+
+	}
+
+	void FunctionData::ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition)
+	{
+
+	}
+
+	void FunctionData::ExecuteOperation(LT::OperationType operationType, IT::Entry& entry)
+	{
+		switch (operationType)
+		{
+		case LT::PLUS:
+			if (entry.idDataType == IT::STRING)
+				funcCode = funcCode + ADD_STR;
+			else
+				funcCode = funcCode + ADD;
+			break;
+		case LT::MINUS:
+			funcCode = funcCode + SUB;
+			break;
+		case LT::MULTIPLY:
+			funcCode = funcCode + MUL;
+			break;
+		case LT::DIVISION:
+			funcCode = funcCode + DIV;
+			break;
+		case LT::OR:
+			funcCode = funcCode + BIT_OR;
+			break;
+		case LT::AND:
+			funcCode = funcCode + BIT_AND;
+			break;
+		case LT::INVERSION:
+			funcCode = funcCode + BIT_NOT;
+			break;
+		}
+	}
+
+	void FunctionData::ExecuteCompare(LT::OperationType operationType, IT::Entry& entry)
+	{
+		switch (operationType)
+		{
+		case LT::EQUALLY:
+			funcCode = funcCode + EQU(ELSE_LABEL + std::to_string(currentIf));
+			break;
+		case LT::NON_EQUALLY:
+			funcCode = funcCode + NOT_EQU(ELSE_LABEL + std::to_string(currentIf));
+			break;
+		case LT::MORE:
+			funcCode = funcCode + MORE(ELSE_LABEL + std::to_string(currentIf));
+			break;
+		case LT::LESS:
+			funcCode = funcCode + LESS(ELSE_LABEL + std::to_string(currentIf));
+			break;
+		case LT::MORE_OR_EQUAL:
+			funcCode = funcCode + MORE_EQU(ELSE_LABEL + std::to_string(currentIf));
+			break;
+		case LT::LESS_OR_EQUAL:
+			funcCode = funcCode + LESS_EQU(ELSE_LABEL + std::to_string(currentIf));
+			break;
+		default:
+			funcCode = funcCode + BOOL(ELSE_LABEL + std::to_string(currentIf));
+			break;
+		}
+	}
+#pragma endregion
+
 	void AsmHead::AddLib(IT::Entry& entryId, int lexTablePosition)
 	{
 		libs = libs + INCLUDE_LIB(ValueToString(entryId));
@@ -288,23 +411,26 @@ namespace CodeGeneration
 		for (auto i = storeState.begin(); i != storeState.end(); i++)
 		{
 			if (i->lenta_position >= lexTablePosition)
+			{
+				lexTablePosition = i->lenta_position;
 				switch (i->nrule)
 				{
-				// Constructions.
+					// Constructions.
 				case S_RULE:
 					ChooseConstructionChain(i->nrulechain, lexTable, idTable);
 					break;
-				// Instructions.
+					// Instructions.
 				case I_RULE:
 					ChooseInstructionChain(i->nrulechain, lexTable, idTable);
 					break;
-				// Return.
+					// Return.
 				case R_RULE:
 					code.entryTempFunctionData.EndFunction(idTable, lexTable.table[i->nrulechain + 1].idxTI);
 					code.AddFunction(code.entryTempFunctionData);
 					code.ResetInfoAboutFunction();
 					break;
 				}
+			}
 		}
 	}
 
@@ -332,62 +458,28 @@ namespace CodeGeneration
 
 	void CodeGenerationData::ChooseInstructionChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable)
 	{
-		// Выводим в комментарий разбираемую строку.
-		std::string tempString;
-		int tempPosition = lexTablePosition;
-		tempString = tempString + std::to_string(lexTable.table[tempPosition].line) + "\t ";
-		while (tempPosition + 1 != lexTable.table.size() && lexTable.table[tempPosition].line == lexTable.table[lexTablePosition].line)
-		{
-			if (lexTable.table[tempPosition].lexema == LEX_FILLER)
-			{
-				tempPosition++;
-				continue;
-			}
-			tempString += lexTable.table[tempPosition++].lexema;
-		}
-		char* s = (char*)tempString.c_str();
-		WriteComment(FUNC_CODE_INDEX, s);
-		// Выбираем цепочку
+		code.entryTempFunctionData.WriteLineToGenerate(lexTable, lexTablePosition);
 		switch (nrulechain)
 		{
 		case Irule_DECL_AND_INIT:
 		case Irule_INIT:
+			// Run on Lexemas for found posistion of the Assignment of Expression.
+			while (lexTable.table[lexTablePosition].lexema != LEX_ASSIGNMENT)
+				lexTablePosition++;
+			code.entryTempFunctionData.ParseExpression(lexTable, idTable, lexTablePosition + 1);
+			// Execute the Assignment.
+			code.entryTempFunctionData.PopVar(idTable.table[lexTable.table[lexTablePosition - 1].idxTI], lexTable.table[lexTablePosition - 1].idxTI);
 			break;
 		case Irule_CALL_FUNCTION:
+			code.entryTempFunctionData.ParseFunctionCall(lexTable, idTable, lexTablePosition);
 			break;
 		case Irule_IF:
 		case Irule_IF_ELSE:
-			break;
-		}
-	}
+			code.entryTempFunctionData.ParseCondition(lexTable, idTable, lexTablePosition + 2);
+			while (lexTable.table[lexTablePosition].lexema != LEX_BRACES_RIGHT)
+			{
 
-	void CodeGenerationData::ExecuteOperation(LT::OperationType operationType, IT::Entry& entry)
-	{
-		switch (operationType)
-		{
-		case LT::PLUS:
-			if (entry.idDataType == IT::STRING)
-				entryFunctionData.funcCode = entryFunctionData.funcCode + ADD_STR;
-			else
-				entryFunctionData.funcCode = entryFunctionData.funcCode + ADD;
-			break;
-		case LT::MINUS:
-			entryFunctionData.funcCode = entryFunctionData.funcCode + SUB;
-			break;
-		case LT::MULTIPLY:
-			entryFunctionData.funcCode = entryFunctionData.funcCode + MUL;
-			break;
-		case LT::DIVISION:
-			entryFunctionData.funcCode = entryFunctionData.funcCode + DIV;
-			break;
-		case LT::OR:
-			entryFunctionData.funcCode = entryFunctionData.funcCode + BIT_OR;
-			break;
-		case LT::AND:
-			entryFunctionData.funcCode = entryFunctionData.funcCode + BIT_AND;
-			break;
-		case LT::INVERSION:
-			entryFunctionData.funcCode = entryFunctionData.funcCode + BIT_NOT;
+			}
 			break;
 		}
 	}
@@ -421,5 +513,4 @@ namespace CodeGeneration
 		streamOut->close();
 	}
 #pragma endregion
-
 }
