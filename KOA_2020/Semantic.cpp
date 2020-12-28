@@ -8,11 +8,15 @@ namespace Semantic
 		SemanticData semanticData;
 		for (auto i = mfst.storestate.begin(); i != mfst.storestate.end(); i++)
 		{
+			if (i->nrule == S_RULE)
+				semanticData.SetFunctionIdDataType(lexTable, idTable, i->lenta_position, i->nrulechain);
+			if (i->nrule == R_RULE && idTable.table[lexTable.table[i->lenta_position + 1].idxTI].idDataType != semanticData.idDataTypeFunction)
+				throw ERROR_THROW_IN(410, lexTable.table[i->lenta_position + 1].line, lexTable.table[i->lenta_position + 1].position);
 			if (i->nrule == I_RULE)
 			{
 				semanticData.SetGeneralIdDataType(lexTable, idTable, i->lenta_position, i->nrulechain);
 				if (!semanticData.isVoidRule)
-					semanticData.AnalyzeExpression(lexTable, idTable, semanticData.initialPosition, semanticData.finalPosition);
+					semanticData.AnalyzeExpression(lexTable, idTable);
 				semanticData.isVoidRule = false;
 			}
 		}
@@ -57,7 +61,23 @@ namespace Semantic
 		}
 	}
 
-	void SemanticData::AnalyzeExpression(LT::LexTable& lexTable, IT::IdTable& idTable, int initialPosition, int finalPosition)
+	void SemanticData::SetFunctionIdDataType(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, int nrulechain)
+	{
+		switch (nrulechain)
+		{
+		case Srule_INCLUDE:
+			// Check for Right Lib Name.
+			break;
+		case Srule_FUNCTION:
+			idDataTypeFunction = idTable.table[lexTable.table[lexTablePosition + 2].idxTI].idDataType;
+			break;
+		case Srule_MAIN:
+			idDataTypeFunction = IT::UINT;
+			break;
+		}
+	}
+
+	void SemanticData::AnalyzeExpression(LT::LexTable& lexTable, IT::IdTable& idTable)
 	{
 		IT::Entry tempIdEntry;
 		for (int i = initialPosition; i < finalPosition; i++)
@@ -68,13 +88,9 @@ namespace Semantic
 			case LEX_LITERAL:
 				tempIdEntry = idTable.table[lexTable.table[i].idxTI];
 				if (tempIdEntry.idDataType != idDataTypeGeneral && idDataTypeGeneral != IT::UNDEF)
-				{
-					if (isParam)
-						throw ERROR_THROW_IN(410, lexTable.table[i].line, lexTable.table[i].position);
 					throw ERROR_THROW_IN(412, lexTable.table[i].line, lexTable.table[i].position);
-				}
 				if (tempIdEntry.idType == IT::FUNCTION || tempIdEntry.idType == IT::PROTOTYPE)
-					AnalyzeFunctionCall(lexTable, idTable, i);
+					i = AnalyzeFunctionCall(lexTable, idTable, i);
 				break;
 			case LEX_BINARIES:
 			case LEX_UNARY:
@@ -104,51 +120,47 @@ namespace Semantic
 		}
 	}
 
-	int SemanticData::SetFunctionFinalPosition(LT::LexTable& lexTable, IT::IdTable& idTable, int functionPosition)
-	{
-		IT::Entry idEntry = idTable.table[lexTable.table[functionPosition].idxTI];
-		idEntry.paramsIdx.reverse();
-		int i = functionPosition + 1;
-		while (lexTable.table[i].lexema != LEX_COMMA && lexTable.table[i].lexema != LEX_PARENTHESES_RIGHT)
-		{
-
-			i++;
-		}
-		for (auto idParam = idEntry.paramsIdx.begin(); idParam != idEntry.paramsIdx.end(); idParam++)
-		{
-
-		}
-
-		return 0;
-	}
-
 	int SemanticData::AnalyzeFunctionCall(LT::LexTable& lexTable, IT::IdTable& idTable, int functionPosition)
 	{
+		// Accept the params DataType info.
 		IT::Entry tempIdEntry = idTable.table[lexTable.table[functionPosition].idxTI];
 		std::vector<IT::Entry> functionParamArray = FillFunctionParams(idTable, tempIdEntry);
+		// Set the position of Lexema - "(".
 		int lexTablePosition = functionPosition + 1;
+		int paramIterator = 0;
 		if (functionParamArray.size() > 0)
 		{
-			for (int i = 0; i < functionParamArray.size(); i++)
+			IT::IDDATATYPE currentParamDataType = functionParamArray[paramIterator++].idDataType;
+			while (lexTable.table[lexTablePosition].lexema != LEX_PARENTHESES_RIGHT)
 			{
-				while (lexTable.table[lexTablePosition].lexema != LEX_PARENTHESES_RIGHT)
+				switch (lexTable.table[lexTablePosition].lexema)
 				{
-					switch (lexTable.table[lexTablePosition].lexema)
-					{
-					case LEX_IDENTIFICATOR:
-					case LEX_LITERAL:
-
-						break;
-					case LEX_BINARIES:
-					case LEX_UNARY:
-
-						break;
-					}
+				case LEX_IDENTIFICATOR:
+				case LEX_LITERAL:
+					tempIdEntry = idTable.table[lexTable.table[lexTablePosition].idxTI];
+					if (tempIdEntry.idDataType != currentParamDataType)
+						throw ERROR_THROW_IN(410, lexTable.table[lexTablePosition].line, lexTable.table[lexTablePosition].position);
+					if (tempIdEntry.idType == IT::FUNCTION || tempIdEntry.idType == IT::PROTOTYPE)
+						lexTablePosition = AnalyzeFunctionCall(lexTable, idTable, lexTablePosition);
+					break;
+				case LEX_BINARIES:
+				case LEX_UNARY:
+					lexTable.table[lexTablePosition].operationDataType = currentParamDataType;
+					if (!CheckOperationType(lexTable.table[lexTablePosition], currentParamDataType))
+						throw ERROR_THROW_IN(413, lexTable.table[lexTablePosition].line, lexTable.table[lexTablePosition].position);
+					break;
+				case LEX_COMMA:
+					if (paramIterator >= functionParamArray.size())
+						throw ERROR_THROW_IN(411, lexTable.table[initialPosition].line, lexTable.table[initialPosition].position);
+					currentParamDataType = functionParamArray[paramIterator++].idDataType;
+					break;
 				}
+				++lexTablePosition;
 			}
 		}
-		else if (lexTable.table[lexTablePosition + 1].lexema != LEX_PARENTHESES_RIGHT)
+		else if (lexTable.table[++lexTablePosition].lexema != LEX_PARENTHESES_RIGHT)
 			throw ERROR_THROW_IN(411, lexTable.table[initialPosition].line, lexTable.table[initialPosition].position);
+		return lexTablePosition;
 	}
 
 	std::vector<IT::Entry> SemanticData::FillFunctionParams(IT::IdTable& idTable, IT::Entry idEntry)

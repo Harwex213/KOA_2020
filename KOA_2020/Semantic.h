@@ -2,21 +2,26 @@
 #include "IT.h"
 #include "MFST.h"
 #include <vector>
+#include <string>
+
+#define LIB_NAME_COUNT		1
+#define LIB_NAME_DATETIME	"DateTime.lib"
 
 namespace Semantic
 {
 	struct SemanticData
 	{
 		IT::IDDATATYPE idDataTypeGeneral = IT::UNDEF;
+		IT::IDDATATYPE idDataTypeFunction = IT::UNDEF;
 		bool isVoidRule = false;
-		int paramCounter = 0;
 		int initialPosition = 0;
 		int finalPosition = 0;
+		std::string libsNameArray[LIB_NAME_COUNT] =  { LIB_NAME_DATETIME };
 
 		void SetGeneralIdDataType(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, int nrulechain);
-		void AnalyzeExpression(LT::LexTable& lexTable, IT::IdTable& idTable, int initialPosition, int finalPosition);
+		void SetFunctionIdDataType(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, int nrulechain);
+		void AnalyzeExpression(LT::LexTable& lexTable, IT::IdTable& idTable);
 		bool CheckOperationType(LT::Entry lexEntry, IT::IDDATATYPE idDataType);
-		int SetFunctionFinalPosition(LT::LexTable& lexTable, IT::IdTable& idTable, int functionPosition);
 		int AnalyzeFunctionCall(LT::LexTable& lexTable, IT::IdTable& idTable, int initialPosition);
 		std::vector<IT::Entry> FillFunctionParams(IT::IdTable& idTable, IT::Entry idEntry);
 	};
