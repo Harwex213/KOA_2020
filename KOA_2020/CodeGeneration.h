@@ -153,7 +153,6 @@ namespace CodeGeneration
 		// Initial actions.
 		void FillStandartLines();
 		void FillDataAndProtos(IT::IdTable& idTable, LT::LexTable& lexTable);
-		void SetFunctionParamInProto();
 		// Action on Libs.
 		void AddLib(IT::Entry& entryId, int lexTablePosition);
 	};
@@ -165,6 +164,7 @@ namespace CodeGeneration
 		std::string funcCode;
 		std::string funcEnd;
 
+		std::list<MFST::MfstState> storeStateIf;
 		int currentIf = 0;
 		int dwordTempVar = DWORD_TEMP_VAR_INITAL_INDEX;
 		int byteTempVar = BYTE_TEMP_VAR_INITAL_INDEX;
@@ -187,10 +187,11 @@ namespace CodeGeneration
 		void EndFunction(IT::IdTable& idTable, int idTableId);
 		// Action on Expressions.
 		void ParseExpression(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, bool isFunctionCall);
-		std::string ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
-		void ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
+		std::string ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition);
+		int ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
+		int ParseIfBody(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition);
 		void ExecuteOperation(LT::OperationType operationType, IT::IDDATATYPE operationDataType);
-		void ExecuteCompare(LT::OperationType operationType, IT::Entry& entry);
+		void ExecuteCompare(LT::OperationType operationType);
 	};
 
 	struct AsmCode

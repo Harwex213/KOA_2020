@@ -345,12 +345,47 @@ namespace CodeGeneration
 		}
 	}
 
-	std::string FunctionData::ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition)
+	std::string FunctionData::ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition)
 	{
+		std::string ifCodition;
+		std::string ifBody;
+		std::string elseBody;
+		std::string endIf = END_LABEL + std::to_string(currentIf++);
+		lexTablePosition = ParseCondition(lexTable, idTable, lexTablePosition);
+		ifBody = ParseIfBody(lexTable, idTable, lexTablePosition);
+
 		return "Amigo";
 	}
 
-	void FunctionData::ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition)
+	int FunctionData::ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition)
+	{
+		for (int i = lexTablePosition; lexTable.table[i].lexema != LEX_COMPARISONS && lexTable.table[i].lexema != LEX_PARENTHESES_RIGHT; i++, lexTablePosition++)
+		{
+			switch (lexTable.table[i].lexema)
+			{
+			case LEX_CALL_FUNCTION:
+				InvokeFunction(lexTable, idTable, i);
+				funcCode = funcCode + PUSH_RESULT_FUNCTION;
+				break;
+			case LEX_IDENTIFICATOR:
+			case LEX_LITERAL:
+				PushVar(idTable.table[lexTable.table[i].idxTI], lexTable.table[i].idxTI);
+				break;
+			case LEX_BINARIES:
+			case LEX_UNARY:
+				ExecuteOperation(lexTable.table[i].operationType, lexTable.table[i].operationDataType);
+				break;
+			}
+		}
+		if (lexTable.table[lexTablePosition].lexema == LEX_COMPARISONS)
+			funcCode = funcCode + IF_CONDITION;
+		else
+			funcCode = funcCode + IF_CONDITION_BOOL;
+		ExecuteCompare(lexTable.table[lexTablePosition++].operationType);
+		return lexTablePosition;
+	}
+
+	int FunctionData::ParseIfBody(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition)
 	{
 
 	}
@@ -386,27 +421,28 @@ namespace CodeGeneration
 		}
 	}
 
-	void FunctionData::ExecuteCompare(LT::OperationType operationType, IT::Entry& entry)
+	void FunctionData::ExecuteCompare(LT::OperationType operationType)
 	{
+		// We reverse every CompareOperation. This is necessary to simplify our life in ParseIfElse.
 		switch (operationType)
 		{
 		case LT::EQUALLY:
-			funcCode = funcCode + EQU(ELSE_LABEL + std::to_string(currentIf));
-			break;
-		case LT::NON_EQUALLY:
 			funcCode = funcCode + NOT_EQU(ELSE_LABEL + std::to_string(currentIf));
 			break;
-		case LT::MORE:
-			funcCode = funcCode + MORE(ELSE_LABEL + std::to_string(currentIf));
+		case LT::NON_EQUALLY:
+			funcCode = funcCode + EQU(ELSE_LABEL + std::to_string(currentIf));
 			break;
-		case LT::LESS:
+		case LT::MORE:
 			funcCode = funcCode + LESS(ELSE_LABEL + std::to_string(currentIf));
 			break;
+		case LT::LESS:
+			funcCode = funcCode + MORE(ELSE_LABEL + std::to_string(currentIf));
+			break;
 		case LT::MORE_OR_EQUAL:
-			funcCode = funcCode + MORE_EQU(ELSE_LABEL + std::to_string(currentIf));
+			funcCode = funcCode + LESS_EQU(ELSE_LABEL + std::to_string(currentIf));
 			break;
 		case LT::LESS_OR_EQUAL:
-			funcCode = funcCode + LESS_EQU(ELSE_LABEL + std::to_string(currentIf));
+			funcCode = funcCode + MORE_EQU(ELSE_LABEL + std::to_string(currentIf));
 			break;
 		default:
 			funcCode = funcCode + BOOL(ELSE_LABEL + std::to_string(currentIf));
@@ -423,6 +459,7 @@ namespace CodeGeneration
 #pragma region CodeGenerationActions
 	void CodeGenerationData::StartCode(LT::LexTable& lexTable, IT::IdTable& idTable)
 	{
+		code.entryTempFunctionData.storeStateIf = storeState;
 		for (auto i = storeState.begin(); i != storeState.end(); i++)
 		{
 			if (i->lenta_position >= lexTablePosition)
@@ -490,7 +527,7 @@ namespace CodeGeneration
 			break;
 		case Irule_IF:
 		case Irule_IF_ELSE:
-			//code.entryTempFunctionData.funcCode = code.entryTempFunctionData.funcCode + code.entryTempFunctionData.ParseIfElse(lexTable, idTable, lexTablePosition);
+			code.entryTempFunctionData.funcCode = code.entryTempFunctionData.funcCode + code.entryTempFunctionData.ParseIfElse(lexTable, idTable, lexTablePosition);
 			break;
 		}
 	}
