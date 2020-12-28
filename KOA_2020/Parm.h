@@ -3,7 +3,7 @@
 #define	PARM_OUT				L"-out:"
 #define	PARM_LOG				L"-log:"
 #define	PARM_MAX_SIZE			300
-#define	PARM_OUT_DEFAULT_NAME	L"..\KOA_2020_asm\KOA_2020.asm"
+#define	PARM_OUT_DEFAULT_NAME	L"../KOA_2020_asm/KOA_2020.asm"
 #define	PARM_LOG_DEFAULT_EXT	L".log"
 #define	PARM_LOG_LEXTABLE_EXT	L".lexTable.txt"
 #define	PARM_LOG_IDTABLE_EXT	L".idTable.txt"

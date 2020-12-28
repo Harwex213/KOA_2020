@@ -46,7 +46,16 @@
 								"includelib StandartLib.lib\n"
 #define STANDART_HEAD_PROTOS	"ExitProcess\t PROTO : DWORD\n" + \
 								"Concat\t PROTO : DWORD, : DWORD, : DWORD\n" + \
-								"AssignmentString\t PROTO : DWORD, : DWORD\n"
+								"AssignmentString\t PROTO : DWORD, : DWORD\n" + \
+								"cWrite PROTO : DWORD\n" + \
+								"cWriteLine PROTO : DWORD\n" + \
+								"GetRandom PROTO : DWORD, : DWORD\n" + \
+								"GetDate PROTO : DWORD\n" + \
+								"GetTime PROTO : DWORD\n" + \
+								"BoolToChar PROTO : DWORD, : DWORD\n" + \
+								"UintToChar PROTO : DWORD, : DWORD\n" + \
+								"CharToBool PROTO : DWORD\n" + \
+								"CharToUint PROTO : DWORD\n"
 
 #define STANDART_CONST_BEGIN	".const\n"
 
@@ -71,18 +80,17 @@
 #define STR_END	", 0"
 
 #define	INSERT_FUNCTION_PROTO(name) name + " PROTO"
-#define INSERT_FIRST_DWORD			": DWORD"
-#define INSERT_DWORD				", : DWORD"
+#define INSERT_FIRST_PARAM(type)	": " + type
+#define INSERT_PARAM(type)			", : " + type
 
 #define FUNC_LIB_DATE	"GetDate"
+#define CALL_DATE		"\t push OFFSET _getDate\n" + "\t call GetDate\n"
 #define FUNC_LIB_TIME	"GetTime"
-#define CALL_DATE		"\t push OFFSET _getDate\n" + "\t call GetDate\n" + "\t push eax\n"
-#define CALL_TIME		"\t push OFFSET _getTime\n" + "\t call GetTime\n" + "\t push eax\n"
-
+#define CALL_TIME		"\t push OFFSET _getTime\n" + "\t call GetTime\n"
 #define FUNC_LIB_UINT_CONVERT	"UintToChar"
+#define CALL_UINT_CONVERT		"\t push OFFSET strConvert\n" + "\t call UintToChar\n"
 #define FUNC_LIB_BOOL_CONVERT	"BoolToChar"
-#define CALL_UINT_CONVERT		"\t push OFFSET strConvert\n" + "\t call UintToChar\n" + "\t push eax\n"
-#define CALL_BOOL_CONVERT		"\t push OFFSET strConvert\n" + "\t call BoolToChar\n" + "\t push eax\n"
+#define CALL_BOOL_CONVERT		"\t push OFFSET strConvert\n" + "\t call BoolToChar\n"
 
 #define CWRITE_FUNC			"cWrite"
 #define CWRITE_LINE_FUNC	"cWriteLine"
@@ -141,6 +149,10 @@ namespace CodeGeneration
 		std::string consts;
 		std::string data;
 
+		// Initial actions.
+		void FillStandartLines();
+		void FillDataAndProtos(IT::IdTable& idTable, LT::LexTable& lexTable);
+		void SetFunctionParamInProto();
 		// Action on Libs.
 		void AddLib(IT::Entry& entryId, int lexTablePosition);
 	};
@@ -155,6 +167,7 @@ namespace CodeGeneration
 		int currentIf = 0;
 		int dwordTempVar = DWORD_TEMP_VAR_INITAL_INDEX;
 		int byteTempVar = BYTE_TEMP_VAR_INITAL_INDEX;
+		std::string standartFunctionsArray[4] = { FUNC_LIB_DATE, FUNC_LIB_TIME, FUNC_LIB_UINT_CONVERT, FUNC_LIB_BOOL_CONVERT };
 
 		// Additional Actions.
 		void WriteLineToGenerate(LT::LexTable& lexTable, int lexTablePosition);
@@ -163,17 +176,17 @@ namespace CodeGeneration
 		void PopVar(IT::Entry& entryId, int id);
 		void RetVar(IT::Entry& entryId, int id);
 		// Action on Temp Vars (required for correct function call)
-		void ResetTempVars();
 		void PushTempVar(IT::Entry& entryId);
 		void PopTempVar(IT::Entry& entryId);
 		// Action on Functions.	
 		void StartFunction(IT::IdTable& idTable, int idTableId);
 		void StartMain();
 		void InvokeFunction(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
+		bool CheckOnStandartFunction(std::string idName);
 		void EndFunction(IT::IdTable& idTable, int idTableId);
 		// Action on Expressions.
-		void ParseExpression(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
-		void ParseFunctionCall(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
+		void ParseExpression(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, bool isFunctionCall);
+		std::string ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
 		void ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
 		void ExecuteOperation(LT::OperationType operationType, IT::Entry& entry);
 		void ExecuteCompare(LT::OperationType operationType, IT::Entry& entry);
@@ -203,10 +216,6 @@ namespace CodeGeneration
 		int lexTablePosition = 0;
 		std::list<MFST::MfstState> storeState;
 
-		void WriteComment(int indexOfBlock, const char* comment);
-		// Initial actions.
-		void FillStandartLines();
-		void FillDataAndProtos(IT::IdTable& idTable, LT::LexTable& lexTable);
 		// Code Generation Actions.
 		void StartCode(LT::LexTable& lexTable, IT::IdTable& idTable);
 		void ChooseConstructionChain(int nrulechain, LT::LexTable& lexTable, IT::IdTable& idTable);
@@ -217,5 +226,6 @@ namespace CodeGeneration
 	void Start(MFST::Mfst& mfst, LT::LexTable& lexTable, IT::IdTable& idTable, wchar_t outfile[]);
 	std::string IdNameToString(int id);
 	std::string IdDataTypeToString(IT::Entry& entryId);
+	std::string ParamTypeToString(IT::Entry& entryId);
 	std::string ValueToString(IT::Entry& entryId);
 }
