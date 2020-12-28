@@ -339,7 +339,7 @@ namespace CodeGeneration
 				break;
 			case LEX_BINARIES:
 			case LEX_UNARY:
-				ExecuteOperation(lexTable.table[i].operationType, idTable.table[lexTable.table[i - 1].idxTI]);
+				ExecuteOperation(lexTable.table[i].operationType, lexTable.table[i].operationDataType);
 				break;
 			}
 		}
@@ -355,12 +355,12 @@ namespace CodeGeneration
 
 	}
 
-	void FunctionData::ExecuteOperation(LT::OperationType operationType, IT::Entry& entry)
+	void FunctionData::ExecuteOperation(LT::OperationType operationType, IT::IDDATATYPE operationDataType)
 	{
 		switch (operationType)
 		{
 		case LT::PLUS:
-			if (entry.idDataType == IT::STRING)
+			if (operationDataType == IT::STRING)
 				funcCode = funcCode + ADD_STR;
 			else
 				funcCode = funcCode + ADD;

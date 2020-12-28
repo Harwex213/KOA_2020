@@ -17,6 +17,7 @@
 #define Irule_CALL_FUNCTION		3
 #define Irule_IF_ELSE			4
 #define Irule_IF				5
+#define Irule_UNDEF				6
 
 #define E_RULE					2
 
@@ -188,7 +189,7 @@ namespace CodeGeneration
 		void ParseExpression(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, bool isFunctionCall);
 		std::string ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
 		void ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
-		void ExecuteOperation(LT::OperationType operationType, IT::Entry& entry);
+		void ExecuteOperation(LT::OperationType operationType, IT::IDDATATYPE operationDataType);
 		void ExecuteCompare(LT::OperationType operationType, IT::Entry& entry);
 	};
 

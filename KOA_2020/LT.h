@@ -1,4 +1,5 @@
 #pragma once
+#include "IT.h"
 
 #define LEXEMA_FIXSIZE	1
 #define	LT_MAXSIZE		4096
@@ -67,6 +68,7 @@ namespace LT							// таблица лексем
 		int position = 0;
 		int idxTI = LT_TI_NULLXDX;
 		OperationType operationType = NONE;
+		IT::IDDATATYPE operationDataType = IT::UNDEF;
 	};
 
 	struct LexTable						// экземпляр таблицы лексем

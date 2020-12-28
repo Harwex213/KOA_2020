@@ -33,13 +33,13 @@ int wmain(int argc, wchar_t* argv[])
 			throw ERROR_THROW(140);
 		mfst.printRules(log);
 
+		// Semantic Stage.
+		Semantic::Start(mfst, lexTable, idTable);
+
 		// Polish Notation Stage.
 		PolishNotation::TransformToPolishNotation(mfst, lexTable, idTable);
 		Log::WriteLineLexLog(log, "...Преобразование выражений в вид польской обратной записи...\n", "");
 		Log::WriteLogLexTable(log, lexTable);
-
-		// Semantic Stage.
-		//Semantic::Start(mfst, lexTable, idTable);
 
 		//// Code Generation Stage.
 		CodeGeneration::Start(mfst, lexTable, idTable, parm.out);
