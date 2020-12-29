@@ -85,7 +85,7 @@ namespace IT
 
 	void SetLibFunctions(IdTable& idtable);
 	void AddEntry(IdTable& idtable, Entry entry);
-	void AddLibEntry(IdTable& idtable, Entry entry);
+	void AddLibEntry(IdTable& idtable, Entry& entry);
 	Entry GetEntry(const IdTable& idtable, int n);
 	int GetId(const IdTable& idTable, char* id, std::forward_list<std::string> visibility);
 	int GetId(const IdTable& idTable, Entry entry);
