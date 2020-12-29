@@ -459,8 +459,7 @@ namespace CodeGeneration
 #pragma region CodeGenerationActions
 	void CodeGenerationData::StartCode(LT::LexTable& lexTable, IT::IdTable& idTable)
 	{
-		code.entryTempFunctionData.storeStateIf = storeState;
-		for (auto i = storeState.begin(); i != storeState.end(); i++)
+		for (; iteratorStoreState != storeState.end(); i++)
 		{
 			if (i->lenta_position >= lexTablePosition)
 			{

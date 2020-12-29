@@ -163,8 +163,9 @@ namespace CodeGeneration
 		std::string funcBegin;
 		std::string funcCode;
 		std::string funcEnd;
-
-		std::list<MFST::MfstState> storeStateIf;
+		std::list<MFST::MfstState> storeState;
+		std::list<MFST::MfstState>::iterator iteratorStoreState = storeState.begin();
+		
 		int currentIf = 0;
 		int dwordTempVar = DWORD_TEMP_VAR_INITAL_INDEX;
 		int byteTempVar = BYTE_TEMP_VAR_INITAL_INDEX;
@@ -216,7 +217,6 @@ namespace CodeGeneration
 
 		ofstream* streamOut = new ofstream();
 		int lexTablePosition = 0;
-		std::list<MFST::MfstState> storeState;
 
 		// Code Generation Actions.
 		void StartCode(LT::LexTable& lexTable, IT::IdTable& idTable);
