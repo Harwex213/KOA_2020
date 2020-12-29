@@ -70,10 +70,15 @@ namespace Semantic
 
 	void SemanticData::SetFunctionIdDataType(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, int nrulechain)
 	{
+		bool checkLibName = false;
 		switch (nrulechain)
 		{
 		case Srule_INCLUDE:
-			// Check for Right Lib Name.
+			for (int i = 0; i < LIB_NAME_COUNT; i++)
+				if (idTable.table[lexTable.table[lexTablePosition + 1].idxTI].value.vString.string == libsNameArray[i])
+					checkLibName = true;
+			if (!checkLibName)
+				throw ERROR_THROW_IN(415, lexTable.table[lexTablePosition + 1].line, lexTable.table[lexTablePosition + 1].position);
 			break;
 		case Srule_FUNCTION:
 			idDataTypeFunction = idTable.table[lexTable.table[lexTablePosition + 2].idxTI].idDataType;

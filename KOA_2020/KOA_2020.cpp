@@ -11,6 +11,7 @@ int wmain(int argc, wchar_t* argv[])
 
 		Parm::PARM parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log, parm.logLexTable, parm.logIdTable, parm.logParsing);
+		Log::WriteLog(log);
 		
 		// Lex Analysis Stage.
 		In::IN in = In::getin(parm.in);
@@ -23,7 +24,6 @@ int wmain(int argc, wchar_t* argv[])
 		Log::WriteLineLexLog(log, "...Лексический анализ произведён без ошибок...\n", "");
 		Log::WriteLogLexTable(log, lexTable);
 		Log::WriteLogIdTable(log, idTable);
-		Log::WriteLog(log);
 		Log::WriteParm(log, parm);
 		Log::WriteIn(log, in);
 

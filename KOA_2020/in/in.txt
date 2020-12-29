@@ -1,4 +1,5 @@
 #include "DateTime.lib"
+#include "DateTime.lib"
 string prototype GetDate();
 string prototype GetTime();
 uint prototype cWrite(string str);
@@ -21,8 +22,8 @@ main
     bool yIsTheBiggest;
     bool zIsTheBiggest;
     uint x = GetRandom(0, 2077);
-    uint y = 2077;
-    uint z = 100;
+    uint y = GetRandom(0, 2077);
+    uint z = 1444;
     string startInfo = "Найти максимальное среди чисел: " + UintToChar(x) + ", " + UintToChar(y) + ", "  + UintToChar(z);
     cWriteLine(startInfo);
     if(x + GetRandom(100,10) > y)

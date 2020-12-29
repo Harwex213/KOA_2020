@@ -5,7 +5,7 @@
 #include <string>
 
 #define LIB_NAME_COUNT		1
-#define LIB_NAME_DATETIME	"DateTime.lib"
+#define LIB_NAME_DATETIME	"\"DateTime.lib\""
 
 namespace Semantic
 {
