@@ -114,10 +114,10 @@
 #define ADD_INVOKE_PARAM(name) ", " + name
 #define PUSH_RESULT_FUNCTION "\t push eax\n"
 
-#define IF_CONDITION		"\t pop eax\n" + "\t pop ebx\n" + "\t cmp eax, ebx\n"
+#define IF_CONDITION		"\t pop ebx\n" + "\t pop eax\n" + "\t cmp eax, ebx\n"
 #define IF_CONDITION_BOOL	"\t pop eax\n" + "\t cmp eax, 0h\n"
-#define ELSE_LABEL			"ELSE_BLOCK_"
-#define END_LABEL			"END_BLOCK_"
+#define ELSE_LABEL(id)		"ELSE_BLOCK_" + id
+#define END_LABEL(id)		"END_BLOCK_" + id
 
 #define ADD				"\t pop eax\n" + "\t pop ebx\n" + "\t add eax, ebx\n" + "\t push eax\n"
 #define ADD_STR			"\t push OFFSET strTemp\n" + "\t call Concat\n" + "\t push eax\n"
@@ -128,13 +128,14 @@
 #define BIT_AND			"\t pop eax\n" + "\t pop ebx\n" + "\t and eax, ebx\n" + "\t push eax\n"
 #define BIT_NOT			"\t pop eax\n" + "\t not eax\n" + "\t push eax\n"
 
-#define EQU(label)		"\t je " + label + "\n"
-#define NOT_EQU(label)	"\t jne " + label + "\n"
-#define MORE(label)		"\t ja " + label + "\n"
-#define LESS(label)		"\t jb " + label + "\n"
-#define MORE_EQU(label)	"\t jae " + label + "\n"
-#define LESS_EQU(label)	"\t jbe " + label + "\n"
-#define BOOL(label)		"\t je " + label + "\n"
+#define EQU(label)			"\t je " + label + "\n"
+#define NOT_EQU(label)		"\t jne " + label + "\n"
+#define MORE(label)			"\t ja " + label + "\n"
+#define LESS(label)			"\t jb " + label + "\n"
+#define MORE_EQU(label)		"\t jae " + label + "\n"
+#define LESS_EQU(label)		"\t jbe " + label + "\n"
+#define BOOL(label)			"\t je " + label + "\n"
+#define GO_TO_END(label)	"\t jmp " + label + "\n"
 
 #define RET(name)		"\t mov eax, " + name + "\n"
 #define RETZX(name)		"\t movzx eax, " + name + "\n"
@@ -164,9 +165,10 @@ namespace CodeGeneration
 		std::string funcCode;
 		std::string funcEnd;
 		std::list<MFST::MfstState> storeState;
-		std::list<MFST::MfstState>::iterator iteratorStoreState = storeState.begin();
+		std::list<MFST::MfstState>::iterator iteratorStoreState;
 		
-		int currentIf = 0;
+		int currentIf = -1;
+		std::stack<int> ifCounter;
 		int dwordTempVar = DWORD_TEMP_VAR_INITAL_INDEX;
 		int byteTempVar = BYTE_TEMP_VAR_INITAL_INDEX;
 		std::string standartFunctionsArray[4] = { FUNC_LIB_DATE, FUNC_LIB_TIME, FUNC_LIB_UINT_CONVERT, FUNC_LIB_BOOL_CONVERT };
@@ -188,9 +190,10 @@ namespace CodeGeneration
 		void EndFunction(IT::IdTable& idTable, int idTableId);
 		// Action on Expressions.
 		void ParseExpression(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, bool isFunctionCall);
-		std::string ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition);
+		void ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition);
+		void ParseIfOrElseBody(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, int finalBodyPosition);
 		int ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
-		int SetEndOfIf(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
+		int SetEndOfBody(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
 		void ExecuteOperation(LT::OperationType operationType, IT::IDDATATYPE operationDataType);
 		void ExecuteCompare(LT::OperationType operationType);
 	};

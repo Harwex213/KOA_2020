@@ -6,6 +6,7 @@ namespace CodeGeneration
 	{
 		CodeGenerationData data;
 		data.code.entryTempFunctionData.storeState = mfst.storestate;
+		data.code.entryTempFunctionData.iteratorStoreState = data.code.entryTempFunctionData.storeState.begin();
 		data.streamOut->open(outfile);
 		if (data.streamOut->fail())
 			throw ERROR_THROW(114);
@@ -345,16 +346,58 @@ namespace CodeGeneration
 		}
 	}
 
-	std::string FunctionData::ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition)
+	void FunctionData::ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition)
 	{
-		std::string ifCodition;
-		std::string ifBody;
-		std::string elseBody;
-		std::string endIf = END_LABEL + std::to_string(currentIf++);
+		ifCounter.push(++currentIf);
 		lexTablePosition = ParseCondition(lexTable, idTable, lexTablePosition);
+		int finalIfBodyPosition = SetEndOfBody(lexTable, idTable, lexTablePosition);
+		// Analyzing Body of If.
+		ParseIfOrElseBody(lexTable, idTable, lexTablePosition, finalIfBodyPosition);
+		funcCode = funcCode + GO_TO_END(END_LABEL(std::to_string(ifCounter.top())));
+		// Analyzing body of Else.
+		funcCode = funcCode + ELSE_LABEL(std::to_string(ifCounter.top())) + ": ";
+		funcCode = funcCode + NEWLINE;
+		lexTablePosition = finalIfBodyPosition + 1;
+		if (lexTable.table[lexTablePosition++].lexema == LEX_ELSE)
+		{
+			int finalElseBodyPosition = SetEndOfBody(lexTable, idTable, lexTablePosition);
+			ParseIfOrElseBody(lexTable, idTable, lexTablePosition, finalElseBodyPosition);
+		}
+		funcCode = funcCode + END_LABEL(std::to_string(ifCounter.top())) + ": ";
+		funcCode = funcCode + NEWLINE;
+		ifCounter.pop();
+	}
 
-
-		return "Amigo";
+	void FunctionData::ParseIfOrElseBody(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, int finalBodyPosition)
+	{
+		iteratorStoreState++;
+		for (; iteratorStoreState->lenta_position != finalBodyPosition; iteratorStoreState++)
+		{
+			if (iteratorStoreState->nrule == I_RULE)
+			{
+				lexTablePosition = iteratorStoreState->lenta_position;
+				WriteLineToGenerate(lexTable, lexTablePosition);
+				switch (iteratorStoreState->nrulechain)
+				{
+				case Irule_DECL_AND_INIT:
+				case Irule_INIT:
+					// Run on Lexemas for found posistion of the Assignment of Expression.
+					while (lexTable.table[lexTablePosition].lexema != LEX_ASSIGNMENT)
+						lexTablePosition++;
+					ParseExpression(lexTable, idTable, lexTablePosition + 1, false);
+					// Execute the Assignment.
+					PopVar(idTable.table[lexTable.table[lexTablePosition - 1].idxTI], lexTable.table[lexTablePosition - 1].idxTI);
+					break;
+				case Irule_CALL_FUNCTION:
+					ParseExpression(lexTable, idTable, lexTablePosition, true);
+					break;
+				case Irule_IF:
+				case Irule_IF_ELSE:
+					ParseIfElse(lexTable, idTable, lexTablePosition);
+					break;
+				}
+			}
+		}
 	}
 
 	int FunctionData::ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition)
@@ -386,6 +429,22 @@ namespace CodeGeneration
 		}
 		ExecuteCompare(lexTable.table[lexTablePosition++].operationType);
 		return lexTablePosition;
+	}
+
+	int FunctionData::SetEndOfBody(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition)
+	{
+		int bracesCounter = 0;
+		while (lexTable.table[lexTablePosition].lexema == LEX_FILLER)
+			lexTablePosition++;
+		do
+		{
+			if (lexTable.table[lexTablePosition].lexema == LEX_BRACES_LEFT)
+				bracesCounter++;
+			if (lexTable.table[lexTablePosition].lexema == LEX_BRACES_RIGHT)
+				bracesCounter--;
+			lexTablePosition++;
+		} while (bracesCounter != 0);
+		return --lexTablePosition;
 	}
 
 	void FunctionData::ExecuteOperation(LT::OperationType operationType, IT::IDDATATYPE operationDataType)
@@ -425,25 +484,25 @@ namespace CodeGeneration
 		switch (operationType)
 		{
 		case LT::EQUALLY:
-			funcCode = funcCode + NOT_EQU(ELSE_LABEL + std::to_string(currentIf));
+			funcCode = funcCode + NOT_EQU(ELSE_LABEL(std::to_string(ifCounter.top())));
 			break;
 		case LT::NON_EQUALLY:
-			funcCode = funcCode + EQU(ELSE_LABEL + std::to_string(currentIf));
+			funcCode = funcCode + EQU(ELSE_LABEL(std::to_string(ifCounter.top())));
 			break;
 		case LT::MORE:
-			funcCode = funcCode + LESS(ELSE_LABEL + std::to_string(currentIf));
+			funcCode = funcCode + LESS(ELSE_LABEL(std::to_string(ifCounter.top())));
 			break;
 		case LT::LESS:
-			funcCode = funcCode + MORE(ELSE_LABEL + std::to_string(currentIf));
+			funcCode = funcCode + MORE(ELSE_LABEL(std::to_string(ifCounter.top())));
 			break;
 		case LT::MORE_OR_EQUAL:
-			funcCode = funcCode + LESS_EQU(ELSE_LABEL + std::to_string(currentIf));
+			funcCode = funcCode + LESS_EQU(ELSE_LABEL(std::to_string(ifCounter.top())));
 			break;
 		case LT::LESS_OR_EQUAL:
-			funcCode = funcCode + MORE_EQU(ELSE_LABEL + std::to_string(currentIf));
+			funcCode = funcCode + MORE_EQU(ELSE_LABEL(std::to_string(ifCounter.top())));
 			break;
 		default:
-			funcCode = funcCode + BOOL(ELSE_LABEL + std::to_string(currentIf));
+			funcCode = funcCode + BOOL(ELSE_LABEL(std::to_string(ifCounter.top())));
 			break;
 		}
 	}
@@ -521,7 +580,7 @@ namespace CodeGeneration
 			break;
 		case Irule_IF:
 		case Irule_IF_ELSE:
-			//code.entryTempFunctionData.funcCode = code.entryTempFunctionData.funcCode + code.entryTempFunctionData.ParseIfElse(lexTable, idTable, lexTablePosition);
+			code.entryTempFunctionData.ParseIfElse(lexTable, idTable, lexTablePosition);
 			break;
 		}
 	}
