@@ -5,7 +5,7 @@ namespace CodeGeneration
 	void Start(MFST::Mfst& mfst, LT::LexTable& lexTable, IT::IdTable& idTable, wchar_t outfile[])
 	{
 		CodeGenerationData data;
-		data.storeState = mfst.storestate;
+		data.code.entryTempFunctionData.storeState = mfst.storestate;
 		data.streamOut->open(outfile);
 		if (data.streamOut->fail())
 			throw ERROR_THROW(114);
@@ -352,14 +352,14 @@ namespace CodeGeneration
 		std::string elseBody;
 		std::string endIf = END_LABEL + std::to_string(currentIf++);
 		lexTablePosition = ParseCondition(lexTable, idTable, lexTablePosition);
-		ifBody = ParseIfBody(lexTable, idTable, lexTablePosition);
+
 
 		return "Amigo";
 	}
 
 	int FunctionData::ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition)
 	{
-		for (int i = lexTablePosition; lexTable.table[i].lexema != LEX_COMPARISONS && lexTable.table[i].lexema != LEX_PARENTHESES_RIGHT; i++, lexTablePosition++)
+		for (int i = lexTablePosition; lexTable.table[i].lexema != LEX_COMPARISONS && lexTable.table[i].lexema != LEX_BRACES_LEFT; i++, lexTablePosition++)
 		{
 			switch (lexTable.table[i].lexema)
 			{
@@ -380,14 +380,12 @@ namespace CodeGeneration
 		if (lexTable.table[lexTablePosition].lexema == LEX_COMPARISONS)
 			funcCode = funcCode + IF_CONDITION;
 		else
+		{
+			lexTablePosition--;
 			funcCode = funcCode + IF_CONDITION_BOOL;
+		}
 		ExecuteCompare(lexTable.table[lexTablePosition++].operationType);
 		return lexTablePosition;
-	}
-
-	int FunctionData::ParseIfBody(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition)
-	{
-
 	}
 
 	void FunctionData::ExecuteOperation(LT::OperationType operationType, IT::IDDATATYPE operationDataType)
@@ -459,28 +457,25 @@ namespace CodeGeneration
 #pragma region CodeGenerationActions
 	void CodeGenerationData::StartCode(LT::LexTable& lexTable, IT::IdTable& idTable)
 	{
-		for (; iteratorStoreState != storeState.end(); i++)
+		for (; code.entryTempFunctionData.iteratorStoreState != code.entryTempFunctionData.storeState.end(); code.entryTempFunctionData.iteratorStoreState++)
 		{
-			if (i->lenta_position >= lexTablePosition)
+			lexTablePosition = code.entryTempFunctionData.iteratorStoreState->lenta_position;
+			switch (code.entryTempFunctionData.iteratorStoreState->nrule)
 			{
-				lexTablePosition = i->lenta_position;
-				switch (i->nrule)
-				{
-					// Constructions.
-				case S_RULE:
-					ChooseConstructionChain(i->nrulechain, lexTable, idTable);
-					break;
-					// Instructions.
-				case I_RULE:
-					ChooseInstructionChain(i->nrulechain, lexTable, idTable);
-					break;
-					// Return.
-				case R_RULE:
-					code.entryTempFunctionData.EndFunction(idTable, lexTable.table[lexTablePosition + 1].idxTI);
-					code.AddFunction(code.entryTempFunctionData);
-					code.ResetInfoAboutFunction();
-					break;
-				}
+				// Constructions.
+			case S_RULE:
+				ChooseConstructionChain(code.entryTempFunctionData.iteratorStoreState->nrulechain, lexTable, idTable);
+				break;
+				// Instructions.
+			case I_RULE:
+				ChooseInstructionChain(code.entryTempFunctionData.iteratorStoreState->nrulechain, lexTable, idTable);
+				break;
+				// Return.
+			case R_RULE:
+				code.entryTempFunctionData.EndFunction(idTable, lexTable.table[lexTablePosition + 1].idxTI);
+				code.AddFunction(code.entryTempFunctionData);
+				code.ResetInfoAboutFunction();
+				break;
 			}
 		}
 	}
@@ -526,7 +521,7 @@ namespace CodeGeneration
 			break;
 		case Irule_IF:
 		case Irule_IF_ELSE:
-			code.entryTempFunctionData.funcCode = code.entryTempFunctionData.funcCode + code.entryTempFunctionData.ParseIfElse(lexTable, idTable, lexTablePosition);
+			//code.entryTempFunctionData.funcCode = code.entryTempFunctionData.funcCode + code.entryTempFunctionData.ParseIfElse(lexTable, idTable, lexTablePosition);
 			break;
 		}
 	}

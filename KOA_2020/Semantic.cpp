@@ -11,7 +11,7 @@ namespace Semantic
 			if (i->nrule == S_RULE)
 				semanticData.SetFunctionIdDataType(lexTable, idTable, i->lenta_position, i->nrulechain);
 			if (i->nrule == R_RULE && idTable.table[lexTable.table[i->lenta_position + 1].idxTI].idDataType != semanticData.idDataTypeFunction)
-				throw ERROR_THROW_IN(410, lexTable.table[i->lenta_position + 1].line, lexTable.table[i->lenta_position + 1].position);
+				throw ERROR_THROW_IN(408, lexTable.table[i->lenta_position + 1].line, lexTable.table[i->lenta_position + 1].position);
 			if (i->nrule == I_RULE)
 			{
 				semanticData.SetGeneralIdDataType(lexTable, idTable, i->lenta_position, i->nrulechain);
@@ -52,9 +52,14 @@ namespace Semantic
 			idDataTypeGeneral = IT::BOOL;
 			initialPosition = lexTablePosition + 2;
 			while (lexTable.table[finalPosition].lexema != LEX_BRACES_LEFT)
+			{
+				if (lexTable.table[finalPosition].lexema == LEX_COMPARISONS)
+					idDataTypeGeneral = IT::UNDEF;
 				finalPosition++;
+			}
 			finalPosition--;
 			break;
+		case Irule_DECL:
 		case Irule_UNDEF:
 			isVoidRule = true;
 			break;

@@ -190,7 +190,7 @@ namespace CodeGeneration
 		void ParseExpression(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition, bool isFunctionCall);
 		std::string ParseIfElse(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition);
 		int ParseCondition(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
-		int ParseIfBody(LT::LexTable& lexTable, IT::IdTable& idTable, int& lexTablePosition);
+		int SetEndOfIf(LT::LexTable& lexTable, IT::IdTable& idTable, int lexTablePosition);
 		void ExecuteOperation(LT::OperationType operationType, IT::IDDATATYPE operationDataType);
 		void ExecuteCompare(LT::OperationType operationType);
 	};
