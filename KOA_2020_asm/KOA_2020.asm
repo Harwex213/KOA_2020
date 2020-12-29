@@ -1,4 +1,4 @@
-; Генерация выполнена успешно. Дата: 29.12.2020 08:50:51
+; Генерация выполнена успешно. Дата: 29.12.2020 18:17:57
 .586
 .model flat, stdcall
 .stack 4096
@@ -28,10 +28,10 @@ V_16	 BYTE	".", 0
 V_17	 BYTE	"-----------------------------------------------", 0
 V_23	 DWORD	0
 V_24	 DWORD	2077
-V_26	 DWORD	200
-V_28	 DWORD	100
-V_30	 BYTE	"Найти максимальное среди чисел: ", 0
-V_31	 BYTE	", ", 0
+V_27	 DWORD	100
+V_29	 BYTE	"Найти максимальное среди чисел: ", 0
+V_30	 BYTE	", ", 0
+V_31	 DWORD	10
 V_32	 BYTE	" Самое большое число!", 0
 .data
 TEMP_V_0	 DWORD	?
@@ -61,8 +61,8 @@ V_20	 BYTE	0
 V_21	 BYTE	0
 V_22	 DWORD	0
 V_25	 DWORD	0
-V_27	 DWORD	0
-V_29	 BYTE	512 DUP(0)
+V_26	 DWORD	0
+V_28	 BYTE	512 DUP(0)
 .code
 GetCurrentTime PROC
 ; 11	 ti=l@vlv@vlv;
@@ -116,13 +116,13 @@ main PROC
 	 push eax
 	 pop V_22
 ; 24	 ti=l;
-	 push V_26
+	 push V_24
 	 pop V_25
 ; 25	 ti=l;
-	 push V_28
-	 pop V_27
+	 push V_27
+	 pop V_26
 ; 26	 ti=li@vlvi@vlvi@v;
-	 push OFFSET V_30
+	 push OFFSET V_29
 	 push V_22
 	 push OFFSET strConvert
 	 call UintToChar
@@ -130,7 +130,7 @@ main PROC
 	 push OFFSET strTemp
 	 call Concat
 	 push eax
-	 push OFFSET V_31
+	 push OFFSET V_30
 	 push OFFSET strTemp
 	 call Concat
 	 push eax
@@ -141,25 +141,35 @@ main PROC
 	 push OFFSET strTemp
 	 call Concat
 	 push eax
-	 push OFFSET V_31
+	 push OFFSET V_30
 	 push OFFSET strTemp
 	 call Concat
 	 push eax
-	 push V_27
+	 push V_26
 	 push OFFSET strConvert
 	 call UintToChar
 	 push eax
 	 push OFFSET strTemp
 	 call Concat
 	 push eax
-	 push OFFSET V_29
+	 push OFFSET V_28
 	 call AssignmentString
 ; 27	 i@;
-	 push OFFSET V_29
+	 push OFFSET V_28
 	 pop TEMP_V_7
 	 invoke cWriteLine, TEMP_V_7
-; 28	 qiig
+; 28	 qill@vig
 	 push V_22
+	 push V_27
+	 push V_31
+	 pop TEMP_V_7
+	 pop TEMP_V_6
+	 invoke GetRandom, TEMP_V_6, TEMP_V_7
+	 push eax
+	 pop eax
+	 pop ebx
+	 add eax, ebx
+	 push eax
 	 push V_25
 	 pop ebx
 	 pop eax
@@ -167,7 +177,7 @@ main PROC
 	 jb ELSE_BLOCK_0
 ; 30	 qiig
 	 push V_22
-	 push V_27
+	 push V_26
 	 pop ebx
 	 pop eax
 	 cmp eax, ebx
@@ -182,7 +192,7 @@ main PROC
 	 jmp END_BLOCK_1
 ELSE_BLOCK_1: 
 ; 36	 i=i@;
-	 push V_27
+	 push V_26
 	 push OFFSET strConvert
 	 call UintToChar
 	 push eax
@@ -193,7 +203,7 @@ END_BLOCK_1:
 ELSE_BLOCK_0: 
 ; 41	 qiig
 	 push V_25
-	 push V_27
+	 push V_26
 	 pop ebx
 	 pop eax
 	 cmp eax, ebx
@@ -208,7 +218,7 @@ ELSE_BLOCK_0:
 	 jmp END_BLOCK_2
 ELSE_BLOCK_2: 
 ; 47	 i=i@;
-	 push V_27
+	 push V_26
 	 push OFFSET strConvert
 	 call UintToChar
 	 push eax

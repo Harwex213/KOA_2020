@@ -26,11 +26,19 @@ namespace In
 			sample.alfaLxmTable = new PARSED_WORDS[interimData.specialSymbolCounter];
 			for (int i = 0, j = 0; i < interimData.specialSymbolCounter; i++)
 			{
-				entry.text = new char[sample.symbolsNew[++j] + 1];
-				entry.text[sample.symbolsNew[j++]] = NULL;
+				// Take the length of word.
+				j++;
+				entry.text = new char[sample.symbolsNew[j] + 1];
+				entry.text[sample.symbolsNew[j]] = NULL;
+				// Take the position of word.
+				j++;
+				entry.position = sample.symbolsNew[j];
+				// Take the line of word.
+				j++;
+				entry.line = sample.symbolsNew[j];
+				// Go to the word itself.
+				j++;
 				counter_temp = 0;
-				entry.position = sample.symbolsNew[j++];
-				entry.line = sample.symbolsNew[j++];
 				while (j != sample.symbolsNew.size() && sample.symbolsNew[j] != interimData.specialSymbol)
 				{
 					entry.text[counter_temp++] = sample.symbolsNew[j];
