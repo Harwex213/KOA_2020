@@ -425,6 +425,7 @@ namespace LexAnalysis
 		entry.idDataType = IT::UNDEF;
 		entry.idType = IT::U;
 		entry.idxfirstLE = LT_TI_NULLXDX;
+		entry.value = analysisData.value;
 
 		analysisData.idDataType = IT::UNDEF;
 		analysisData.idType = IT::U;

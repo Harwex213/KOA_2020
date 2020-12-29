@@ -64,7 +64,7 @@ namespace IT
 		std::forward_list<int> paramsIdx;
 		IDDATATYPE	idDataType = UNDEF;
 		IDTYPE	idType = U;
-		union
+		union VALUE
 		{
 			int vUint;
 			bool vBool;
