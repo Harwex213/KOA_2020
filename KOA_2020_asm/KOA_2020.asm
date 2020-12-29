@@ -1,4 +1,4 @@
-; Генерация выполнена успешно. Дата: 29.12.2020 21:00:46
+; Генерация выполнена успешно. Дата: 29.12.2020 23:16:25
 .586
 .model flat, stdcall
 .stack 4096
@@ -18,6 +18,7 @@ BoolToChar PROTO : DWORD, : DWORD
 UintToChar PROTO : DWORD, : DWORD
 CharToBool PROTO : DWORD
 CharToUint PROTO : DWORD
+StartRandom PROTO
 ; User Functions:
 GetCurrentTime PROTO
 .const
@@ -94,6 +95,7 @@ GetCurrentTime PROC
 	 ret
 GetCurrentTime ENDP
 main PROC
+	call StartRandom
 ; 17	 @@;
 	 invoke GetCurrentTime
 	 push eax
@@ -115,13 +117,32 @@ main PROC
 	 invoke GetRandom, TEMP_V_6, TEMP_V_7
 	 push eax
 	 pop V_22
-; 24	 ti=l;
+; 24	 i@@;
+	 push V_22
+	 push OFFSET strConvert
+	 call UintToChar
+	 push eax
+	 pop TEMP_V_7
+	 invoke cWriteLine, TEMP_V_7
+; 25	 ti=ll@;
+	 push V_23
 	 push V_24
+	 pop TEMP_V_7
+	 pop TEMP_V_6
+	 invoke GetRandom, TEMP_V_6, TEMP_V_7
+	 push eax
 	 pop V_25
-; 25	 ti=l;
+; 26	 i@@;
+	 push V_25
+	 push OFFSET strConvert
+	 call UintToChar
+	 push eax
+	 pop TEMP_V_7
+	 invoke cWriteLine, TEMP_V_7
+; 27	 ti=l;
 	 push V_27
 	 pop V_26
-; 26	 ti=li@vlvi@vlvi@v;
+; 28	 ti=li@vlvi@vlvi@v;
 	 push OFFSET V_29
 	 push V_22
 	 push OFFSET strConvert
@@ -154,11 +175,11 @@ main PROC
 	 push eax
 	 push OFFSET V_28
 	 call AssignmentString
-; 27	 i@;
+; 29	 i@;
 	 push OFFSET V_28
 	 pop TEMP_V_7
 	 invoke cWriteLine, TEMP_V_7
-; 28	 qill@vig
+; 30	 qill@vig
 	 push V_22
 	 push V_27
 	 push V_31
@@ -175,14 +196,14 @@ main PROC
 	 pop eax
 	 cmp eax, ebx
 	 jb ELSE_BLOCK_0
-; 30	 qiig
+; 32	 qiig
 	 push V_22
 	 push V_26
 	 pop ebx
 	 pop eax
 	 cmp eax, ebx
 	 jb ELSE_BLOCK_1
-; 32	 i=i@;
+; 34	 i=i@;
 	 push V_22
 	 push OFFSET strConvert
 	 call UintToChar
@@ -191,7 +212,7 @@ main PROC
 	 call AssignmentString
 	 jmp END_BLOCK_1
 ELSE_BLOCK_1: 
-; 36	 i=i@;
+; 38	 i=i@;
 	 push V_26
 	 push OFFSET strConvert
 	 call UintToChar
@@ -201,14 +222,14 @@ ELSE_BLOCK_1:
 END_BLOCK_1: 
 	 jmp END_BLOCK_0
 ELSE_BLOCK_0: 
-; 41	 qiig
+; 43	 qiig
 	 push V_25
 	 push V_26
 	 pop ebx
 	 pop eax
 	 cmp eax, ebx
 	 jb ELSE_BLOCK_2
-; 43	 i=i@;
+; 45	 i=i@;
 	 push V_25
 	 push OFFSET strConvert
 	 call UintToChar
@@ -217,7 +238,7 @@ ELSE_BLOCK_0:
 	 call AssignmentString
 	 jmp END_BLOCK_2
 ELSE_BLOCK_2: 
-; 47	 i=i@;
+; 49	 i=i@;
 	 push V_26
 	 push OFFSET strConvert
 	 call UintToChar
@@ -226,7 +247,7 @@ ELSE_BLOCK_2:
 	 call AssignmentString
 END_BLOCK_2: 
 END_BLOCK_0: 
-; 51	 i=ilv;
+; 53	 i=ilv;
 	 push OFFSET V_18
 	 push OFFSET V_32
 	 push OFFSET strTemp
@@ -234,11 +255,11 @@ END_BLOCK_0:
 	 push eax
 	 push OFFSET V_18
 	 call AssignmentString
-; 52	 i@;
+; 54	 i@;
 	 push OFFSET V_18
 	 pop TEMP_V_7
 	 invoke cWriteLine, TEMP_V_7
-; 53	 rl;
+; 55	 rl;
 	 push V_23
 	 call ExitProcess
 main ENDP

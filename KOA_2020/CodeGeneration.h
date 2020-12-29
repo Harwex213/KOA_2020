@@ -56,7 +56,8 @@
 								"BoolToChar PROTO : DWORD, : DWORD\n" + \
 								"UintToChar PROTO : DWORD, : DWORD\n" + \
 								"CharToBool PROTO : DWORD\n" + \
-								"CharToUint PROTO : DWORD\n"
+								"CharToUint PROTO : DWORD\n" + \
+								"StartRandom PROTO\n"
 
 #define STANDART_CONST_BEGIN	".const\n"
 
@@ -99,7 +100,7 @@
 #define STANDART_FUNC_BEGIN(name)			name + " PROC"
 #define INSERT_FUNCTION_PARAM(name, type)	", " + name + ": " + type
 #define STANDART_FUNC_END(name)				"\t ret\n" + name + " ENDP\n"
-#define MAIN_BEGIN	"main PROC\n"
+#define MAIN_BEGIN	"main PROC\n" + "\tcall StartRandom\n"
 #define MAIN_END	"\t call ExitProcess\n" "main ENDP\n"
 
 #define PUSH(name)		"\t push " + name + "\n"
