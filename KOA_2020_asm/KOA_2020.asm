@@ -1,11 +1,10 @@
-; Генерация выполнена успешно. Дата: 29.12.2020 23:53:01
+; Генерация выполнена успешно. Дата: 30.12.2020 01:02:49
 .586
 .model flat, stdcall
 .stack 4096
 includelib kernel32.lib
 includelib libucrt.lib
 includelib StandartLib.lib
-includelib	 "DateTime.lib"
 includelib	 "DateTime.lib"
 ExitProcess	 PROTO : DWORD
 Concat	 PROTO : DWORD, : DWORD, : DWORD
@@ -27,7 +26,7 @@ V_0	 BYTE	"DateTime.lib", 0
 V_14	 BYTE	"Date: ", 0
 V_15	 BYTE	". Time: ", 0
 V_16	 BYTE	".", 0
-V_17	 BYTE	"-----------------------", 0
+V_17	 BYTE	"------------------------", 0
 V_23	 DWORD	0
 V_24	 DWORD	2077
 V_27	 DWORD	1444
@@ -57,6 +56,7 @@ strTemp	 BYTE	 512 DUP(0)
 strConvert	 BYTE	 512 DUP(0)
 _getDate	 BYTE	 512 DUP (0)
 _getTime	 BYTE	 512 DUP(0)
+_divZeroException	 BYTE	 "Division by zero was detected!", 0
 V_13	 BYTE	512 DUP(0)
 V_18	 BYTE	512 DUP(0)
 V_19	 BYTE	0
@@ -68,7 +68,7 @@ V_26	 DWORD	0
 V_28	 BYTE	512 DUP(0)
 .code
 GetCurrentTime PROC
-; 12	 ti=l@vlv@vlv;
+; 11	 ti=l@vlv@vlv;
 	 push OFFSET V_14
 	 push OFFSET _getDate
 	 call GetDate
@@ -92,26 +92,31 @@ GetCurrentTime PROC
 	 push eax
 	 push OFFSET V_13
 	 call AssignmentString
-; 13	 ri;
+; 12	 ri;
 	 mov eax, OFFSET V_13
 	 ret
+@DIVZERO:
+	 push OFFSET _divZeroException
+	 call cWriteLine
+	 push -1
+	 call ExitProcess
 GetCurrentTime ENDP
 main PROC
 	call StartRandom
-; 18	 @@;
+; 17	 @@;
 	 invoke GetCurrentTime
 	 push eax
 	 pop TEMP_V_7
 	 invoke cWriteLine, TEMP_V_7
-; 19	 l@;
+; 18	 l@;
 	 push OFFSET V_17
 	 pop TEMP_V_7
 	 invoke cWriteLine, TEMP_V_7
+; 19	 ti;
 ; 20	 ti;
 ; 21	 ti;
 ; 22	 ti;
-; 23	 ti;
-; 24	 ti=ll@;
+; 23	 ti=ll@;
 	 push V_23
 	 push V_24
 	 pop TEMP_V_7
@@ -119,7 +124,7 @@ main PROC
 	 invoke GetRandom, TEMP_V_6, TEMP_V_7
 	 push eax
 	 pop V_22
-; 25	 ti=ll@;
+; 24	 ti=ll@;
 	 push V_23
 	 push V_24
 	 pop TEMP_V_7
@@ -127,10 +132,10 @@ main PROC
 	 invoke GetRandom, TEMP_V_6, TEMP_V_7
 	 push eax
 	 pop V_25
-; 26	 ti=l;
+; 25	 ti=l;
 	 push V_27
 	 pop V_26
-; 27	 ti=li@vlvi@vlvi@v;
+; 26	 ti=li@vlvi@vlvi@v;
 	 push OFFSET V_29
 	 push V_22
 	 push OFFSET strConvert
@@ -163,11 +168,11 @@ main PROC
 	 push eax
 	 push OFFSET V_28
 	 call AssignmentString
-; 28	 i@;
+; 27	 i@;
 	 push OFFSET V_28
 	 pop TEMP_V_7
 	 invoke cWriteLine, TEMP_V_7
-; 29	 qill@vig
+; 28	 qill@vig
 	 push V_22
 	 push V_31
 	 push V_32
@@ -184,14 +189,14 @@ main PROC
 	 pop eax
 	 cmp eax, ebx
 	 jb ELSE_BLOCK_0
-; 31	 qiig
+; 30	 qiig
 	 push V_22
 	 push V_26
 	 pop ebx
 	 pop eax
 	 cmp eax, ebx
 	 jb ELSE_BLOCK_1
-; 33	 i=i@;
+; 32	 i=i@;
 	 push V_22
 	 push OFFSET strConvert
 	 call UintToChar
@@ -200,7 +205,7 @@ main PROC
 	 call AssignmentString
 	 jmp END_BLOCK_1
 ELSE_BLOCK_1: 
-; 37	 i=i@;
+; 36	 i=i@;
 	 push V_26
 	 push OFFSET strConvert
 	 call UintToChar
@@ -210,14 +215,14 @@ ELSE_BLOCK_1:
 END_BLOCK_1: 
 	 jmp END_BLOCK_0
 ELSE_BLOCK_0: 
-; 42	 qiig
+; 41	 qiig
 	 push V_25
 	 push V_26
 	 pop ebx
 	 pop eax
 	 cmp eax, ebx
 	 jb ELSE_BLOCK_2
-; 44	 i=i@;
+; 43	 i=i@;
 	 push V_25
 	 push OFFSET strConvert
 	 call UintToChar
@@ -226,7 +231,7 @@ ELSE_BLOCK_0:
 	 call AssignmentString
 	 jmp END_BLOCK_2
 ELSE_BLOCK_2: 
-; 48	 i=i@;
+; 47	 i=i@;
 	 push V_26
 	 push OFFSET strConvert
 	 call UintToChar
@@ -235,7 +240,7 @@ ELSE_BLOCK_2:
 	 call AssignmentString
 END_BLOCK_2: 
 END_BLOCK_0: 
-; 52	 i=ilv;
+; 51	 i=ilv;
 	 push OFFSET V_18
 	 push OFFSET V_33
 	 push OFFSET strTemp
@@ -243,12 +248,17 @@ END_BLOCK_0:
 	 push eax
 	 push OFFSET V_18
 	 call AssignmentString
-; 53	 i@;
+; 52	 i@;
 	 push OFFSET V_18
 	 pop TEMP_V_7
 	 invoke cWriteLine, TEMP_V_7
-; 54	 rl;
+; 53	 rl;
 	 push V_23
+	 call ExitProcess
+@DIVZERO:
+	 push OFFSET _divZeroException
+	 call cWriteLine
+	 push -1
 	 call ExitProcess
 main ENDP
 end main

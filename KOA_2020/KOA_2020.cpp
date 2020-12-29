@@ -8,7 +8,6 @@ int wmain(int argc, wchar_t* argv[])
 	try
 	{
 		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-
 		Parm::PARM parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log, parm.logLexTable, parm.logIdTable, parm.logParsing);
 		Log::WriteLog(log);
@@ -43,7 +42,6 @@ int wmain(int argc, wchar_t* argv[])
 
 		//// Code Generation Stage.
 		CodeGeneration::Start(mfst, lexTable, idTable, parm.out);
-
 		// Clear RAM Stage.
 		LT::Delete(lexTable);
 		IT::Delete(idTable);

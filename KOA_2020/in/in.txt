@@ -1,5 +1,4 @@
 #include "DateTime.lib"
-#include "DateTime.lib"
 string prototype GetDate();
 string prototype GetTime();
 uint prototype cWrite(string str);
@@ -16,7 +15,7 @@ string function GetCurrentTime()
 main
 {
     cWriteLine(GetCurrentTime());
-    cWriteLine("-----------------------");
+    cWriteLine("------------------------");
     string resultString;
     bool xIsTheBiggest;
     bool yIsTheBiggest;

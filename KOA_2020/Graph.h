@@ -139,7 +139,7 @@ FST::NODE()
 
 
 #define GRAPH_DIVISION LEX_DIVISION, string, 2, \
-FST::NODE(1, FST::RELATION('/', 0)), \
+FST::NODE(1, FST::RELATION('/', 1)), \
 FST::NODE()
 
 

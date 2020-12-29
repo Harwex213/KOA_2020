@@ -65,7 +65,9 @@
 #define STANDART_VARS			"strTemp\t BYTE\t 512 DUP(0)\n" + \
 								"strConvert\t BYTE\t 512 DUP(0)\n" + \
 								"_getDate\t BYTE\t 512 DUP (0)\n" + \
-								"_getTime\t BYTE\t 512 DUP(0)\n"
+								"_getTime\t BYTE\t 512 DUP(0)\n" + \
+								"_divZeroException\t BYTE\t \"Division by zero was detected!\", 0\n"
+
 #define VAR_NAME(var_name) "V_" + var_name
 // Dword Temp Var:	0	1	2	3	4	5	6	7
 #define DWORD_TEMP_VAR_INITAL_INDEX	7
@@ -75,6 +77,9 @@
 
 #define STANDART_CODE_BEGIN		".code\n"
 #define STANDART_CODE_END		"end main\n"
+
+#define STANDART_ERROR_DIV_ZERO_END		"@DIVZERO:\n" + "\t push OFFSET _divZeroException\n" + \
+										"\t call cWriteLine\n" + "\t push -1\n" + "\t call ExitProcess\n"
 
 #define INCLUDE_LIB(lib_name) "includelib\t " + lib_name + "\n"
 
@@ -99,9 +104,9 @@
 
 #define STANDART_FUNC_BEGIN(name)			name + " PROC"
 #define INSERT_FUNCTION_PARAM(name, type)	", " + name + ": " + type
-#define STANDART_FUNC_END(name)				"\t ret\n" + name + " ENDP\n"
+#define STANDART_FUNC_END(name)				"\t ret\n" + STANDART_ERROR_DIV_ZERO_END + name + " ENDP\n"
 #define MAIN_BEGIN	"main PROC\n" + "\tcall StartRandom\n"
-#define MAIN_END	"\t call ExitProcess\n" "main ENDP\n"
+#define MAIN_END	"\t call ExitProcess\n" + STANDART_ERROR_DIV_ZERO_END + "main ENDP\n"
 
 #define PUSH(name)		"\t push " + name + "\n"
 #define PUSHZX(name)	"\t movzx eax, " + name + "\n" + "\t push eax\n"
@@ -122,9 +127,9 @@
 
 #define ADD				"\t pop eax\n" + "\t pop ebx\n" + "\t add eax, ebx\n" + "\t push eax\n"
 #define ADD_STR			"\t push OFFSET strTemp\n" + "\t call Concat\n" + "\t push eax\n"
-#define SUB				"\t pop eax\n" + "\t pop ebx\n" + "\t sub ebx, eax\n" + "\t push eax\n"
+#define SUB				"\t pop eax\n" + "\t pop ebx\n" + "\t sub ebx, eax\n" + "\t push ebx\n"
 #define MUL				"\t pop eax\n" + "\t pop ebx\n" + "\t mul ebx\n" + "\t push eax\n"
-#define DIV				"\t pop eax\n" + "\t pop ebx\n" + "\t div ebx\n" + "\t push eax\n"
+#define DIV				"\t pop ebx\n" + "\t pop eax\n" + "\t cmp ebx, 0h\n" + "\t je @DIVZERO\n" + "\t div ebx\n" + "\t push eax\n"
 #define BIT_OR			"\t pop eax\n" + "\t pop ebx\n" + "\t or  eax, ebx\n" + "\t push eax\n"
 #define BIT_AND			"\t pop eax\n" + "\t pop ebx\n" + "\t and eax, ebx\n" + "\t push eax\n"
 #define BIT_NOT			"\t pop eax\n" + "\t not eax\n" + "\t push eax\n"
