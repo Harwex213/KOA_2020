@@ -18,6 +18,7 @@ namespace Semantic
 				if (!semanticData.isVoidRule)
 					semanticData.AnalyzeExpression(lexTable, idTable);
 				semanticData.isVoidRule = false;
+				semanticData.isCondition = false;
 			}
 		}
 	}
@@ -49,12 +50,13 @@ namespace Semantic
 			break;
 		case Irule_IF:
 		case Irule_IF_ELSE:
+			isCondition = true;
 			idDataTypeGeneral = IT::BOOL;
 			initialPosition = lexTablePosition + 2;
 			while (lexTable.table[finalPosition].lexema != LEX_BRACES_LEFT)
 			{
 				if (lexTable.table[finalPosition].lexema == LEX_COMPARISONS)
-					idDataTypeGeneral = IT::UNDEF;
+					idDataTypeGeneral = IT::UINT;
 				finalPosition++;
 			}
 			finalPosition--;
@@ -93,7 +95,11 @@ namespace Semantic
 			case LEX_LITERAL:
 				tempIdEntry = idTable.table[lexTable.table[i].idxTI];
 				if (tempIdEntry.idDataType != idDataTypeGeneral && idDataTypeGeneral != IT::UNDEF)
+				{
+					if (isCondition)
+						throw ERROR_THROW_IN(413, lexTable.table[i].line, lexTable.table[i].position);
 					throw ERROR_THROW_IN(412, lexTable.table[i].line, lexTable.table[i].position);
+				}
 				if (tempIdEntry.idType == IT::FUNCTION || tempIdEntry.idType == IT::PROTOTYPE)
 					i = AnalyzeFunctionCall(lexTable, idTable, i);
 				break;

@@ -14,6 +14,7 @@ namespace Semantic
 		IT::IDDATATYPE idDataTypeGeneral = IT::UNDEF;
 		IT::IDDATATYPE idDataTypeFunction = IT::UNDEF;
 		bool isVoidRule = false;
+		bool isCondition = false;
 		int initialPosition = 0;
 		int finalPosition = 0;
 		std::string libsNameArray[LIB_NAME_COUNT] =  { LIB_NAME_DATETIME };
