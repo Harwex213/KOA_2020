@@ -12,6 +12,12 @@ string function GetCurrentTime()
     return time;
 }
 
+uint function Sum(uint x, uint y)
+{
+    uint result = x + y;
+    return result;
+}
+
 main
 {
     cWriteLine(GetCurrentTime());
@@ -20,12 +26,16 @@ main
     bool xIsTheBiggest;
     bool yIsTheBiggest;
     bool zIsTheBiggest;
-    uint x = GetRandom(0, 2077);
-    uint y = GetRandom(0, 2077);
-    uint z = 1444;
+    uint x = Sum(10, Sum(10, Sum(10, Sum(10, Sum(10,)))));
+    uint y = 10;
+    uint z = 1444 / 2 * 10 - 213;
     string startInfo = "Найти максимальное среди чисел: " + UintToChar(x) + ", " + UintToChar(y) + ", "  + UintToChar(z);
     cWriteLine(startInfo);
-    if(x + GetRandom(100,10) > y)
+    if(2>2)
+    {
+        cWriteLine("Amigo");
+    }
+    if(x > y)
     {
        if(x > z)
        {
