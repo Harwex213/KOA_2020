@@ -60,7 +60,7 @@ namespace In
 		enum { L = 64, A = 128, S = 256, W = 512, T = 1024, F = 2048, I = 4096 };
 		int code[256] = IN_CODE_TABLE;
 
-		std::vector<char> symbolsNew;
+		std::vector<short> symbolsNew;
 		int wordCounter = 0;
 		PARSED_WORDS* alfaLxmTable;
 	};
@@ -76,7 +76,7 @@ namespace In
 		bool wasAssignment = false;
 		bool wasMinus = false;
 		bool shiftPosition = false;
-		std::vector<char> tempVector;
+		std::vector<short> tempVector;
 		char specialSymbol = -128;
 		int specialSymbolCounter = 0;
 

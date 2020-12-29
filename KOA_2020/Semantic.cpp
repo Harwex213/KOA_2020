@@ -134,6 +134,10 @@ namespace Semantic
 		case IT::BOOL:
 			return lexEntry.lexema == LEX_COMPARISONS;
 		}
+#ifdef DEBUG_SEMANTIC
+			cout << "Something Wrong!" << endl;
+			return false;
+#endif // DEBUG_SEMANTIC
 	}
 
 	int SemanticData::AnalyzeFunctionCall(LT::LexTable& lexTable, IT::IdTable& idTable, int functionPosition)

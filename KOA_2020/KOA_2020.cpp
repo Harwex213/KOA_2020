@@ -7,7 +7,7 @@ int wmain(int argc, wchar_t* argv[])
 	Log::LOG log;
 	try
 	{
-		//std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
 		Parm::PARM parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log, parm.logLexTable, parm.logIdTable, parm.logParsing);
@@ -52,9 +52,9 @@ int wmain(int argc, wchar_t* argv[])
 		Log::Close(log);
 
 		// Time optimization check.
-		//std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-		//std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration < double >> (t2 - t1);
-		//std::cout << time_span.count() << " seconds.";
+		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration < double >> (t2 - t1);
+		std::cout << time_span.count() << " seconds.";
 	}
 	catch (Error::ERROR e)
 	{
