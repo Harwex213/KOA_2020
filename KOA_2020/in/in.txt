@@ -13,13 +13,6 @@ string function GetCurrentTime()
     return time;
 }
 
-uint function Check(bool value2, string value)
-{
-    value2 = false;
-    cWriteLine(value);
-    return 0;
-}
-
 main
 {
     cWriteLine(GetCurrentTime());
@@ -29,8 +22,8 @@ main
     bool yIsTheBiggest;
     bool zIsTheBiggest;
     uint x = GetRandom(0,2077);
-    uint y = Check(true, "10");
-    uint z = 1444 / 2 * 10 - 213;
+    uint y = 102;
+    uint z = 1444 / 2 * 10 - 213*10000 * 123 + 3120 * 132103 + GetRandom(0, 100000) / 2 + 78888;
     string startInfo = "Найти максимальное среди чисел: " + UintToChar(x) + ", " + UintToChar(y) + ", "  + UintToChar(z);
     cWriteLine(startInfo);
     if(x > y)
