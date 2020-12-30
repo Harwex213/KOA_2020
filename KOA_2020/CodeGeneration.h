@@ -108,9 +108,10 @@
 #define MAIN_BEGIN	"main PROC\n" + "\tcall StartRandom\n"
 #define MAIN_END	"\t call ExitProcess\n" + STANDART_ERROR_DIV_ZERO_END + "main ENDP\n"
 
-#define PUSH(name)		"\t push " + name + "\n"
-#define PUSHZX(name)	"\t movzx eax, " + name + "\n" + "\t push eax\n"
-#define PUSHSTR(name)	"\t push OFFSET " + name + "\n"
+#define PUSH(name)			"\t push " + name + "\n"
+#define PUSHZX(name)		"\t movzx eax, " + name + "\n" + "\t push eax\n"
+#define PUSHSTR(name)		"\t push OFFSET " + name + "\n"
+#define PUSHSTRPARAM(name)	"\t push " + name + "\n"
 
 #define	POP(name)		"\t pop " + name + "\n"
 #define	POPZX(name)		"\t pop eax\n" + "\t mov " + name + ", al\n"

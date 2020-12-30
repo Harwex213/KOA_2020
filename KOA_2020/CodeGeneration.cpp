@@ -155,7 +155,10 @@ namespace CodeGeneration
 			funcCode = funcCode + PUSHZX(IdNameToString(id));
 			break;
 		case IT::STRING:
-			funcCode = funcCode + PUSHSTR(IdNameToString(id));
+			if (entryId.idType == IT::PARAM)
+				funcCode = funcCode + PUSHSTRPARAM(IdNameToString(id));
+			else
+				funcCode = funcCode + PUSHSTR(IdNameToString(id));
 			break;
 		}
 	}
@@ -233,7 +236,7 @@ namespace CodeGeneration
 		// Writing Params of Function.
 		entryFunctionId.paramsIdx.reverse();
 		for (auto idParam = entryFunctionId.paramsIdx.begin(); idParam != entryFunctionId.paramsIdx.end(); idParam++)
-			funcBegin = funcBegin + INSERT_FUNCTION_PARAM(IdNameToString(*idParam), IdDataTypeToString(idTable.table[*idParam]));
+			funcBegin = funcBegin + INSERT_FUNCTION_PARAM(IdNameToString(*idParam), ParamTypeToString(idTable.table[*idParam]));
 		funcBegin = funcBegin + NEWLINE;
 	}
 
@@ -249,11 +252,11 @@ namespace CodeGeneration
 		if (!CheckOnStandartFunction(entryFunctionId.idName))
 		{
 			// Pop data to Temp Vars.
-			entryFunctionId.paramsIdx.reverse();
 			for (auto idParam = entryFunctionId.paramsIdx.begin(); idParam != entryFunctionId.paramsIdx.end(); idParam++)
 				PopTempVar(idTable.table[*idParam]);
 			// Start writing the invoke of function.
 			funcCode = funcCode + INVOKE_FUNCTION(entryFunctionId.idName);
+			entryFunctionId.paramsIdx.reverse();
 			// Writing params of invoke.
 			for (auto idParam = entryFunctionId.paramsIdx.begin(); idParam != entryFunctionId.paramsIdx.end(); idParam++)
 				PushTempVar(idTable.table[*idParam]);

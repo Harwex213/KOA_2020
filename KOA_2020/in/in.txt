@@ -4,6 +4,7 @@ string prototype GetTime();
 uint prototype cWrite(string str);
 uint prototype cWriteLine(string str);
 string prototype UintToChar(uint value);
+uint prototype CharToUint(string str);
 uint prototype GetRandom(uint min, uint max);
 
 string function GetCurrentTime()
@@ -12,10 +13,11 @@ string function GetCurrentTime()
     return time;
 }
 
-uint function Sum(uint x, uint y)
+uint function Check(bool value2, string value)
 {
-    uint result = x + y;
-    return result;
+    value2 = false;
+    cWriteLine(value);
+    return 0;
 }
 
 main
@@ -26,15 +28,11 @@ main
     bool xIsTheBiggest;
     bool yIsTheBiggest;
     bool zIsTheBiggest;
-    uint x = Sum(10, Sum(10, Sum(10, Sum(10, Sum(10,)))));
-    uint y = 10;
+    uint x = GetRandom(0,2077);
+    uint y = Check(true, "10");
     uint z = 1444 / 2 * 10 - 213;
     string startInfo = "Найти максимальное среди чисел: " + UintToChar(x) + ", " + UintToChar(y) + ", "  + UintToChar(z);
     cWriteLine(startInfo);
-    if(2>2)
-    {
-        cWriteLine("Amigo");
-    }
     if(x > y)
     {
        if(x > z)
